@@ -1,0 +1,83 @@
+[build-system]
+requires = ["poetry-core"]
+build-backend = "poetry.core.masonry.api"
+
+[tool.poetry.dependencies]
+python = "^3.10"
+pydantic = "^1.10.7"
+graphql-pydantic-transformer = "^0.0.1"
+frinx-topology-discovery-api = {git = "ssh://git@github.com/FRINXio/frinx-services-python-api.git", rev = "v0.0.1", subdirectory = "topology-discovery/python"}
+frinx-python-sdk = {git = "ssh://git@github.com/FRINXio/frinx-python-sdk.git", rev = "poetry_sdk"}
+
+[tool.poetry.group.dev.dependencies]
+ruff = "^0.0.263"
+mypy = "^1.5.1"
+pyright = "^1.1.317"
+
+[tool.poetry]
+packages = [{ include = "frinx_worker" }]
+name = "frinx-topology-discovery-worker"
+description = "Conductor worker for Frinx Topology Discovery"
+authors = ["Jozef Volak <jozef.volak@elisapolystar.com>"]
+version = "0.0.1"
+readme = ["README.md", "CHANGELOG.md", "RELEASE.md"]
+keywords = ["frinx-machine", "topology-discovery", "worker"]
+license = "Apache 2.0"
+
+[project.urls]
+Homepage = 'https://github.com/FRINXio/frinx-python-sdk'
+Source = 'https://github.com/FRINXio/frinx-python-sdk'
+
+[tool.pyright]
+include = ['frinx_worker']
+reportGeneralTypeIssues = "none"
+
+[tool.ruff]
+line-length = 120
+extend-select = ['Q', 'RUF100', 'C90', 'UP', 'I', 'E', 'F', 'N', 'PL']
+fixable = ["A", "B", "C", "D", "E", "F", "G", "I", "N", "Q", "S", "T", "W", "ANN", "ARG", "BLE", "COM", "DJ", "DTZ", "EM", "ERA", "EXE", "FBT", "ICN", "INP", "ISC", "NPY", "PD", "PGH", "PIE", "PL", "PT", "PTH", "PYI", "RET", "RSE", "RUF", "SIM", "SLF", "TCH", "TID", "TRY", "UP", "YTT"]
+
+target-version = "py310"
+
+[tool.ruff.isort]
+known-first-party = ['frinx_worker', 'tests']
+force-single-line = true
+
+[tool.ruff.flake8-quotes]
+inline-quotes = 'single'
+multiline-quotes = 'double'
+
+[tool.ruff.mccabe]
+max-complexity = 14
+
+[tool.ruff.pydocstyle]
+convention = "google"
+
+[tool.ruff.pylint]
+max-args = 10
+
+[tool.ruff.pyupgrade]
+# Preserve types, even if a file imports `from __future__ import annotations`.
+keep-runtime-typing = true
+
+[tool.ruff.pep8-naming]
+# Allow Pydantic's `@validator` decorator to trigger class method treatment.
+classmethod-decorators = ["classmethod", "pydantic.validator", "pydantic.root_validator"]
+
+[tool.mypy]
+python_version = "3.10"
+plugins = [ "pydantic.mypy" ]
+explicit_package_bases = true
+namespace_packages = true
+strict = true
+pretty = true
+ignore_missing_imports = true
+disallow_untyped_defs= true
+disallow_subclassing_any = false
+warn_unused_ignores = false
+
+[tool.pydantic-mypy]
+init_forbid_extra = true
+init_typed = true
+warn_required_dynamic_aliases = true
+warn_untyped_fields = true

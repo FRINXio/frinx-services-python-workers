@@ -1,0 +1,29 @@
+version: '3.8'
+
+services:
+  postgres:
+    image: frinx/postgres:12.10
+    environment:
+      - POSTGRES_USER=postgres
+      - POSTGRES_PASSWORD=postgres
+      - POSTGRES_DB=frinx
+    healthcheck:
+      test: pg_isready -U postgres
+      interval: 10s
+      timeout: 5s
+      retries: 5
+      start_period: 5s
+
+  resource-manager:
+    image: frinx/resource-manager:${IMAGE_TAG:?}
+    environment:
+      - RM_DB_CONNECTION_STRING=postgres://postgres:postgres@postgres:5432/postgres?sslmode=disable
+      - RM_API_PORT=8884
+    depends_on:
+      postgres:
+        condition: service_healthy
+    healthcheck:
+      test: curl --silent --write-out 'HTTPSTATUS:%{http_code}' -X GET 'http://0.0.0.0:8884/healthz/readiness'
+      interval: 10s
+      timeout: 5s
+      retries: 5

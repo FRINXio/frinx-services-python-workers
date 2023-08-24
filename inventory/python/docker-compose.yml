@@ -1,0 +1,35 @@
+version: '3.8'
+
+services:
+  postgres:
+    image: frinx/postgres:12.10
+    environment:
+      - POSTGRES_USER=postgres
+      - POSTGRES_PASSWORD=postgres
+    healthcheck:
+      test: pg_isready -U postgres
+      interval: 10s
+      timeout: 5s
+      retries: 5
+      start_period: 5s
+
+  inventory:
+    image: frinx/frinx-inventory-server:${IMAGE_TAG:?}
+    environment:
+      - DATABASE_URL="postgresql://postgres:postgres@localhost:5432/frinx"
+      - UNICONFIG_API_PROTOCOL=http
+      - UNICONFIG_API_PORT=8181
+      - UNICONFIG_LIST_URL=http://uniconfig/static/list/uniconfig
+      - X_TENANT_ID=frinx
+      - SHELL_HOST=localhost
+      - TOPOLOGY_ENABLED=false
+    depends_on:
+      postgres:
+        condition: service_healthy
+    healthcheck:
+      test: wget --spider -q '0.0.0.0:8000/.well-known/apollo/server-health'
+      interval: 10s
+      timeout: 5s
+      retries: 5
+      start_period: 40s
+

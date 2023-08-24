@@ -1,0 +1,36 @@
+version: '3.8'
+
+services:
+  postgres:
+    image: frinx/postgres:12.10
+    environment:
+      - POSTGRES_USER=postgres
+      - POSTGRES_PASSWORD=postgres
+    healthcheck:
+      test: pg_isready -U postgres
+      interval: 10s
+      timeout: 5s
+      retries: 5
+      start_period: 5s
+
+  schellar:
+    image: frinx/schellar:${IMAGE_TAG:?}
+    environment:
+      - CONDUCTOR_API_URL=http://conductor-server:8080/api
+      - POSTGRES_HOST=postgres
+      - POSTGRES_PORT=5432
+      - POSTGRES_DB=postgres
+      - POSTGRES_USER=postgres
+      - POSTGRES_PASSWORD=postgres
+    ports:
+      - 3000:3000
+    depends_on:
+      postgres:
+        condition: service_healthy
+    healthcheck:
+      test: wget --spider -q 127.0.0.1:3000/liveness
+      interval: 10s
+      timeout: 5s
+      retries: 5
+      start_period: 20s
+

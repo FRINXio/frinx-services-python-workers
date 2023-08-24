@@ -1,0 +1,9 @@
+version: '3.8'
+
+services:
+  uniconfig-controller:
+    user: root
+    image: frinx/uniconfig:${IMAGE_TAG:?}
+    entrypoint: cp openapi/uniconfigV3.yaml /home/api/
+    volumes:
+      - uniconfig-swagger:/home/api

@@ -1,0 +1,15 @@
+[tool.poetry]
+name = "frinx-services-python-workers"
+version = "0.1.0"
+description = ""
+authors = ["Jozef Volak <jvolak@frinx.io>"]
+readme = "README.md"
+packages = [{include = "frinx_services_python_workers"}]
+
+[tool.poetry.dependencies]
+python = "^3.10"
+
+
+[build-system]
+requires = ["poetry-core"]
+build-backend = "poetry.core.masonry.api"
