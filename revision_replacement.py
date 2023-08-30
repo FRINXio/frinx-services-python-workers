@@ -1,7 +1,7 @@
 import subprocess
 import re
 
-REV_PATTERN = r'rev\s*=\s*"([^"]+)"'
+REV_PATTERN = r'branch\s*=\s*"([^"]+)"'
 PYPROJECT_PATH = "pyproject.toml"
 
 
@@ -22,7 +22,7 @@ def _replace_placeholder(current_branch: str) -> None:
     with open(PYPROJECT_PATH, 'r') as file:
         file_contents = file.read()
 
-    updated_contents = re.sub(REV_PATTERN, f'rev = "{current_branch}"', file_contents)
+    updated_contents = re.sub(REV_PATTERN, f'branch = "{current_branch}"', file_contents)
 
     with open(PYPROJECT_PATH, 'w') as file:
         file.write(updated_contents)

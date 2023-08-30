@@ -292,7 +292,7 @@ websockets = "^11.0"
 type = "git"
 url = "ssh://git@github.com/FRINXio/frinx-python-sdk.git"
 reference = "poetry_sdk"
-resolved_reference = "ce995c5f0174264446c6f95eee4397bd7138c6c1"
+resolved_reference = "f3c708a563b77c536d08cfd1fb37009c3c3f7b39"
 
 [[package]]
 name = "frinx-topology-discovery-api"
