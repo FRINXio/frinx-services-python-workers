@@ -15,20 +15,18 @@ from frinx.common.worker.task_def import TaskInput
 from frinx.common.worker.task_def import TaskOutput
 from frinx.common.worker.task_result import TaskResult
 from frinx.common.worker.worker import WorkerImpl
-
-
 from frinx_api.schellar import CreateScheduleInput
 from frinx_api.schellar import CreateScheduleMutation
 from frinx_api.schellar import DeleteScheduleMutation
 from frinx_api.schellar import PageInfo
 from frinx_api.schellar import Schedule
+from frinx_api.schellar import ScheduleConnection
 from frinx_api.schellar import ScheduleEdge
 from frinx_api.schellar import ScheduleQuery
 from frinx_api.schellar import SchedulesFilterInput
 from frinx_api.schellar import SchedulesQuery
 from frinx_api.schellar import UpdateScheduleInput
 from frinx_api.schellar import UpdateScheduleMutation
-from frinx_api.schellar import ScheduleConnection
 
 client = GraphqlClient(endpoint=SCHELLAR_URL_BASE, headers=SCHELLAR_HEADERS)
 
