@@ -12,6 +12,10 @@ Please note that you should not use tags as identifiers when installing the pack
 
 ```bash
 poetry add "https://github.com/FRINXio/frinx-services-python-workers.git@main"
+
+#with ssh
+poetry add "git+ssh://git@github.com/FRINXio/frinx-services-python-workers.git@main"
+
 ```
 
 If you only need specific subpackages, you can select them using the following command:

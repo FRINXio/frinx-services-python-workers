@@ -8,15 +8,13 @@ packages = [ {include = 'frinx_worker'} ]
 
 [tool.poetry.dependencies]
 python = "^3.10"
-frinx-inventory-worker = {git = "ssh://git@github.com/FRINXio/frinx-services-python-workers.git", rev = "main", subdirectory = "inventory/python"}
-frinx-schellar-worker = {git = "ssh://git@github.com/FRINXio/frinx-services-python-workers.git", rev = "main", subdirectory = "schellar/python"}
-frinx-uniconfig-worker = {git = "ssh://git@github.com/FRINXio/frinx-services-python-workers.git", rev = "main", subdirectory = "uniconfig/python"}
-frinx-resource-manager-worker = {git = "ssh://git@github.com/FRINXio/frinx-services-python-workers.git", rev = "main", subdirectory = "resource-manager/python"}
-frinx-topology-discovery-worker = {git = "ssh://git@github.com/FRINXio/frinx-services-python-workers.git", rev = "main", subdirectory = "topology-discovery/python"}
+frinx-inventory-worker = {git = "ssh://git@github.com/FRINXio/frinx-services-python-workers.git", branch = "main", subdirectory = "inventory/python"}
+frinx-schellar-worker = {git = "ssh://git@github.com/FRINXio/frinx-services-python-workers.git", branch = "main", subdirectory = "schellar/python"}
+frinx-uniconfig-worker = {git = "ssh://git@github.com/FRINXio/frinx-services-python-workers.git", branch = "main", subdirectory = "uniconfig/python"}
+frinx-resource-manager-worker = {git = "ssh://git@github.com/FRINXio/frinx-services-python-workers.git", branch = "main", subdirectory = "resource-manager/python"}
+frinx-topology-discovery-worker = {git = "ssh://git@github.com/FRINXio/frinx-services-python-workers.git", branch = "main", subdirectory = "topology-discovery/python"}
+frinx-http-worker = {git = "ssh://git@github.com/FRINXio/frinx-services-python-workers.git", branch = "main", subdirectory = "misc/python/http"}
 
 [build-system]
 requires = ["poetry-core"]
 build-backend = "poetry.core.masonry.api"
-
-[tool.poetry.build]
-script = "revision_replacement.py"
