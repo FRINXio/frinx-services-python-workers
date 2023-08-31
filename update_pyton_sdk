@@ -1,9 +1,12 @@
 #!/bin/bash
 
-# Find all pyproject.toml files in the repository
-find . -type f -name 'pyproject.toml' | while read toml_file; do
-    parent_dir=$(dirname "$toml_file")
-    pushd "$parent_dir" || exit
-      poetry update frinx-python-sdk
-    popd > /dev/null || exit
+# Find all subproject pyproject.toml files in the repository
+find . -mindepth 2  -type f -name 'pyproject.toml' | while read toml_file; do
+  parent_dir=$(dirname "$toml_file")
+  pushd "$parent_dir" || exit
+    poetry update frinx-python-sdk
+    poetry run ruff --fix .
+    poetry run mypy .
+    poetry run pyright .
+  popd > /dev/null || exit
 done

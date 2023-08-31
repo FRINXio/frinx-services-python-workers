@@ -74,7 +74,7 @@ class HTTPWorkersService(ServiceWorkersImpl):
                 output=self.WorkerOutput(
                     status_code=response.status_code,
                     response=parse_response(response),
-                    cookies=response.cookies.get_dict(),
+                    cookies=response.cookies.get_dict(),  # type: ignore[no-untyped-call]
                     logs=logs
                 )
             )

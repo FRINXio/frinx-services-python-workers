@@ -12,6 +12,7 @@ frinx-python-sdk = {git = "ssh://git@github.com/FRINXio/frinx-python-sdk.git", r
 ruff = "^0.0.263"
 mypy = "^1.5.1"
 pyright = "^1.1.317"
+types-requests = "^2.31.0.2"
 
 [tool.poetry]
 packages = [{ include = "frinx_worker" }]

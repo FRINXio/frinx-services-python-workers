@@ -13,10 +13,6 @@ ruff = "^0.0.263"
 mypy = "^1.5.1"
 pyright = "^1.1.317"
 
-[[tool.poetry.source]]
-name = "test"
-url = "https://test.pypi.org/simple/"
-priority = "supplemental"
 
 [tool.poetry]
 packages = [{ include = "frinx_worker" }]
