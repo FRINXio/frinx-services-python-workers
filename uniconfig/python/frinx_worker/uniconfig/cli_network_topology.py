@@ -1,10 +1,10 @@
-from typing import Any, Optional
+from typing import Any
+from typing import Optional
 
 import requests
-
 from frinx.common.frinx_rest import UNICONFIG_HEADERS
-from frinx.common.frinx_rest import UNICONFIG_URL_BASE
 from frinx.common.frinx_rest import UNICONFIG_REQUEST_PARAMS
+from frinx.common.frinx_rest import UNICONFIG_URL_BASE
 from frinx.common.type_aliases import ListAny
 from frinx.common.worker.service import ServiceWorkersImpl
 from frinx.common.worker.task_def import TaskDefinition
@@ -12,17 +12,18 @@ from frinx.common.worker.task_def import TaskInput
 from frinx.common.worker.task_def import TaskOutput
 from frinx.common.worker.task_result import TaskResult
 from frinx.common.worker.worker import WorkerImpl
-from frinx_worker.uniconfig import class_to_json
-from frinx_worker.uniconfig import uniconfig_zone_to_cookie
-from frinx_worker.uniconfig import handle_response
+
+from . import class_to_json
+from . import handle_response
+from . import uniconfig_zone_to_cookie
 
 
 class CliNetworkTopology(ServiceWorkersImpl):
 
     class ExecuteAndRead(WorkerImpl):
 
-        from frinx_api.uniconfig.rest_api import ExecuteAndRead as UniconfigApi
         from frinx_api.uniconfig.cli.unit.generic.executeandread import Input
+        from frinx_api.uniconfig.rest_api import ExecuteAndRead as UniconfigApi
 
         class WorkerDefinition(TaskDefinition):
             name: str = 'UNICONFIG_Execute_and_read_RPC'
@@ -71,8 +72,8 @@ class CliNetworkTopology(ServiceWorkersImpl):
 
     class Execute(WorkerImpl):
 
-        from frinx_api.uniconfig.rest_api import Execute as UniconfigApi
         from frinx_api.uniconfig.cli.unit.generic.execute import Input
+        from frinx_api.uniconfig.rest_api import Execute as UniconfigApi
 
         class WorkerDefinition(TaskDefinition):
             name: str = 'UNICONFIG_Execute_RPC'

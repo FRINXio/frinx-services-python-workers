@@ -5,8 +5,8 @@ from frinx.common.workflow.workflow import FrontendWFInputFieldType
 from frinx.common.workflow.workflow import WorkflowImpl
 from frinx.common.workflow.workflow import WorkflowInputField
 
-from ..schellar_worker import PaginationCursorType
-from ..schellar_worker import Schellar
+from .. import PaginationCursorType
+from .. import Schellar
 
 
 class SchellarWorkflows(ServiceWorkflowsImpl):

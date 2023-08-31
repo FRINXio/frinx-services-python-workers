@@ -1,8 +1,8 @@
-import subprocess
 import re
+import subprocess
 
 REV_PATTERN = r'branch\s*=\s*"([^"]+)"'
-PYPROJECT_PATH = "pyproject.toml"
+PYPROJECT_PATH = 'pyproject.toml'
 
 
 def _get_branch() -> str:
@@ -10,16 +10,16 @@ def _get_branch() -> str:
         output = subprocess.check_output(['git', 'branch', '--show-current'], stderr=subprocess.STDOUT, text=True)
         current_branch = output.strip()
 
-        print("Current Git Branch:", current_branch)
+        print('Current Git Branch:', current_branch)
         return current_branch
     except subprocess.CalledProcessError:
-        print("Error: Not a Git repository or no current branch found.")
+        print('Error: Not a Git repository or no current branch found.')
     except FileNotFoundError:
-        print("Error: Git command not found. Please ensure Git is installed.")
+        print('Error: Git command not found. Please ensure Git is installed.')
 
 
 def _replace_placeholder(current_branch: str) -> None:
-    with open(PYPROJECT_PATH, 'r') as file:
+    with open(PYPROJECT_PATH) as file:
         file_contents = file.read()
 
     updated_contents = re.sub(REV_PATTERN, f'branch = "{current_branch}"', file_contents)

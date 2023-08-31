@@ -1,21 +1,22 @@
 from typing import Optional
 
 import requests
-
 from frinx.common.frinx_rest import UNICONFIG_HEADERS
-from frinx.common.frinx_rest import UNICONFIG_URL_BASE
 from frinx.common.frinx_rest import UNICONFIG_REQUEST_PARAMS
+from frinx.common.frinx_rest import UNICONFIG_URL_BASE
 from frinx.common.type_aliases import DictAny
 from frinx.common.worker.service import ServiceWorkersImpl
 from frinx.common.worker.task_def import TaskDefinition
 from frinx.common.worker.task_def import TaskExecutionProperties
 from frinx.common.worker.task_def import TaskInput
 from frinx.common.worker.task_def import TaskOutput
-from frinx.common.worker.task_result import TaskResult, TaskResultStatus
+from frinx.common.worker.task_result import TaskResult
+from frinx.common.worker.task_result import TaskResultStatus
 from frinx.common.worker.worker import WorkerImpl
-from frinx_worker.uniconfig import class_to_json
-from frinx_worker.uniconfig import uniconfig_zone_to_cookie
-from frinx_worker.uniconfig import handle_response
+
+from . import class_to_json
+from . import handle_response
+from . import uniconfig_zone_to_cookie
 
 
 class UniconfigManager(ServiceWorkersImpl):
