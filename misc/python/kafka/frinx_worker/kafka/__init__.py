@@ -46,29 +46,29 @@ class KafkaWorker(ServiceWorkersImpl):
         class WorkerOutput(TaskOutput):
             ...
 
-        def execute(self, task: Task) -> TaskResult:
-            config = ProducerConfigServers(bootstrap_servers=task.input_data.get('bootstrap_servers', '')).dict(
+        def execute(self, worker_input: WorkerInput) -> TaskResult[Any]:
+            config = ProducerConfigServers(bootstrap_servers=worker_input.bootstrap_servers).dict(
                 by_alias=True, exclude_none=True)
 
-            match SecurityProtocolType(task.input_data.get('security')):
+            match SecurityProtocolType(worker_input.security):
                 case SecurityProtocolType.SSL:
-                    ssl_conf = ProducerConfigSSL(**json.loads(task.input_data.get('ssl_conf', ''))).dict(
+                    ssl_conf = ProducerConfigSSL(**json.loads(worker_input.ssl_conf)).dict(
                         by_alias=True, exclude_none=True)
                     config = config | ssl_conf
                 case SecurityProtocolType.SASL_PLAINTEXT:
-                    ssl_conf = ProducerConfigSaslPlain(**json.loads(task.input_data.get('ssl_conf', ''))).dict(
+                    ssl_conf = ProducerConfigSaslPlain(**json.loads(worker_input.ssl_conf)).dict(
                         by_alias=True, exclude_none=True)
                     config = config | ssl_conf
                 case SecurityProtocolType.SASL_SSL:
-                    ssl_conf = ProducerConfigCommon(**json.loads(task.input_data.get('ssl_conf', ''))).dict(
+                    ssl_conf = ProducerConfigCommon(**json.loads(worker_input.ssl_conf)).dict(
                         by_alias=True, exclude_none=True)
                     config = config | ssl_conf
 
             producer = kafka_producer_cache.get_producer(config)
 
             producer.send(
-                topic=task.input_data.get('topic', None),
-                value=task.input_data.get('message', None).encode('utf-8'),
-                key=task.input_data.get('key', None).encode('utf-8')
+                topic=worker_input.topic,
+                value=worker_input.message.encode('utf-8'),
+                key=worker_input.key.encode('utf-8')
             )
             return TaskResult(status=TaskResultStatus.COMPLETED, logs='Kafka message published successfully')
