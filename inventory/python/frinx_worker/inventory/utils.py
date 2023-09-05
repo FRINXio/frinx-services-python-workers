@@ -1,14 +1,28 @@
+from dataclasses import dataclass
+from typing import Any
+from typing import TypeAlias
+
 import requests
 from frinx.common.frinx_rest import INVENTORY_HEADERS
 from frinx.common.frinx_rest import INVENTORY_URL_BASE
 from frinx.common.type_aliases import DictAny
+
+CoursorGroup: TypeAlias = dict[str, list[dict[str, str]]]
+CoursorGroups: TypeAlias = dict[str, dict[str, list[dict[str, str]]]]
+
+
+@dataclass
+class InventoryOutput:
+    status: str
+    code: int
+    data: Any
 
 
 def execute_inventory_query(
     query: str,
     variables: DictAny | None = None,
     inventory_url_base: str = INVENTORY_URL_BASE
-) -> requests.Response:
+) -> InventoryOutput:
     """
     Execute GraphQL query to fetch data from inventory
     Args:
@@ -25,6 +39,12 @@ def execute_inventory_query(
         headers=INVENTORY_HEADERS
     )
 
-    response.raise_for_status()
-    return response
+    data = response.json()
 
+    if data.get('errors') is not None:
+        return InventoryOutput(data=data['errors'], status='errors', code=404)
+
+    if data.get('data') is not None:
+        return InventoryOutput(data=data['data'], status='data', code=200)
+
+    return InventoryOutput(data='Request failed', status='failed', code=500)
