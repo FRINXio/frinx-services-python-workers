@@ -102,18 +102,8 @@ class SchellarWorkflows(ServiceWorkflowsImpl):
                     )
                 )
             )
-            self.tasks.append(
-                SimpleTask(
-                    name=Schellar.ExecuteSchellarQuery,
-                    task_reference_name='execute_schellar_query',
-                    input_parameters=SimpleTaskInputParameters(
-                        query=self.tasks[0].output_ref('query'),
-                        variables=self.tasks[0].output_ref('variables'),
-                    )
-                )
-            )
 
-            self.output_parameters.update(self.WorkflowOutput(response=self.tasks[-1].output_ref('response')))
+            self.output_parameters.update(self.WorkflowOutput(response=self.tasks[0].output_ref('response')))
 
     class UpdateScheduledWorkflow(WorkflowImpl):
 
@@ -208,18 +198,7 @@ class SchellarWorkflows(ServiceWorkflowsImpl):
                 )
             )
 
-            self.tasks.append(
-                SimpleTask(
-                    name=Schellar.ExecuteSchellarQuery,
-                    task_reference_name='execute_schellar_query',
-                    input_parameters=SimpleTaskInputParameters(
-                        query=self.tasks[0].output_ref('query'),
-                        variables=self.tasks[0].output_ref('variables'),
-                    )
-                )
-            )
-
-            self.output_parameters.update(self.WorkflowOutput(response=self.tasks[-1].output_ref('response')))
+            self.output_parameters.update(self.WorkflowOutput(response=self.tasks[0].output_ref('response')))
 
     class DeleteScheduledWorkflow(WorkflowImpl):
 
@@ -249,18 +228,8 @@ class SchellarWorkflows(ServiceWorkflowsImpl):
                     )
                 )
             )
-            self.tasks.append(
-                SimpleTask(
-                    name=Schellar.ExecuteSchellarQuery,
-                    task_reference_name='execute_schellar_query',
-                    input_parameters=SimpleTaskInputParameters(
-                        query=self.tasks[0].output_ref('query'),
-                        variables=self.tasks[0].output_ref('variables'),
-                    )
-                )
-            )
 
-            self.output_parameters.update(self.WorkflowOutput(response=self.tasks[-1].output_ref('response')))
+            self.output_parameters.update(self.WorkflowOutput(response=self.tasks[0].output_ref('response')))
 
     class GetScheduleWorkflow(WorkflowImpl):
 
@@ -290,18 +259,8 @@ class SchellarWorkflows(ServiceWorkflowsImpl):
                     )
                 )
             )
-            self.tasks.append(
-                SimpleTask(
-                    name=Schellar.ExecuteSchellarQuery,
-                    task_reference_name='execute_schellar_query',
-                    input_parameters=SimpleTaskInputParameters(
-                        query=self.tasks[0].output_ref('query'),
-                        variables=self.tasks[0].output_ref('variables'),
-                    )
-                )
-            )
 
-            self.output_parameters.update(self.WorkflowOutput(response=self.tasks[-1].output_ref('response')))
+            self.output_parameters.update(self.WorkflowOutput(response=self.tasks[0].output_ref('response')))
 
     class GetSchedulesWorkflow(WorkflowImpl):
 
@@ -364,15 +323,5 @@ class SchellarWorkflows(ServiceWorkflowsImpl):
                     )
                 )
             )
-            self.tasks.append(
-                SimpleTask(
-                    name=Schellar.ExecuteSchellarQuery,
-                    task_reference_name='execute_schellar_query',
-                    input_parameters=SimpleTaskInputParameters(
-                        query=self.tasks[0].output_ref('query'),
-                        variables=self.tasks[0].output_ref('variables'),
-                    )
-                )
-            )
 
-            self.output_parameters.update(self.WorkflowOutput(response=self.tasks[-1].output_ref('response')))
+            self.output_parameters.update(self.WorkflowOutput(response=self.tasks[0].output_ref('response')))
