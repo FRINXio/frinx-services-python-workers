@@ -104,10 +104,20 @@ class Inventory(ServiceWorkflowsImpl):
                 ]
             )
 
+            join_results = JsonJqTask(
+                name='join_results',
+                task_reference_name='join_results',
+                input_parameters=JsonJqTaskInputParameters(
+                    query_expression='{output: .data[]|iterables|.join}',
+                    data=loop_task.output_ref()
+                )
+            )
+
             self.tasks = [
                 get_labels,
                 get_pages_cursors,
                 loop_task,
+                join_results
             ]
 
     class InstallInBatch(WorkflowImpl):

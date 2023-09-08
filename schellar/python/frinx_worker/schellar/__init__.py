@@ -89,7 +89,7 @@ class Schellar(ServiceWorkersImpl):
 
         class WorkerOutput(TaskOutput):
             query: str
-            variables: Optional[DictAny]
+            response: DictAny
 
         def execute(self, worker_input: WorkerInput) -> TaskResult[WorkerOutput]:
 
@@ -113,9 +113,15 @@ class Schellar(ServiceWorkersImpl):
                     query.last = worker_input.size
                     query.before = worker_input.cursor
 
+            query_render = query.render()
+            response = client.execute(query=query_render, variables=None)
+
             return TaskResult(
                 status=TaskResultStatus.COMPLETED,
-                output=self.WorkerOutput(query=query.render(), variables=None)
+                output=self.WorkerOutput(
+                    response=response,
+                    query=query_render
+                )
             )
 
     class GetSchedule(WorkerImpl):
@@ -145,7 +151,7 @@ class Schellar(ServiceWorkersImpl):
 
         class WorkerOutput(TaskOutput):
             query: str
-            variables: Optional[DictAny]
+            response: DictAny
 
         def execute(self, worker_input: WorkerInput) -> TaskResult[WorkerOutput]:
 
@@ -154,9 +160,15 @@ class Schellar(ServiceWorkersImpl):
                 name=worker_input.name
             )
 
+            query_render = query.render()
+            response = client.execute(query=query_render, variables=None)
+
             return TaskResult(
                 status=TaskResultStatus.COMPLETED,
-                output=self.WorkerOutput(query=query.render(), variables=None)
+                output=self.WorkerOutput(
+                    response=response,
+                    query=query_render
+                )
             )
 
     class DeleteSchedule(WorkerImpl):
@@ -178,7 +190,7 @@ class Schellar(ServiceWorkersImpl):
 
         class WorkerOutput(TaskOutput):
             query: str
-            variables: Optional[DictAny]
+            response: DictAny
 
         def execute(self, worker_input: WorkerInput) -> TaskResult[WorkerOutput]:
 
@@ -187,9 +199,15 @@ class Schellar(ServiceWorkersImpl):
                 name=worker_input.name
             )
 
+            mutation_render = mutation.render()
+            response = client.execute(query=mutation_render, variables=None)
+
             return TaskResult(
                 status=TaskResultStatus.COMPLETED,
-                output=self.WorkerOutput(query=mutation.render(), variables=None)
+                output=self.WorkerOutput(
+                    response=response,
+                    query=mutation_render
+                )
             )
 
     class CreateSchedule(WorkerImpl):
@@ -242,7 +260,7 @@ class Schellar(ServiceWorkersImpl):
 
         class WorkerOutput(TaskOutput):
             query: str
-            variables: Optional[DictAny]
+            response: DictAny
 
         def execute(self, worker_input: WorkerInput) -> TaskResult[WorkerOutput]:
 
@@ -260,9 +278,15 @@ class Schellar(ServiceWorkersImpl):
             if worker_input.workflow_context:
                 mutation.input.workflow_context = json_dumps(worker_input.workflow_context).replace('"', '\\"')
 
+            mutation_render = mutation.render()
+            response = client.execute(query=mutation_render, variables=None)
+
             return TaskResult(
                 status=TaskResultStatus.COMPLETED,
-                output=self.WorkerOutput(query=mutation.render(), variables=None)
+                output=self.WorkerOutput(
+                    response=response,
+                    query=mutation_render
+                )
             )
 
     class UpdateSchedule(WorkerImpl):
@@ -315,7 +339,7 @@ class Schellar(ServiceWorkersImpl):
 
         class WorkerOutput(TaskOutput):
             query: str
-            variables: Optional[DictAny]
+            response: DictAny
 
         def execute(self, worker_input: WorkerInput) -> TaskResult[WorkerOutput]:
             mutation = UpdateScheduleMutation(
@@ -333,23 +357,13 @@ class Schellar(ServiceWorkersImpl):
             if worker_input.workflow_context:
                 mutation.input.workflow_context = json_dumps(worker_input.workflow_context).replace('"', '\\"')
 
+            mutation_render = mutation.render()
+            response = client.execute(query=mutation_render, variables=None)
+
             return TaskResult(
                 status=TaskResultStatus.COMPLETED,
-                output=self.WorkerOutput(query=mutation.render(), variables=None)
+                output=self.WorkerOutput(
+                    response=response,
+                    query=mutation_render
+                )
             )
-
-    class ExecuteSchellarQuery(WorkerImpl):
-        class WorkerDefinition(TaskDefinition):
-            name: str = 'Execute_schellar_query'
-            description: str = 'Execute schellar query'
-
-        class WorkerInput(TaskInput):
-            query: str
-            variables: Optional[DictAny]
-
-        class WorkerOutput(TaskOutput):
-            output: DictAny
-
-        def execute(self, worker_input: WorkerInput) -> TaskResult[WorkerOutput]:
-            response = client.execute(query=worker_input.query, variables=worker_input.variables)
-            return TaskResult(status=TaskResultStatus.COMPLETED, output=self.WorkerOutput(output=response))
