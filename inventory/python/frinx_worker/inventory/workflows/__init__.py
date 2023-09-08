@@ -12,6 +12,7 @@ from frinx.common.workflow.task import SimpleTaskInputParameters
 from frinx.common.workflow.workflow import FrontendWFInputFieldType
 from frinx.common.workflow.workflow import WorkflowImpl
 from frinx.common.workflow.workflow import WorkflowInputField
+
 from .. import InventoryService
 
 

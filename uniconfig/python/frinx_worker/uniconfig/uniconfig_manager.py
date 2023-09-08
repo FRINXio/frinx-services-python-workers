@@ -130,7 +130,7 @@ class UniconfigManager(ServiceWorkersImpl):
             )
 
     class CommitTransaction(WorkerImpl):
-        from frinx_api.uniconfig.rest_api import CommitTransaction as UniconfigApi
+        from frinx_api.uniconfig.rest_api import Commit as UniconfigApi
         from frinx_api.uniconfig.uniconfig.manager.commit import Input as CommitInput
 
         class ExecutionProperties(TaskExecutionProperties):

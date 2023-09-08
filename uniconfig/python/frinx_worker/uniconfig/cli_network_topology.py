@@ -48,7 +48,7 @@ class CliNetworkTopology(ServiceWorkersImpl):
 
             response = requests.request(
                 url=worker_input.uniconfig_url_base + self.UniconfigApi.uri.format(
-                    tid=worker_input.topology_id, nid=worker_input.node_id
+                    topology_id=worker_input.topology_id, node_id=worker_input.node_id
                 ),
                 method=self.UniconfigApi.method,
                 data=class_to_json(
@@ -99,7 +99,7 @@ class CliNetworkTopology(ServiceWorkersImpl):
 
             response = requests.request(
                 url=worker_input.uniconfig_url_base + self.UniconfigApi.uri.format(
-                    tid=worker_input.topology_id, nid=worker_input.node_id
+                    topology_id=worker_input.topology_id, node_id=worker_input.node_id
                 ),
                 method=self.UniconfigApi.method,
                 data=class_to_json(

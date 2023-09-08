@@ -3,7 +3,6 @@ from typing import Any
 
 from frinx.common.conductor_enums import TaskResultStatus
 from frinx.common.worker.service import ServiceWorkersImpl
-from frinx.common.worker.task import Task
 from frinx.common.worker.task_def import TaskDefinition
 from frinx.common.worker.task_def import TaskExecutionProperties
 from frinx.common.worker.task_def import TaskInput

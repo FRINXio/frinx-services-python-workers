@@ -52,7 +52,7 @@ class StructuredData(ServiceWorkersImpl):
                     uri = worker_input.uri
 
             url = worker_input.uniconfig_url_base + self.UniconfigApi.uri.format(
-                tid=worker_input.topology_id, nid=worker_input.node_id, uri=uri
+                topology_id=worker_input.topology_id, node_id=worker_input.node_id, uri=uri
             )
 
             response = requests.request(
@@ -104,7 +104,7 @@ class StructuredData(ServiceWorkersImpl):
                     uri = worker_input.uri
 
             url = worker_input.uniconfig_url_base + self.UniconfigApi.uri.format(
-                tid=worker_input.topology_id, nid=worker_input.node_id, uri=uri
+                topology_id=worker_input.topology_id, node_id=worker_input.node_id, uri=uri
             )
 
             if worker_input.params:
@@ -129,7 +129,6 @@ class StructuredData(ServiceWorkersImpl):
                     output=dict(
                         response_code=response.status_code,
                         response_body=response.json()
-                        # response_body=response.content.decode('utf8')
                     )
                 )
             )

@@ -4,9 +4,14 @@
 find . -mindepth 2  -type f -name 'pyproject.toml' | while read toml_file; do
   parent_dir=$(dirname "$toml_file")
   pushd "$parent_dir" || exit
+    poetry lock --no-update
+    poetry install --no-cache --sync
     poetry update frinx-python-sdk
     poetry run ruff --fix .
     poetry run mypy .
     poetry run pyright .
   popd > /dev/null || exit
 done
+
+poetry lock --no-update
+poetry install
