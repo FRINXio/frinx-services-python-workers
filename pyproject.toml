@@ -15,6 +15,7 @@ frinx-resource-manager-worker = {git = "ssh://git@github.com/FRINXio/frinx-servi
 frinx-topology-discovery-worker = {git = "ssh://git@github.com/FRINXio/frinx-services-python-workers.git", branch = "main", subdirectory = "topology-discovery/python"}
 frinx-http-worker = {git = "ssh://git@github.com/FRINXio/frinx-services-python-workers.git", branch = "main", subdirectory = "misc/python/http"}
 frinx-kafka-worker = {git = "ssh://git@github.com/FRINXio/frinx-services-python-workers.git", branch = "main", subdirectory = "misc/python/kafka"}
+frinx-influxdb-worker = {git = "ssh://git@github.com/FRINXio/frinx-services-python-workers.git", branch = "main", subdirectory = "misc/python/influxdb"}
 
 [build-system]
 requires = ["poetry-core"]

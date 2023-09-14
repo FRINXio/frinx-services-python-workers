@@ -17,7 +17,7 @@ types-requests = "^2.31.0.2"
 
 [tool.poetry]
 packages = [{ include = "frinx_worker" }]
-name = "frinx-http-worker"
+name = "frinx-influxdb-worker"
 description = "Conductor HTTP worker for Frinx Machine"
 authors = ["Jozef Volak <jozef.volak@elisapolystar.com>"]
 version = "0.0.1" # dynamically generated
