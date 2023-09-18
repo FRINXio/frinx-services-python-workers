@@ -120,6 +120,10 @@ class Inventory(ServiceWorkflowsImpl):
                 join_results
             ]
 
+            self.output_parameters = self.WorkflowOutput(
+                response_body=join_results.output_ref('result.output')
+            ).dict()
+
     class InstallInBatch(WorkflowImpl):
         name: str = 'INVENTORY_install_in_batch'
         version: int = 1
@@ -252,7 +256,7 @@ class Inventory(ServiceWorkflowsImpl):
             ]
 
             self.output_parameters = self.WorkflowOutput(
-                response_body=join_results.output_ref('data')
+                response_body=join_results.output_ref('result.output')
             ).dict()
 
     class UninstallInBatch(WorkflowImpl):
