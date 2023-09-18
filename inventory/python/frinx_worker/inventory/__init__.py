@@ -746,6 +746,8 @@ class InventoryService(ServiceWorkersImpl):
             match response.status:
                 case 'data':
                     for device in range(len(response.data['devices']['edges'])):
+                        for_loop_id += 1
+
                         dynamic_fork_list.append(
                             {
                                 response.data['devices']['edges'][device]['node']['name']:
@@ -765,7 +767,6 @@ class InventoryService(ServiceWorkersImpl):
                             fork_dict_position = 0
                             for_loop_id = 0
                             dynamic_fork_dict = {}
-                        for_loop_id += 1
                 case _:
                     raise Exception(response.data)
 
@@ -876,7 +877,7 @@ class InventoryService(ServiceWorkersImpl):
                 device_status.update({self.mutation.id: per_device_params})
 
             return TaskResult(
-                status=TaskResultStatus.FAILED,
+                status=TaskResultStatus.COMPLETED,
                 output=self.WorkerOutput(
                     response_body=device_status,
                 )
@@ -931,6 +932,67 @@ class InventoryService(ServiceWorkersImpl):
                 status=TaskResultStatus.COMPLETED,
                 output=self.WorkerOutput(
                     response_body=device_status,
+                )
+            )
+
+    class InventorySubWorkflowForkFormat(WorkerImpl):
+
+        TASK_BODY_TEMPLATE: DictAny = {
+            'name': 'sub_task',
+            'taskReferenceName': '',
+            'type': 'SUB_WORKFLOW',
+            'subWorkflowParam': {
+                'name': '',
+                'version': 1
+            }
+        }
+
+        class WorkerDefinition(TaskDefinition):
+            name: str = 'INVENTORY_sub_workflow_format'
+            description: str = 'Get all pages cursors as dynamic fork tasks with device name for uniconfig workers'
+            labels: ListStr = ['BASIC', 'INVENTORY']
+            timeout_seconds: int = 3600
+            response_timeout_seconds: int = 3600
+
+        class WorkerInput(TaskInput):
+            cursors_groups: CoursorGroup
+            task: str
+            task_input: Optional[DictAny]
+            device_identifies: str = 'device_id'
+
+        class WorkerOutput(TaskOutput):
+            dynamic_tasks_input: DictAny
+            dynamic_tasks: list[DictAny]
+
+        def execute(self, worker_input: WorkerInput) -> TaskResult[WorkerOutput]:
+
+            dynamic_tasks = []
+            dynamic_tasks_i = {}
+            devices = []
+
+            for fork_id, devices_list in worker_input.cursors_groups.items():
+                for device_info in devices_list:
+                    for device_name in device_info:
+                        devices.append(device_name)
+
+            for device in devices:
+                task_body = copy.deepcopy(self.TASK_BODY_TEMPLATE)
+                task_body['taskReferenceName'] = str(device)
+                task_body['subWorkflowParam']['name'] = worker_input.task
+                dynamic_tasks.append(task_body)
+
+                task_input: DictAny = {worker_input.device_identifies: device}
+
+                if worker_input.task_input:
+                    task_input.update(**worker_input.task_input)
+
+                dynamic_tasks_i.update({str(device): copy.deepcopy(task_input)})
+
+            return TaskResult(
+                status=TaskResultStatus.COMPLETED,
+                output=self.WorkerOutput(
+                    dynamic_tasks_input=dynamic_tasks_i,
+                    dynamic_tasks=dynamic_tasks,
                 )
             )
 

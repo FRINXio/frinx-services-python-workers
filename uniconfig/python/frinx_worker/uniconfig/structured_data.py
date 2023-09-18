@@ -127,8 +127,7 @@ class StructuredData(ServiceWorkersImpl):
                 response,
                 self.WorkerOutput(
                     output=dict(
-                        response_code=response.status_code,
-                        response_body=response.json()
+                        response_code=response.status_code
                     )
                 )
             )
@@ -192,8 +191,7 @@ class StructuredData(ServiceWorkersImpl):
                 response,
                 self.WorkerOutput(
                     output=dict(
-                        response_code=response.status_code,
-                        response_body=response.json()
+                        response_code=response.status_code
                     )
                 )
             )
