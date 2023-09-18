@@ -291,8 +291,8 @@ websockets = "^11.0"
 [package.source]
 type = "git"
 url = "ssh://git@github.com/FRINXio/frinx-python-sdk.git"
-reference = "poetry_sdk"
-resolved_reference = "76f9de3a718b4c2a9abdad8c544f688a2cda709b"
+reference = "main"
+resolved_reference = "d11243250b39de64a7f85579b5336366b1ef7cb5"
 
 [[package]]
 name = "frozenlist"
@@ -1049,4 +1049,4 @@ multidict = ">=4.0"
 [metadata]
 lock-version = "2.0"
 python-versions = "^3.10"
-content-hash = "1015712f944f41c0cbae522340354101c6508fc3caa6c50ef504c8201281a718"
+content-hash = "1f16a3f9eb1eec8629d42c833bbae4d3cfec6f0b952982c367aa0d42403725b7"

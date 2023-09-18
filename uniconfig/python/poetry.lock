@@ -291,8 +291,8 @@ websockets = "^11.0"
 [package.source]
 type = "git"
 url = "ssh://git@github.com/FRINXio/frinx-python-sdk.git"
-reference = "poetry_sdk"
-resolved_reference = "76f9de3a718b4c2a9abdad8c544f688a2cda709b"
+reference = "main"
+resolved_reference = "d11243250b39de64a7f85579b5336366b1ef7cb5"
 
 [[package]]
 name = "frinx-uniconfig-api"
@@ -1005,4 +1005,4 @@ multidict = ">=4.0"
 [metadata]
 lock-version = "2.0"
 python-versions = "^3.10"
-content-hash = "ad24b749ae57125513258d38b512bb229885cfbf906522f20235765ef8398f57"
+content-hash = "da6068ec1e77a0224fd54ca5589ecb6e39b4b2ed80a26c883dc2a4b8b5df7ee9"
