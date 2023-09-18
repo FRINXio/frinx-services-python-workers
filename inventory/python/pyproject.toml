@@ -6,7 +6,7 @@ build-backend = "poetry.core.masonry.api"
 python = "^3.10"
 pydantic = "^1.10.7"
 frinx-inventory-api = {git = "ssh://git@github.com/FRINXio/frinx-services-python-api.git", rev = "v0.0.3", subdirectory = "inventory/python"}
-frinx-python-sdk = {git = "ssh://git@github.com/FRINXio/frinx-python-sdk.git", rev = "poetry_sdk"}
+frinx-python-sdk = {git = "ssh://git@github.com/FRINXio/frinx-python-sdk.git", rev = "main"}
 
 [tool.poetry.group.dev.dependencies]
 ruff = "^0.0.263"
