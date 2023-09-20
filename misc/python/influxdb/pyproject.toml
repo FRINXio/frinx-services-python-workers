@@ -5,7 +5,7 @@ build-backend = "poetry.core.masonry.api"
 [tool.poetry.dependencies]
 python = "^3.10"
 pydantic = "^1.10.7"
-frinx-python-sdk = {git = "ssh://git@github.com/FRINXio/frinx-python-sdk.git", rev = "main"}
+frinx-python-sdk = {git = "https://github.com/FRINXio/frinx-python-sdk.git", rev = "main"}
 influxdb-client = "^1.37.0"
 
 [tool.poetry.group.dev.dependencies]
@@ -18,11 +18,11 @@ types-requests = "^2.31.0.2"
 [tool.poetry]
 packages = [{ include = "frinx_worker" }]
 name = "frinx-influxdb-worker"
-description = "Conductor HTTP worker for Frinx Machine"
+description = "Conductor InfluxDB worker for Frinx Machine"
 authors = ["Jozef Volak <jozef.volak@elisapolystar.com>"]
 version = "0.0.1" # dynamically generated
 readme = ["README.md", "CHANGELOG.md"]
-keywords = ["frinx-machine", "http", "worker"]
+keywords = ["frinx-machine", "influx", "worker"]
 license = "Apache 2.0"
 
 [project.urls]
