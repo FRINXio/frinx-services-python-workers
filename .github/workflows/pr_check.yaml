@@ -1,0 +1,97 @@
+# NOTE: adding exceptions for codespell into .github/.codespellignore
+name: pr-check
+
+on:
+  pull_request:
+    branches: [ main ]
+  workflow_dispatch:
+
+jobs:
+  codespell:
+    name: Check spelling issues in repository.
+
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@v3
+
+      - uses: codespell-project/actions-codespell@master
+        with:
+          ignore_words_file: .github/.codespellignore
+          check_filenames: true
+          check_hidden: false
+
+  changes:
+    name: Catch sub-repository with changes.
+
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    outputs:
+      python-workers: ${{ steps.python.outputs.changes }}
+    steps:
+      - uses: actions/checkout@v3
+      - uses: dorny/paths-filter@v2
+        id: python
+        with:
+          filters: |
+            inventory/python:
+              - 'inventory/python/**'
+            misc/python/http:
+              - 'misc/python/http/**'
+            misc/python/influxdb:
+              - 'misc/python/influxdb/**'
+            misc/python/kafka:
+              - 'misc/python/kafka/**'
+            resource-manager/python:
+              - 'resource-manager/python/**'
+            schellar/python:
+              - 'schellar/python/**'
+            topology-discovery/python:
+              - 'topology-discovery/python/**'
+            uniconfig/python:
+              - 'uniconfig/python/**'
+      
+      - name: Echoes changes.
+        run: |
+          echo "------------------------------------------------------------------------"
+          echo "Caught changes in:" ${{ steps.python.outputs.changes }}
+          echo "------------------------------------------------------------------------"
+
+  tests:
+    name: Code testing in parallel.
+
+    needs: changes
+    if: ${{ needs.changes.outputs.python-workers != '[]' && needs.changes.outputs.python-workers != '' }}
+    strategy:
+      fail-fast: false
+      matrix:
+        directories: ${{ fromJSON(needs.changes.outputs.python-workers) }}
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+      - uses: actions/setup-python@v4
+        with:
+          python-version: "3.10"
+      - uses: abatilo/actions-poetry@v2
+        with:
+          poetry-version: "1.4.2"
+
+      - name: Install package dependencies.
+        run: |
+          poetry install --verbose
+        working-directory: ${{ matrix.directories }}
+
+      - name: Run mypy.
+        run: |
+          poetry run mypy .
+        working-directory: ${{ matrix.directories }}
+
+      - name: Run ruff.
+        run: |
+          poetry run ruff .
+        working-directory: ${{ matrix.directories }}
+
+      - name: Run pyright.
+        run: |
+          poetry run pyright .
+        working-directory: ${{ matrix.directories }}
