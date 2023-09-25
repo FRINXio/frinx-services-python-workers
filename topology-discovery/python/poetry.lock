@@ -290,7 +290,7 @@ websockets = "^11.0"
 
 [package.source]
 type = "git"
-url = "ssh://git@github.com/FRINXio/frinx-python-sdk.git"
+url = "https://github.com/FRINXio/frinx-python-sdk.git"
 reference = "main"
 resolved_reference = "d11243250b39de64a7f85579b5336366b1ef7cb5"
 
@@ -309,7 +309,7 @@ pydantic = "^1.10.7"
 
 [package.source]
 type = "git"
-url = "ssh://git@github.com/FRINXio/frinx-services-python-api.git"
+url = "https://github.com/FRINXio/frinx-services-python-api.git"
 reference = "v0.0.3"
 resolved_reference = "026a130a091b1675745ab53bdfda3f34d651f5f4"
 subdirectory = "topology-discovery/python"
@@ -996,4 +996,4 @@ multidict = ">=4.0"
 [metadata]
 lock-version = "2.0"
 python-versions = "^3.10"
-content-hash = "ed7f49ed7c0b1bd178f97d050971108c282f314ec2d2f558ef1cf74138453264"
+content-hash = "156910e0121df30a64a0db737f75db698ad8d8cdbdc58593f2319c0fa2d75ab3"

@@ -286,7 +286,7 @@ pydantic = "^1.10.7"
 
 [package.source]
 type = "git"
-url = "ssh://git@github.com/FRINXio/frinx-services-python-api.git"
+url = "https://github.com/FRINXio/frinx-services-python-api.git"
 reference = "v0.0.3"
 resolved_reference = "026a130a091b1675745ab53bdfda3f34d651f5f4"
 subdirectory = "inventory/python"
@@ -310,7 +310,7 @@ websockets = "^11.0"
 
 [package.source]
 type = "git"
-url = "ssh://git@github.com/FRINXio/frinx-python-sdk.git"
+url = "https://github.com/FRINXio/frinx-python-sdk.git"
 reference = "main"
 resolved_reference = "d11243250b39de64a7f85579b5336366b1ef7cb5"
 
@@ -1021,4 +1021,4 @@ multidict = ">=4.0"
 [metadata]
 lock-version = "2.0"
 python-versions = "^3.10"
-content-hash = "38a1d2b3488fd2377715eed0b6939ac2458060bbeb3b8e5a15e55cc93d795181"
+content-hash = "38dd8ff2667a5dfee31aeaeab65e163400f043cc0e90eecf07066d162f59afa3"

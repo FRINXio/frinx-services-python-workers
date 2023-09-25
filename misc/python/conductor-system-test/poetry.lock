@@ -290,7 +290,7 @@ websockets = "^11.0"
 
 [package.source]
 type = "git"
-url = "ssh://git@github.com/FRINXio/frinx-python-sdk.git"
+url = "https://github.com/FRINXio/frinx-python-sdk.git"
 reference = "main"
 resolved_reference = "d11243250b39de64a7f85579b5336366b1ef7cb5"
 
@@ -777,13 +777,13 @@ files = [
 
 [[package]]
 name = "urllib3"
-version = "2.0.4"
+version = "2.0.5"
 description = "HTTP library with thread-safe connection pooling, file post, and more."
 optional = false
 python-versions = ">=3.7"
 files = [
-    {file = "urllib3-2.0.4-py3-none-any.whl", hash = "sha256:de7df1803967d2c2a98e4b11bb7d6bd9210474c46e8a0401514e3a42a75ebde4"},
-    {file = "urllib3-2.0.4.tar.gz", hash = "sha256:8d22f86aae8ef5e410d4f539fde9ce6b2113a001bb4d189e0aed70642d602b11"},
+    {file = "urllib3-2.0.5-py3-none-any.whl", hash = "sha256:ef16afa8ba34a1f989db38e1dbbe0c302e4289a47856990d0682e374563ce35e"},
+    {file = "urllib3-2.0.5.tar.gz", hash = "sha256:13abf37382ea2ce6fb744d4dad67838eec857c9f4f57009891805e0b5e123594"},
 ]
 
 [package.extras]
@@ -961,4 +961,4 @@ multidict = ">=4.0"
 [metadata]
 lock-version = "2.0"
 python-versions = "^3.10"
-content-hash = "763b29ebc6ee84f261dcaa2e326f4aea647fffd1c188e24e4f8e6dab202b7481"
+content-hash = "6591078f17fb569a1b362f224a63fc22fdc332c57b66ab947dca0430e49ea1e9"

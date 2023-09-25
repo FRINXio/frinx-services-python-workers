@@ -5,9 +5,9 @@ build-backend = "poetry.core.masonry.api"
 [tool.poetry.dependencies]
 python = "^3.10"
 pydantic = "^1.10.7"
-frinx-python-sdk = {git = "ssh://git@github.com/FRINXio/frinx-python-sdk.git", rev = "main"}
 cache3 = "^0.4.3"
 kafka-python = "^2.0.2"
+frinx-python-sdk = {git = "https://github.com/FRINXio/frinx-python-sdk.git", rev = "main"}
 
 [tool.poetry.group.dev.dependencies]
 ruff = "^0.0.263"
