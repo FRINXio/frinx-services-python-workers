@@ -9,12 +9,11 @@ on:
 jobs:
   codespell:
     name: Check spelling issues in repository.
-
     runs-on: ubuntu-latest
     timeout-minutes: 5
+
     steps:
       - uses: actions/checkout@v3
-
       - uses: codespell-project/actions-codespell@master
         with:
           ignore_words_file: .github/.codespellignore
@@ -23,11 +22,12 @@ jobs:
 
   changes:
     name: Catch sub-repository with changes.
-
     runs-on: ubuntu-latest
     timeout-minutes: 5
+
     outputs:
       python-workers: ${{ steps.python.outputs.changes }}
+
     steps:
       - uses: actions/checkout@v3
       - uses: dorny/paths-filter@v2
@@ -50,15 +50,11 @@ jobs:
               - 'topology-discovery/python/**'
             uniconfig/python:
               - 'uniconfig/python/**'
-      
-      - name: Echoes changes.
-        run: |
-          echo "------------------------------------------------------------------------"
-          echo "Caught changes in:" ${{ steps.python.outputs.changes }}
-          echo "------------------------------------------------------------------------"
 
   tests:
     name: Code testing in parallel.
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
 
     needs: changes
     if: ${{ needs.changes.outputs.python-workers != '[]' && needs.changes.outputs.python-workers != '' }}
@@ -66,7 +62,10 @@ jobs:
       fail-fast: false
       matrix:
         directories: ${{ fromJSON(needs.changes.outputs.python-workers) }}
-    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: ${{ matrix.directories }}
+
     steps:
       - uses: actions/checkout@v3
       - uses: actions/setup-python@v4
@@ -75,23 +74,15 @@ jobs:
       - uses: abatilo/actions-poetry@v2
         with:
           poetry-version: "1.4.2"
-
       - name: Install package dependencies.
         run: |
-          poetry install --verbose
-        working-directory: ${{ matrix.directories }}
-
+          poetry install
       - name: Run mypy.
         run: |
           poetry run mypy .
-        working-directory: ${{ matrix.directories }}
-
       - name: Run ruff.
         run: |
           poetry run ruff .
-        working-directory: ${{ matrix.directories }}
-
       - name: Run pyright.
         run: |
           poetry run pyright .
-        working-directory: ${{ matrix.directories }}
