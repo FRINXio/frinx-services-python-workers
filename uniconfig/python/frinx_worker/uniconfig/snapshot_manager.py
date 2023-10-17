@@ -1,3 +1,5 @@
+from typing import Optional
+
 import requests
 from frinx.common.frinx_rest import UNICONFIG_HEADERS
 from frinx.common.frinx_rest import UNICONFIG_REQUEST_PARAMS
@@ -33,8 +35,8 @@ class SnapshotManager(ServiceWorkersImpl):
         class WorkerInput(TaskInput):
             node_ids: list[str]
             snapshot_name: str
-            transaction_id: str | None = None
-            uniconfig_server_id: str | None = None
+            transaction_id: Optional[str] = None
+            uniconfig_server_id: Optional[str] = None
             uniconfig_url_base: str = UNICONFIG_URL_BASE
 
         class WorkerOutput(TaskOutput):
@@ -80,7 +82,7 @@ class SnapshotManager(ServiceWorkersImpl):
         class WorkerInput(TaskInput):
             snapshot_name: str
             transaction_id: str
-            uniconfig_server_id: str | None = None
+            uniconfig_server_id: Optional[str] = None
             uniconfig_url_base: str = UNICONFIG_URL_BASE
 
         class WorkerOutput(TaskOutput):
@@ -127,7 +129,7 @@ class SnapshotManager(ServiceWorkersImpl):
             snapshot_name: str
             node_ids: list[str]
             transaction_id: str
-            uniconfig_server_id: str | None = None
+            uniconfig_server_id: Optional[str] = None
             uniconfig_url_base: str = UNICONFIG_URL_BASE
 
         class WorkerOutput(TaskOutput):

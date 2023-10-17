@@ -77,28 +77,29 @@ class Schellar(ServiceWorkersImpl):
             description: str = 'Get schedules from schellar'
 
         class WorkerInput(TaskInput):
-            workflow_name: Optional[str]
-            workflow_version: Optional[str]
-            size: Optional[int]
-            cursor: Optional[str]
-            type: Optional[PaginationCursorType]
+            workflow_name: Optional[str] = None
+            workflow_version: Optional[str] = None
+            size: Optional[int] = None
+            cursor: Optional[str] = None
+            type: Optional[PaginationCursorType] = None
 
-            class Config:
-                alias_generator = snake_to_camel_case
-                allow_population_by_field_name = True
+            model_config = TaskInput().model_config
+            model_config['alias_generator'] = snake_to_camel_case
+            model_config['populate_by_name'] = True
 
         class WorkerOutput(TaskOutput):
             query: str
+            variable: Optional[DictAny] = None
             response: DictAny
 
         def execute(self, worker_input: WorkerInput) -> TaskResult[WorkerOutput]:
 
-            query = SchedulesQuery(
+            schedules = SchedulesQuery(
                 payload=self.SCHEDULES
             )
 
             if worker_input.workflow_name and worker_input.workflow_version:
-                query.filter = SchedulesFilterInput(
+                schedules.filter = SchedulesFilterInput(
                     workflowName=worker_input.workflow_name,
                     workflowVersion=worker_input.workflow_version
                 )
@@ -107,20 +108,21 @@ class Schellar(ServiceWorkersImpl):
 
             match worker_input.type:
                 case PaginationCursorType.AFTER:
-                    query.first = worker_input.size
-                    query.after = worker_input.cursor
+                    schedules.first = worker_input.size
+                    schedules.after = worker_input.cursor
                 case PaginationCursorType.BEFORE:
-                    query.last = worker_input.size
-                    query.before = worker_input.cursor
+                    schedules.last = worker_input.size
+                    schedules.before = worker_input.cursor
 
-            query_render = query.render()
-            response = client.execute(query=query_render, variables=None)
+            query = schedules.render()
+            response = client.execute(query=query.query, variables=query.variable)
 
             return TaskResult(
                 status=TaskResultStatus.COMPLETED,
                 output=self.WorkerOutput(
                     response=response,
-                    query=query_render
+                    query=query.query,
+                    variable=query.variable
                 )
             )
 
@@ -151,23 +153,25 @@ class Schellar(ServiceWorkersImpl):
 
         class WorkerOutput(TaskOutput):
             query: str
+            variable: Optional[DictAny] = None
             response: DictAny
 
         def execute(self, worker_input: WorkerInput) -> TaskResult[WorkerOutput]:
 
-            query = ScheduleQuery(
+            schedule = ScheduleQuery(
                 payload=self.SCHEDULE,
                 name=worker_input.name
             )
 
-            query_render = query.render()
-            response = client.execute(query=query_render, variables=None)
+            query = schedule.render()
+            response = client.execute(query=query.query, variables=query.variable)
 
             return TaskResult(
                 status=TaskResultStatus.COMPLETED,
                 output=self.WorkerOutput(
                     response=response,
-                    query=query_render
+                    query=query.query,
+                    variable=query.variable
                 )
             )
 
@@ -190,23 +194,25 @@ class Schellar(ServiceWorkersImpl):
 
         class WorkerOutput(TaskOutput):
             query: str
+            variable: Optional[DictAny] = None
             response: DictAny
 
         def execute(self, worker_input: WorkerInput) -> TaskResult[WorkerOutput]:
 
-            mutation = DeleteScheduleMutation(
+            delete_schedule = DeleteScheduleMutation(
                 payload=True,
                 name=worker_input.name
             )
 
-            mutation_render = mutation.render()
-            response = client.execute(query=mutation_render, variables=None)
+            mutation = delete_schedule.render()
+            response = client.execute(query=mutation.query, variables=mutation.variable)
 
             return TaskResult(
                 status=TaskResultStatus.COMPLETED,
                 output=self.WorkerOutput(
                     response=response,
-                    query=mutation_render
+                    query=mutation.query,
+                    variable=mutation.variable
                 )
             )
 
@@ -248,26 +254,27 @@ class Schellar(ServiceWorkersImpl):
             workflow_name: str
             workflow_version: str
             cron_string: str
-            enabled: Optional[bool]
-            parallel_runs: Optional[bool]
-            workflow_context: Optional[DictAny]
-            from_date: Optional[str]
-            to_date: Optional[str]
+            enabled: Optional[bool] = None
+            parallel_runs: Optional[bool] = None
+            workflow_context: Optional[DictAny] = None
+            from_date: Optional[str] = None
+            to_date: Optional[str] = None
 
-            class Config(TaskInput.Config):
-                alias_generator = snake_to_camel_case
-                allow_population_by_field_name = True
+            model_config = TaskInput().model_config
+            model_config['alias_generator'] = snake_to_camel_case
+            model_config['populate_by_name'] = True
 
         class WorkerOutput(TaskOutput):
             query: str
+            variable: Optional[DictAny] = None
             response: DictAny
 
         def execute(self, worker_input: WorkerInput) -> TaskResult[WorkerOutput]:
 
-            mutation = CreateScheduleMutation(
+            create_schedule = CreateScheduleMutation(
                 payload=self.SCHEDULE,
                 input=CreateScheduleInput(
-                    **worker_input.dict(
+                    **worker_input.model_dump(
                         by_alias=True,
                         exclude_none=True,
                         exclude={'workflow_context'}
@@ -276,16 +283,19 @@ class Schellar(ServiceWorkersImpl):
             )
 
             if worker_input.workflow_context:
-                mutation.input.workflow_context = json_dumps(worker_input.workflow_context).replace('"', '\\"')
+                create_schedule.input.workflow_context = json_dumps(
+                    worker_input.workflow_context
+                ).replace('"', '\\"')
 
-            mutation_render = mutation.render()
-            response = client.execute(query=mutation_render, variables=None)
+            mutation = create_schedule.render(form='extracted')
+            response = client.execute(query=mutation.query, variables=mutation.variable)
 
             return TaskResult(
                 status=TaskResultStatus.COMPLETED,
                 output=self.WorkerOutput(
                     response=response,
-                    query=mutation_render
+                    query=mutation.query,
+                    variable=mutation.variable
                 )
             )
 
@@ -324,29 +334,30 @@ class Schellar(ServiceWorkersImpl):
 
         class WorkerInput(TaskInput):
             name: str
-            workflow_name: Optional[str]
-            workflow_version: Optional[str]
-            cron_string: Optional[str]
-            enabled: Optional[bool]
-            parallel_runs: Optional[bool]
-            workflow_context: Optional[DictAny]
-            from_date: Optional[str]
-            to_date: Optional[str]
+            workflow_name: Optional[str] = None
+            workflow_version: Optional[str] = None
+            cron_string: Optional[str] = None
+            enabled: Optional[bool] = None
+            parallel_runs: Optional[bool] = None
+            workflow_context: Optional[DictAny] = None
+            from_date: Optional[str] = None
+            to_date: Optional[str] = None
 
-            class Config:
-                alias_generator = snake_to_camel_case
-                allow_population_by_field_name = True
+            model_config = TaskInput().model_config
+            model_config['alias_generator'] = snake_to_camel_case
+            model_config['populate_by_name'] = True
 
         class WorkerOutput(TaskOutput):
             query: str
+            variable: Optional[DictAny] = None
             response: DictAny
 
         def execute(self, worker_input: WorkerInput) -> TaskResult[WorkerOutput]:
-            mutation = UpdateScheduleMutation(
+            update_schedule = UpdateScheduleMutation(
                 name=worker_input.name,
                 payload=self.SCHEDULE,
                 input=UpdateScheduleInput(
-                    **worker_input.dict(
+                    **worker_input.model_dump(
                         by_alias=True,
                         exclude_none=True,
                         exclude={'name', 'workflow_context'}
@@ -355,15 +366,18 @@ class Schellar(ServiceWorkersImpl):
             )
 
             if worker_input.workflow_context:
-                mutation.input.workflow_context = json_dumps(worker_input.workflow_context).replace('"', '\\"')
+                update_schedule.input.workflow_context = json_dumps(
+                    worker_input.workflow_context
+                ).replace('"', '\\"')
 
-            mutation_render = mutation.render()
-            response = client.execute(query=mutation_render, variables=None)
+            mutation = update_schedule.render()
+            response = client.execute(query=mutation.query, variables=mutation.variable)
 
             return TaskResult(
                 status=TaskResultStatus.COMPLETED,
                 output=self.WorkerOutput(
                     response=response,
-                    query=mutation_render
+                    query=mutation.query,
+                    variable=mutation.variable
                 )
             )

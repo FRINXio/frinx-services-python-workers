@@ -11,7 +11,7 @@ class BasicAuth(BaseModel):
 
 
 def http_task(http_input: TaskInput) -> requests.Response:
-    input_data = defaultdict(lambda: None, http_input.dict(by_alias=True))
+    input_data = defaultdict(lambda: None, http_input.model_dump(by_alias=True))
     headers, timeout, json, data, auth = input_data['headers'] or {}, None, None, None, None
 
     if input_data['basicAuth']:

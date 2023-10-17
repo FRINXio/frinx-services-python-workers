@@ -32,13 +32,13 @@ class UniconfigManager(ServiceWorkersImpl):
             description: str = 'Create Uniconfig transaction'
 
         class WorkerInput(TaskInput):
-            transaction_timeout: int | None = None
+            transaction_timeout: Optional[int] = None
             use_dedicated_session: bool = False
             uniconfig_url_base: str = UNICONFIG_URL_BASE
 
         class WorkerOutput(TaskOutput):
-            transaction_id: str | None
-            uniconfig_server_id: str | None
+            transaction_id: Optional[str] = None
+            uniconfig_server_id: Optional[str] = None
             uniconfig_url_base: str
 
         def execute(self, worker_input: WorkerInput) -> TaskResult[WorkerOutput]:
@@ -82,14 +82,14 @@ class UniconfigManager(ServiceWorkersImpl):
 
         class WorkerInput(TaskInput):
             uniconfig_url_base: str = UNICONFIG_URL_BASE
-            uniconfig_server_id: Optional[str]
-            transaction_id: Optional[str]
+            uniconfig_server_id: Optional[str] = None
+            transaction_id: Optional[str] = None
 
         class WorkerOutput(TaskOutput):
             closed: Optional[DictAny] = {}
             unclosed: Optional[DictAny] = {}
 
-        def execute(self, worker_input: WorkerInput) -> TaskResult[None]:
+        def execute(self, worker_input: WorkerInput) -> TaskResult[WorkerOutput]:
             if self.UniconfigApi.request is None:
                 raise Exception(f'Failed to create request {self.UniconfigApi.request}')
 
@@ -144,10 +144,10 @@ class UniconfigManager(ServiceWorkersImpl):
         class WorkerInput(TaskInput):
             confirmed_commit: bool = False
             validate_commit: bool = True
-            rollback: bool | None = None
-            skip_unreachable_nodes: bool | None = None
-            transaction_id: Optional[str]
-            uniconfig_server_id: Optional[str]
+            rollback: Optional[bool] = None
+            skip_unreachable_nodes: Optional[bool] = None
+            transaction_id: Optional[str] = None
+            uniconfig_server_id: Optional[str] = None
             uniconfig_url_base: str
 
         class WorkerOutput(TaskOutput):
@@ -196,7 +196,7 @@ class UniconfigManager(ServiceWorkersImpl):
         class WorkerInput(TaskInput):
             node_ids: list[str]
             transaction_id: str
-            uniconfig_server_id: str | None = None
+            uniconfig_server_id: Optional[str] = None
             uniconfig_url_base: str = UNICONFIG_URL_BASE
 
         class WorkerOutput(TaskOutput):
@@ -242,7 +242,7 @@ class UniconfigManager(ServiceWorkersImpl):
         class WorkerInput(TaskInput):
             node_ids: list[str]
             transaction_id: str
-            uniconfig_server_id: str | None = None
+            uniconfig_server_id: Optional[str] = None
             uniconfig_url_base: str = UNICONFIG_URL_BASE
 
         class WorkerOutput(TaskOutput):
@@ -287,9 +287,9 @@ class UniconfigManager(ServiceWorkersImpl):
 
         class WorkerInput(TaskInput):
             do_rollback: Optional[bool] = False
-            node: Optional[list[str]]
-            transaction_id: Optional[str]
-            uniconfig_server_id: str | None = None
+            node: Optional[list[str]] = None
+            transaction_id: Optional[str] = None
+            uniconfig_server_id: Optional[str] = None
             uniconfig_url_base: str = UNICONFIG_URL_BASE
 
         class WorkerOutput(TaskOutput):

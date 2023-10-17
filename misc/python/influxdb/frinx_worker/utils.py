@@ -27,34 +27,34 @@ class InfluxDbWrapper:
     
 
 def error_adapter(error: InfluxDBError) -> ConductorWorkerError:
-        in_message = partial(contains, error.message)
+    in_message = partial(contains, error.message)
 
-        match error.response.status:
-            case HTTPStatus.BAD_REQUEST:
-                if in_message('undefined identifier'):
-                    err_msg = f'Invalid query, {error.message}'
-                elif in_message('organization name'):
-                    err_msg = 'Invalid org.'
-                else:
-                    err_msg = error.message
-                
-                return InvalidTaskInputError(err_msg)
-                
-            case HTTPStatus.UNAUTHORIZED:
-                return FailedTaskError('Unauthorized, invalid token.')
-            
-            case HTTPStatus.NOT_FOUND:
-                if in_message('bucket'):
-                    err_msg = 'Bucket not exists.'
-                elif in_message('organization name'):
-                    err_msg = 'Org not exists.'
-                else:
-                    err_msg = error.message
+    match error.response.status:
+        case HTTPStatus.BAD_REQUEST:
+            if in_message('undefined identifier'):
+                err_msg = f'Invalid query, {error.message}'
+            elif in_message('organization name'):
+                err_msg = 'Invalid org.'
+            else:
+                err_msg = error.message
 
-                return FailedTaskError(err_msg)
-            
-            case _:
-                FailedTaskError(error.message)
+            return InvalidTaskInputError(err_msg)
+
+        case HTTPStatus.UNAUTHORIZED:
+            return FailedTaskError('Unauthorized, invalid token.')
+
+        case HTTPStatus.NOT_FOUND:
+            if in_message('bucket'):
+                err_msg = 'Bucket not exists.'
+            elif in_message('organization name'):
+                err_msg = 'Org not exists.'
+            else:
+                err_msg = error.message
+
+            return FailedTaskError(err_msg)
+
+        case _:
+            FailedTaskError(error.message)
     
 
 def influx_write_data(worker: WorkerImpl, worker_input: TaskInput) -> TaskResult:

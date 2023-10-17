@@ -37,9 +37,11 @@ class PostToSlackService(ServiceWorkflowsImpl):
 
         def workflow_builder(self, workflow_inputs: WorkflowInput) -> None:
             worker_input = SimpleTaskInputParameters(
-                uri=f'https://hooks.slack.com/services/{workflow_inputs.slack_webhook_id.wf_input}',
-                body={'text': workflow_inputs.message_text.wf_input},
-                method='POST'
+                root=dict(
+                    uri=f'https://hooks.slack.com/services/{workflow_inputs.slack_webhook_id.wf_input}',
+                    body={'text': workflow_inputs.message_text.wf_input},
+                    method='POST'
+                )
             )
 
             self.tasks.append(

@@ -23,7 +23,7 @@ class Inventory(ServiceWorkflowsImpl):
         version: int = 1
         description: str = 'Install all devices from device inventory or by label'
         labels: list[str] = ['INVENTORY']
-        timeout_seconds = 3600
+        timeout_seconds: int = 3600
 
         class WorkflowInput(WorkflowImpl.WorkflowInput):
             labels: WorkflowInputField = WorkflowInputField(
@@ -42,7 +42,9 @@ class Inventory(ServiceWorkflowsImpl):
                 name=InventoryService.InventoryGetLabelsId,
                 task_reference_name='get_labels',
                 input_parameters=SimpleTaskInputParameters(
-                    labels=workflow_inputs.labels.wf_input
+                    root=dict(
+                        labels=workflow_inputs.labels.wf_input
+                    )
                 )
             )
 
@@ -50,7 +52,9 @@ class Inventory(ServiceWorkflowsImpl):
                 name=InventoryService.InventoryGetPagesCursors,
                 task_reference_name='get_pages_cursors',
                 input_parameters=SimpleTaskInputParameters(
-                    labels=get_labels.output_ref('labels_id')
+                    root=dict(
+                        labels=get_labels.output_ref('labels_id')
+                    )
                 )
             )
 
@@ -68,8 +72,10 @@ class Inventory(ServiceWorkflowsImpl):
                 name=InventoryService.InventoryGetPagesCursorsForkTasks,
                 task_reference_name='get_pages_cursors_fork_task',
                 input_parameters=SimpleTaskInputParameters(
-                    task=InventoryService.InventoryInstallInBatch().WorkerDefinition().name,
-                    cursors_groups=convert_to_string.output_ref('result'),
+                    root=dict(
+                        task=InventoryService.InventoryInstallInBatch().WorkerDefinition().name,
+                        cursors_groups=convert_to_string.output_ref('result')
+                    )
                 )
             )
 
@@ -122,14 +128,14 @@ class Inventory(ServiceWorkflowsImpl):
 
             self.output_parameters = self.WorkflowOutput(
                 response_body=join_results.output_ref('result.output')
-            ).dict()
+            ).model_dump()
 
     class InstallInBatch(WorkflowImpl):
         name: str = 'INVENTORY_install_in_batch'
         version: int = 1
         description: str = 'Install devices in batch'
         labels: list[str] = ['INVENTORY']
-        timeout_seconds = 3600
+        timeout_seconds: int = 3600
 
         class WorkflowInput(WorkflowImpl.WorkflowInput):
             devices: WorkflowInputField = WorkflowInputField(
@@ -148,7 +154,9 @@ class Inventory(ServiceWorkflowsImpl):
                     name=InventoryService.InventoryInstallInBatch,
                     task_reference_name='install_in_batch',
                     input_parameters=SimpleTaskInputParameters(
-                        devices=workflow_inputs.devices.wf_input
+                        root=dict(
+                            devices=workflow_inputs.devices.wf_input
+                        )
                     )
                 )
             )
@@ -158,7 +166,7 @@ class Inventory(ServiceWorkflowsImpl):
         version: int = 1
         description: str = 'Uninstall all devices from device inventory or by label'
         labels: list[str] = ['INVENTORY']
-        timeout_seconds = 3600
+        timeout_seconds: int = 3600
 
         class WorkflowInput(WorkflowImpl.WorkflowInput):
             labels: WorkflowInputField = WorkflowInputField(
@@ -177,7 +185,9 @@ class Inventory(ServiceWorkflowsImpl):
                 name=InventoryService.InventoryGetLabelsId,
                 task_reference_name='get_labels',
                 input_parameters=SimpleTaskInputParameters(
-                    labels=workflow_inputs.labels.wf_input
+                    root=dict(
+                        labels=workflow_inputs.labels.wf_input
+                    )
                 )
             )
 
@@ -185,7 +195,9 @@ class Inventory(ServiceWorkflowsImpl):
                 name=InventoryService.InventoryGetPagesCursors,
                 task_reference_name='get_pages_cursors',
                 input_parameters=SimpleTaskInputParameters(
-                    labels=get_labels.output_ref('labels_id')
+                    root=dict(
+                        labels=get_labels.output_ref('labels_id')
+                    )
                 )
             )
 
@@ -203,8 +215,10 @@ class Inventory(ServiceWorkflowsImpl):
                 name=InventoryService.InventoryGetPagesCursorsForkTasks,
                 task_reference_name='get_pages_cursors_fork_task',
                 input_parameters=SimpleTaskInputParameters(
-                    task='INVENTORY_uninstall_in_batch',
-                    cursors_groups=convert_to_string.output_ref('result'),
+                    root=dict(
+                        task='INVENTORY_uninstall_in_batch',
+                        cursors_groups=convert_to_string.output_ref('result')
+                    )
                 )
             )
 
@@ -257,14 +271,14 @@ class Inventory(ServiceWorkflowsImpl):
 
             self.output_parameters = self.WorkflowOutput(
                 response_body=join_results.output_ref('result.output')
-            ).dict()
+            ).model_dump()
 
     class UninstallInBatch(WorkflowImpl):
         name: str = 'INVENTORY_uninstall_in_batch'
         version: int = 1
         description: str = 'Uninstall devices in batch'
         labels: list[str] = ['INVENTORY']
-        timeout_seconds = 3600
+        timeout_seconds: int = 3600
 
         class WorkflowInput(WorkflowImpl.WorkflowInput):
             devices: WorkflowInputField = WorkflowInputField(
@@ -283,7 +297,9 @@ class Inventory(ServiceWorkflowsImpl):
                     name=InventoryService.InventoryUninstallInBatch,
                     task_reference_name='uninstall_in_batch',
                     input_parameters=SimpleTaskInputParameters(
-                        devices=workflow_inputs.devices.wf_input
+                        root=dict(
+                            devices=workflow_inputs.devices.wf_input
+                        )
                     )
                 )
             )

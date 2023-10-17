@@ -146,7 +146,7 @@ class StructuredData(ServiceWorkersImpl):
 
         class WorkerInput(TaskInput):
             node_id: str
-            uri: Optional[str]
+            uri: Optional[str] = None
             template: DictAny
             method: str = 'PUT'
             params: Optional[DictAny] = {}

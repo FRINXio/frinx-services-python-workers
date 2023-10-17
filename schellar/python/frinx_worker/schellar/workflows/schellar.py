@@ -90,15 +90,17 @@ class SchellarWorkflows(ServiceWorkflowsImpl):
                     name=Schellar.CreateSchedule,
                     task_reference_name='schedule_workflow',
                     input_parameters=SimpleTaskInputParameters(
-                        name=workflow_inputs.name.wf_input,
-                        workflow_name=workflow_inputs.workflow_name.wf_input,
-                        workflow_version=workflow_inputs.workflow_version.wf_input,
-                        cron_string=workflow_inputs.cron_string.wf_input,
-                        enabled=workflow_inputs.enabled.wf_input,
-                        parallel_runs=workflow_inputs.parallel_runs.wf_input,
-                        workflow_context=workflow_inputs.workflow_context.wf_input,
-                        from_date=workflow_inputs.from_date.wf_input,
-                        to_date=workflow_inputs.to_date.wf_input
+                        root=dict(
+                            name=workflow_inputs.name.wf_input,
+                            workflow_name=workflow_inputs.workflow_name.wf_input,
+                            workflow_version=workflow_inputs.workflow_version.wf_input,
+                            cron_string=workflow_inputs.cron_string.wf_input,
+                            enabled=workflow_inputs.enabled.wf_input,
+                            parallel_runs=workflow_inputs.parallel_runs.wf_input,
+                            workflow_context=workflow_inputs.workflow_context.wf_input,
+                            from_date=workflow_inputs.from_date.wf_input,
+                            to_date=workflow_inputs.to_date.wf_input
+                        )
                     )
                 )
             )
@@ -185,15 +187,17 @@ class SchellarWorkflows(ServiceWorkflowsImpl):
                     name=Schellar.UpdateSchedule,
                     task_reference_name='update_scheduled_workflow',
                     input_parameters=SimpleTaskInputParameters(
-                        name=workflow_inputs.name.wf_input,
-                        workflow_name=workflow_inputs.workflow_name.wf_input,
-                        workflow_version=workflow_inputs.workflow_version.wf_input,
-                        cron_string=workflow_inputs.cron_string.wf_input,
-                        enabled=workflow_inputs.enabled.wf_input,
-                        parallel_runs=workflow_inputs.parallel_runs.wf_input,
-                        workflow_context=workflow_inputs.workflow_context.wf_input,
-                        from_date=workflow_inputs.from_date.wf_input,
-                        to_date=workflow_inputs.to_date.wf_input
+                        root=dict(
+                            name=workflow_inputs.name.wf_input,
+                            workflow_name=workflow_inputs.workflow_name.wf_input,
+                            workflow_version=workflow_inputs.workflow_version.wf_input,
+                            cron_string=workflow_inputs.cron_string.wf_input,
+                            enabled=workflow_inputs.enabled.wf_input,
+                            parallel_runs=workflow_inputs.parallel_runs.wf_input,
+                            workflow_context=workflow_inputs.workflow_context.wf_input,
+                            from_date=workflow_inputs.from_date.wf_input,
+                            to_date=workflow_inputs.to_date.wf_input
+                        )
                     )
                 )
             )
@@ -224,7 +228,9 @@ class SchellarWorkflows(ServiceWorkflowsImpl):
                     name=Schellar.DeleteSchedule,
                     task_reference_name='delete_scheduled_workflow',
                     input_parameters=SimpleTaskInputParameters(
-                        name=workflow_inputs.name.wf_input
+                        root=dict(
+                            name=workflow_inputs.name.wf_input
+                        )
                     )
                 )
             )
@@ -255,7 +261,9 @@ class SchellarWorkflows(ServiceWorkflowsImpl):
                     name=Schellar.GetSchedule,
                     task_reference_name='schedule_by_name',
                     input_parameters=SimpleTaskInputParameters(
-                        name=workflow_inputs.name.wf_input
+                        root=dict(
+                            name=workflow_inputs.name.wf_input
+                        )
                     )
                 )
             )
@@ -315,11 +323,13 @@ class SchellarWorkflows(ServiceWorkflowsImpl):
                     name=Schellar.GetSchedules,
                     task_reference_name='schedule_by_name',
                     input_parameters=SimpleTaskInputParameters(
-                        workflow_name=workflow_inputs.workflow_name.wf_input,
-                        workflow_version=workflow_inputs.workflow_version.wf_input,
-                        cursor=workflow_inputs.cursor.wf_input,
-                        size=workflow_inputs.size.wf_input,
-                        type=workflow_inputs.type.wf_input,
+                        root=dict(
+                            workflow_name=workflow_inputs.workflow_name.wf_input,
+                            workflow_version=workflow_inputs.workflow_version.wf_input,
+                            cursor=workflow_inputs.cursor.wf_input,
+                            size=workflow_inputs.size.wf_input,
+                            type=workflow_inputs.type.wf_input
+                        )
                     )
                 )
             )

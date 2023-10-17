@@ -35,8 +35,8 @@ class CliNetworkTopology(ServiceWorkersImpl):
             command: str
             wait_for_output: int = 0
             error_check: bool = True
-            transaction_id: Optional[str]
-            uniconfig_server_id: Optional[str]
+            transaction_id: Optional[str] = None
+            uniconfig_server_id: Optional[str] = None
             uniconfig_url_base: str = UNICONFIG_URL_BASE
 
         class WorkerOutput(TaskOutput):
@@ -86,8 +86,8 @@ class CliNetworkTopology(ServiceWorkersImpl):
             command: str
             wait_for_output: int = 0
             error_check: bool = True
-            transaction_id: Optional[str]
-            uniconfig_server_id: Optional[str]
+            transaction_id: Optional[str] = None
+            uniconfig_server_id: Optional[str] = None
             uniconfig_url_base: str = UNICONFIG_URL_BASE
 
         class WorkerOutput(TaskOutput):

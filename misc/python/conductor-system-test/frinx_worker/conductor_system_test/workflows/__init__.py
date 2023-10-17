@@ -60,10 +60,12 @@ class TestWorkflows(ServiceWorkflowsImpl):
                 name=TestWorker.LoremIpsum,
                 task_reference_name='generate',
                 input_parameters=SimpleTaskInputParameters(
-                    num_paragraphs=workflow_inputs.num_paragraphs.wf_input,
-                    num_sentences=workflow_inputs.num_sentences.wf_input,
-                    num_words=workflow_inputs.num_words.wf_input,
-                ),
+                    root=dict(
+                        num_paragraphs=workflow_inputs.num_paragraphs.wf_input,
+                        num_sentences=workflow_inputs.num_sentences.wf_input,
+                        num_words=workflow_inputs.num_words.wf_input
+                    )
+                )
             )
             self.tasks.append(generate_task)
 
@@ -72,15 +74,21 @@ class TestWorkflows(ServiceWorkflowsImpl):
                     name=TestWorker.Sleep,
                     task_reference_name='sleep',
                     input_parameters=SimpleTaskInputParameters(
-                        time=workflow_inputs.sleep_time.wf_input
-                    ),
+                        root=dict(
+                            time=workflow_inputs.sleep_time.wf_input
+                        )
+                    )
                 )
             )
 
             echo_task = SimpleTask(
                 name=TestWorker.Echo,
                 task_reference_name='echo',
-                input_parameters=SimpleTaskInputParameters(input=generate_task.output_ref('text')),
+                input_parameters=SimpleTaskInputParameters(
+                    root=dict(
+                        input=generate_task.output_ref('text')
+                    )
+                )
             )
             self.tasks.append(echo_task)
 
@@ -140,15 +148,17 @@ class TestWorkflows(ServiceWorkflowsImpl):
                     name=TestWorker.DynamicForkGenerator,
                     task_reference_name='fork_generator',
                     input_parameters=SimpleTaskInputParameters(
-                        wf_count=workflow_inputs.fork_count.wf_input,
-                        wf_name='Test_workflow',
-                        wf_inputs={
-                            'num_words': workflow_inputs.num_words.wf_input,
-                            'num_sentences': workflow_inputs.num_sentences.wf_input,
-                            'num_paragraphs': workflow_inputs.num_paragraphs.wf_input,
-                            'sleep_time': workflow_inputs.sleep_time.wf_input,
-                        },
-                    ),
+                        root=dict(
+                            wf_count=workflow_inputs.fork_count.wf_input,
+                            wf_name='Test_workflow',
+                            wf_inputs={
+                                'num_words': workflow_inputs.num_words.wf_input,
+                                'num_sentences': workflow_inputs.num_sentences.wf_input,
+                                'num_paragraphs': workflow_inputs.num_paragraphs.wf_input,
+                                'sleep_time': workflow_inputs.sleep_time.wf_input,
+                            }
+                        )
+                    )
                 )
             )
 

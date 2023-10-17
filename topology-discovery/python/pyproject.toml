@@ -4,10 +4,9 @@ build-backend = "poetry.core.masonry.api"
 
 [tool.poetry.dependencies]
 python = "^3.10"
-pydantic = "^1.10.7"
-graphql-pydantic-transformer = "^0.0.1"
-frinx-python-sdk = {git = "https://github.com/FRINXio/frinx-python-sdk.git", rev = "main"}
-frinx-topology-discovery-api = {git = "https://github.com/FRINXio/frinx-services-python-api.git", rev = "v0.0.3", subdirectory = "topology-discovery/python"}
+pydantic = "^2"
+frinx-python-sdk = {git = "https://github.com/FRINXio/frinx-python-sdk.git", rev = "v1.0.0"}
+frinx-topology-discovery-api = {git = "https://github.com/FRINXio/frinx-services-python-api.git", rev = "frinx-topology-discovery-api_v1.0.0", subdirectory = "topology-discovery/python"}
 
 [tool.poetry.group.dev.dependencies]
 ruff = "^0.0.263"
@@ -62,7 +61,7 @@ keep-runtime-typing = true
 
 [tool.ruff.pep8-naming]
 # Allow Pydantic's `@validator` decorator to trigger class method treatment.
-classmethod-decorators = ["classmethod", "pydantic.validator", "pydantic.root_validator"]
+classmethod-decorators = ["classmethod", "pydantic.field_validator", "pydantic.model_validator"]
 
 [tool.mypy]
 python_version = "3.10"

@@ -41,9 +41,10 @@ from frinx_api.inventory import Zone
 from frinx_api.inventory import ZoneEdge
 from frinx_api.inventory import ZonesConnection
 from frinx_api.inventory import ZonesQuery
+from graphql_pydantic_converter.graphql_types import QueryForm
 
-from .utils import CoursorGroup
-from .utils import CoursorGroups
+from .utils import CursorGroup
+from .utils import CursorGroups
 from .utils import InventoryOutput
 from .utils import execute_inventory_query
 
@@ -102,20 +103,20 @@ class InventoryService(ServiceWorkersImpl):
             labels: ListStr = ['BASIC', 'INVENTORY']
 
         class WorkerInput(TaskInput):
-            device_name: Optional[str]
-            labels: Optional[ListStr]
-            size: Optional[int]
-            cursor: Optional[str]
-            type: Optional[PaginationCursorType]
+            device_name: Optional[str] = None
+            labels: Optional[ListStr] = None
+            size: Optional[int] = None
+            cursor: Optional[str] = None
+            type: Optional[PaginationCursorType] = None
 
         class WorkerOutput(TaskOutput):
             query: str
-            response_code: int
-            response_body: Any
+            variable: Optional[DictAny] = None
+            response: DictAny
 
         def execute(self, worker_input: WorkerInput) -> TaskResult[WorkerOutput]:
 
-            query = DevicesQuery(
+            devices = DevicesQuery(
                 payload=self.DEVICES,
                 filter=FilterDevicesInput(
                     deviceName=worker_input.device_name or None,
@@ -125,20 +126,20 @@ class InventoryService(ServiceWorkersImpl):
 
             match worker_input.type:
                 case PaginationCursorType.AFTER:
-                    query.first = worker_input.size
-                    query.after = worker_input.cursor
+                    devices.first = worker_input.size
+                    devices.after = worker_input.cursor
                 case PaginationCursorType.BEFORE:
-                    query.last = worker_input.size
-                    query.before = worker_input.cursor
+                    devices.last = worker_input.size
+                    devices.before = worker_input.cursor
 
-            query_render = query.render()
-            response = execute_inventory_query(query=query_render, variables=None)
+            query = devices.render()
+            response = execute_inventory_query(query=query.query, variables=query.variable)
 
-            return response_handler(query_render, response)
+            return response_handler(query=query, response=response)
 
     class InventoryInstallDeviceById(WorkerImpl):
 
-        mutation: InstallDeviceMutation = InstallDeviceMutation(
+        install_device: InstallDeviceMutation = InstallDeviceMutation(
             payload=InstallDevicePayload(
                 device=Device(
                     name=True,
@@ -168,18 +169,19 @@ class InventoryService(ServiceWorkersImpl):
 
         class WorkerOutput(TaskOutput):
             query: str
-            variables: Optional[DictAny]
+            variable: Optional[DictAny]
+            response_code: int
+            response_body: Any
 
         def execute(self, worker_input: WorkerInput) -> TaskResult[WorkerOutput]:
-
-            self.mutation.id = worker_input.device_id
-            query_render = self.mutation.render()
-            response = execute_inventory_query(query=query_render, variables=None)
-            return response_handler(query_render, response)
+            self.install_device.id = worker_input.device_id
+            query = self.install_device.render()
+            response = execute_inventory_query(query=query.query, variables=query.variable)
+            return response_handler(query, response)
 
     class InventoryUninstallDeviceById(WorkerImpl):
 
-        mutation: UninstallDeviceMutation = UninstallDeviceMutation(
+        uninstall_device: UninstallDeviceMutation = UninstallDeviceMutation(
             payload=UninstallDevicePayload(
                 device=Device(
                     name=True,
@@ -206,13 +208,15 @@ class InventoryService(ServiceWorkersImpl):
 
         class WorkerOutput(TaskOutput):
             query: str
-            variables: Optional[DictAny]
+            variable: Optional[DictAny]
+            response_code: int
+            response_body: Any
 
         def execute(self, worker_input: WorkerInput) -> TaskResult[WorkerOutput]:
-            self.mutation.id = worker_input.device_id
-            query_render = self.mutation.render()
-            response = execute_inventory_query(query=query_render, variables=None)
-            return response_handler(query_render, response)
+            self.uninstall_device.id = worker_input.device_id
+            query = self.uninstall_device.render()
+            response = execute_inventory_query(query=query.query, variables=query.variable)
+            return response_handler(query, response)
 
     class InventoryInstallDeviceByName(WorkerImpl):
 
@@ -251,7 +255,7 @@ class InventoryService(ServiceWorkersImpl):
             before='before',
         )
 
-        mutation: InstallDeviceMutation = InstallDeviceMutation(
+        install_device: InstallDeviceMutation = InstallDeviceMutation(
             payload=InstallDevicePayload(
                 device=Device(
                     name=True,
@@ -281,7 +285,8 @@ class InventoryService(ServiceWorkersImpl):
             device_name: str
 
         class WorkerOutput(TaskOutput):
-            url: str
+            query: str
+            variable: Optional[DictAny]
             response_code: int
             response_body: Any
 
@@ -292,9 +297,9 @@ class InventoryService(ServiceWorkersImpl):
                 filter=FilterDevicesInput(
                     deviceName=device_name
                 )
-            )
+            ).render()
 
-            response = execute_inventory_query(query=query.render(), variables=None)
+            response = execute_inventory_query(query=query.query, variables=query.variable)
 
             for node in response.data['devices']['edges']:
                 if node['node']['name'] == device_name:
@@ -303,10 +308,10 @@ class InventoryService(ServiceWorkersImpl):
             raise Exception('Device ' + device_name + ' missing in inventory')
 
         def execute(self, worker_input: WorkerInput) -> TaskResult[WorkerOutput]:
-            self.mutation.id = self._get_device_id(worker_input.device_name)
-            query_render = self.mutation.render()
-            response = execute_inventory_query(query=query_render, variables=None)
-            return response_handler(query_render, response)
+            self.install_device.id = self._get_device_id(worker_input.device_name)
+            query = self.install_device.render()
+            response = execute_inventory_query(query=query.query, variables=query.variable)
+            return response_handler(query, response)
 
     class InventoryUninstallDeviceByName(WorkerImpl):
 
@@ -345,7 +350,7 @@ class InventoryService(ServiceWorkersImpl):
             before='before',
         )
 
-        mutation: UninstallDeviceMutation = UninstallDeviceMutation(
+        uninstall_device: UninstallDeviceMutation = UninstallDeviceMutation(
             payload=UninstallDevicePayload(
                 device=Device(
                     name=True,
@@ -374,8 +379,8 @@ class InventoryService(ServiceWorkersImpl):
             device_name: str
 
         class WorkerOutput(TaskOutput):
-            url: str
-            response_code: int
+            query: str
+            variable: Optional[DictAny]
             response_body: Any
 
         @classmethod
@@ -385,9 +390,9 @@ class InventoryService(ServiceWorkersImpl):
                 filter=FilterDevicesInput(
                     deviceName=device_name
                 )
-            )
+            ).render()
 
-            response = execute_inventory_query(query=query.render(), variables=None)
+            response = execute_inventory_query(query=query.query, variables=query.variable)
 
             for node in response.data['devices']['edges']:
                 if node['node']['name'] == device_name:
@@ -396,10 +401,10 @@ class InventoryService(ServiceWorkersImpl):
             raise Exception('Device ' + device_name + ' missing in inventory')
 
         def execute(self, worker_input: WorkerInput) -> TaskResult[WorkerOutput]:
-            self.mutation.id = self._get_device_id(worker_input.device_name)
-            query_render = self.mutation.render()
-            response = execute_inventory_query(query=query_render, variables=None)
-            return response_handler(query_render, response)
+            self.uninstall_device.id = self._get_device_id(worker_input.device_name)
+            query = self.uninstall_device.render()
+            response = execute_inventory_query(query=query.query, variables=query.variable)
+            return response_handler(query, response)
 
     class InventoryGetLabels(WorkerImpl):
 
@@ -437,32 +442,33 @@ class InventoryService(ServiceWorkersImpl):
             response_timeout_seconds: int = 3600
 
         class WorkerInput(TaskInput):
-            size: Optional[int]
-            cursor: Optional[str]
-            type: Optional[PaginationCursorType]
+            size: Optional[int] = None
+            cursor: Optional[str] = None
+            type: Optional[PaginationCursorType] = None
 
         class WorkerOutput(TaskOutput):
-            url: str
+            query: str
+            variable: Optional[DictAny]
             response_code: int
             response_body: Any
 
         def execute(self, worker_input: WorkerInput) -> TaskResult[WorkerOutput]:
 
-            query = LabelsQuery(
+            labels = LabelsQuery(
                 payload=self.LABELS,
             )
 
             match worker_input.type:
                 case PaginationCursorType.AFTER:
-                    query.first = worker_input.size
-                    query.after = worker_input.cursor
+                    labels.first = worker_input.size
+                    labels.after = worker_input.cursor
                 case PaginationCursorType.BEFORE:
-                    query.last = worker_input.size
-                    query.before = worker_input.cursor
+                    labels.last = worker_input.size
+                    labels.before = worker_input.cursor
 
-            query_render = query.render()
-            response = execute_inventory_query(query=query_render, variables=None)
-            return response_handler(query_render, response)
+            query = labels.render()
+            response = execute_inventory_query(query=query.query, variables=query.variable)
+            return response_handler(query, response)
 
     class InventoryGetLabelsId(WorkerImpl):
 
@@ -477,11 +483,11 @@ class InventoryService(ServiceWorkersImpl):
 
         query = LabelsQuery(
             payload=LABELS,
-        )
+        ).render()
 
         class ExecutionProperties(TaskExecutionProperties):
             exclude_empty_inputs: bool = True
-            transform_string_to_json_valid = True
+            transform_string_to_json_valid: bool = True
 
         class WorkerDefinition(TaskDefinition):
             name: str = 'INVENTORY_get_labels_id'
@@ -495,14 +501,16 @@ class InventoryService(ServiceWorkersImpl):
             response_timeout_seconds: int = 3600
 
         class WorkerInput(TaskInput):
-            labels: Optional[ListStr]
+            labels: Optional[ListStr] = None
 
         class WorkerOutput(TaskOutput):
             labels_id: DictStr
+            query: str
+            variable: Optional[DictAny]
 
         def execute(self, worker_input: WorkerInput) -> TaskResult[WorkerOutput]:
 
-            response = execute_inventory_query(query=self.query.render(), variables=None)
+            response = execute_inventory_query(query=self.query.query, variables=self.query.variable)
             labels_id: DictStr = {}
 
             if worker_input.labels:
@@ -517,12 +525,14 @@ class InventoryService(ServiceWorkersImpl):
                 status=TaskResultStatus.COMPLETED,
                 output=self.WorkerOutput(
                     labels_id=labels_id,
+                    query=self.query.query,
+                    variable=self.query.variable
                 )
             )
 
     class InventoryCreateLabel(WorkerImpl):
 
-        mutation: CreateLabelMutation = CreateLabelMutation(
+        create_label: CreateLabelMutation = CreateLabelMutation(
             payload=CreateLabelPayload(
                 label=Label(
                     name=True,
@@ -548,15 +558,15 @@ class InventoryService(ServiceWorkersImpl):
             label: str
 
         class WorkerOutput(TaskOutput):
-            url: str
-            response_code: int
+            query: str
+            variable: Optional[DictAny]
             response_body: Any
 
         def execute(self, worker_input: WorkerInput) -> TaskResult[WorkerOutput]:
-            self.mutation.input.name = worker_input.label
-            query_render = self.mutation.render()
-            response = execute_inventory_query(query=query_render, variables=None)
-            return response_handler(query_render, response)
+            self.create_label.input.name = worker_input.label
+            query = self.create_label.render()
+            response = execute_inventory_query(query=query.query, variables=query.variable)
+            return response_handler(query, response)
 
     class InventoryAddDevice(WorkerImpl):
 
@@ -568,7 +578,7 @@ class InventoryService(ServiceWorkersImpl):
             )
         )
 
-        mutation: AddDeviceMutation = AddDeviceMutation(
+        add_device: AddDeviceMutation = AddDeviceMutation(
             payload=ADD_DEVICE,
             input=AddDeviceInput(
                 name='name',
@@ -579,7 +589,7 @@ class InventoryService(ServiceWorkersImpl):
 
         class ExecutionProperties(TaskExecutionProperties):
             exclude_empty_inputs: bool = True
-            transform_string_to_json_valid = True
+            transform_string_to_json_valid: bool = True
 
         class WorkerDefinition(TaskDefinition):
             name: str = 'INVENTORY_add_device'
@@ -594,20 +604,20 @@ class InventoryService(ServiceWorkersImpl):
             mount_parameters: DictAny
             service_state: DeviceServiceState
             device_size: DeviceSize
-            vendor: Optional[str]
-            model: Optional[str]
-            label_ids: Optional[ListStr]
-            blueprint_id: Optional[str]
-            address: Optional[str]
-            port: Optional[int]
+            vendor: Optional[str] = None
+            model: Optional[str] = None
+            label_ids: Optional[ListStr] = None
+            blueprint_id: Optional[str] = None
+            address: Optional[str] = None
+            port: Optional[int] = None
             username: Optional[str]
-            password: Optional[str]
-            version: Optional[str]
-            device_type: Optional[str]
+            password: Optional[str] = None
+            version: Optional[str] = None
+            device_type: Optional[str] = None
 
         class WorkerOutput(TaskOutput):
-            url: str
-            response_code: int
+            query: str
+            variable: Optional[DictAny]
             response_body: Any
 
         @staticmethod
@@ -621,9 +631,9 @@ class InventoryService(ServiceWorkersImpl):
                         )
                     )
                 )
-            )
+            ).render()
 
-            response = execute_inventory_query(query=query.render(), variables=None)
+            response = execute_inventory_query(query=query.query, variables=query.variable)
 
             for node in response.data['zones']['edges']:
                 if node['node']['name'] == zone_name:
@@ -633,43 +643,43 @@ class InventoryService(ServiceWorkersImpl):
 
         def execute(self, worker_input: WorkerInput) -> TaskResult[WorkerOutput]:
 
-            self.mutation.input.name = worker_input.device_name
-            self.mutation.input.zone_id = worker_input.zone_id
-            self.mutation.input.service_state = worker_input.service_state,
-            self.mutation.input.device_size = worker_input.device_size,
-            self.mutation.input.mount_parameters = str(worker_input.mount_parameters).replace("'", '\\"')
+            self.add_device.input.name = worker_input.device_name
+            self.add_device.input.zone_id = worker_input.zone_id
+            self.add_device.input.service_state = worker_input.service_state,
+            self.add_device.input.device_size = worker_input.device_size,
+            self.add_device.input.mount_parameters = str(worker_input.mount_parameters).replace("'", '\\"')
 
             if worker_input.label_ids:
-                self.mutation.input.label_ids = worker_input.label_ids,
+                self.add_device.input.label_ids = worker_input.label_ids,
 
             if worker_input.vendor:
-                self.mutation.input.vendor = worker_input.vendor,
+                self.add_device.input.vendor = worker_input.vendor,
 
             if worker_input.model:
-                self.mutation.input.model = worker_input.model,
+                self.add_device.input.model = worker_input.model,
 
             if worker_input.device_type:
-                self.mutation.input.device_type = worker_input.device_type,
+                self.add_device.input.device_type = worker_input.device_type,
 
             if worker_input.version:
-                self.mutation.input.version = worker_input.version,
+                self.add_device.input.version = worker_input.version,
 
             if worker_input.address:
-                self.mutation.input.address = worker_input.address,
+                self.add_device.input.address = worker_input.address,
 
             if worker_input.port:
-                self.mutation.input.port = worker_input.port,
+                self.add_device.input.port = worker_input.port,
 
             if worker_input.username:
-                self.mutation.input.username = worker_input.username,
+                self.add_device.input.username = worker_input.username,
 
             if worker_input.password:
-                self.mutation.input.password = worker_input.password,
+                self.add_device.input.password = worker_input.password,
 
-            query_render = self.mutation.render()
+            query = self.add_device.render()
 
-            response = execute_inventory_query(query=query_render, variables=None)
-            return response_handler(query_render, response)
+            response = execute_inventory_query(query=query.query, variables=query.variable)
+            return response_handler(query, response)
 
     class InventoryGetPagesCursors(WorkerImpl):
 
@@ -701,7 +711,7 @@ class InventoryService(ServiceWorkersImpl):
 
         class ExecutionProperties(TaskExecutionProperties):
             exclude_empty_inputs: bool = True
-            transform_string_to_json_valid = True
+            transform_string_to_json_valid: bool = True
 
         class WorkerDefinition(TaskDefinition):
             name: str = 'INVENTORY_get_pages_cursors'
@@ -711,7 +721,7 @@ class InventoryService(ServiceWorkersImpl):
             response_timeout_seconds: int = 3600
 
         class WorkerInput(TaskInput):
-            labels: Optional[DictStr]
+            labels: Optional[DictStr] = None
             cursor_step: Optional[int] = 10
             cursors_per_group: Optional[int] = 20
 
@@ -719,8 +729,7 @@ class InventoryService(ServiceWorkersImpl):
             cursors_per_group: int
             cursor_step: int
             number_of_groups: int
-            cursors_groups: CoursorGroups
-
+            cursors_groups: CursorGroups
 
         def execute(self, worker_input: WorkerInput) -> TaskResult[WorkerOutput]:
 
@@ -733,8 +742,9 @@ class InventoryService(ServiceWorkersImpl):
                 filter=FilterDevicesInput(
                     labels=labels
                 ),
-            )
-            response = execute_inventory_query(query=query.render(), variables=None)
+            ).render()
+
+            response = execute_inventory_query(query=query.query, variables=query.variable)
 
             datastructure = {}
             dynamic_fork_list = []
@@ -801,7 +811,7 @@ class InventoryService(ServiceWorkersImpl):
 
         class WorkerInput(TaskInput):
             task: str
-            cursors_groups: CoursorGroup
+            cursors_groups: CursorGroup
 
         class WorkerOutput(TaskOutput):
             dynamic_tasks_input: DictAny
@@ -829,7 +839,7 @@ class InventoryService(ServiceWorkersImpl):
 
     class InventoryInstallInBatch(WorkerImpl):
 
-        mutation: InstallDeviceMutation = InstallDeviceMutation(
+        install_device: InstallDeviceMutation = InstallDeviceMutation(
             payload=InstallDevicePayload(
                 device=Device(
                     name=True,
@@ -846,7 +856,7 @@ class InventoryService(ServiceWorkersImpl):
             labels: ListStr = ['BASIC', 'INVENTORY']
             timeout_seconds: int = 3600
             response_timeout_seconds: int = 3600
-            limit_to_thread_count = 5
+            limit_to_thread_count: int = 5
 
         class WorkerInput(TaskInput):
             devices: list[DictStr]
@@ -862,8 +872,9 @@ class InventoryService(ServiceWorkersImpl):
                     per_device_params.update({'device_id': device_id})
                     per_device_params.update({'device_name': device_name})
 
-                self.mutation.id = per_device_params['device_id']
-                response = execute_inventory_query(query=self.mutation.render(), variables=None)
+                self.install_device.id = per_device_params['device_id']
+                query = self.install_device.render()
+                response = execute_inventory_query(query=query.query, variables=query.variable)
 
                 match response.status:
                     case 'errors':
@@ -874,7 +885,7 @@ class InventoryService(ServiceWorkersImpl):
                     case 'data':
                         per_device_params.update({'status': 'success'})
 
-                device_status.update({self.mutation.id: per_device_params})
+                device_status.update({self.install_device.id: per_device_params})
 
             return TaskResult(
                 status=TaskResultStatus.COMPLETED,
@@ -885,7 +896,7 @@ class InventoryService(ServiceWorkersImpl):
 
     class InventoryUninstallInBatch(WorkerImpl):
 
-        mutation: UninstallDeviceMutation = UninstallDeviceMutation(
+        uninstall_device: UninstallDeviceMutation = UninstallDeviceMutation(
             payload=UninstallDevicePayload(
                 device=Device(
                     name=True,
@@ -917,8 +928,9 @@ class InventoryService(ServiceWorkersImpl):
                     per_device_params.update({'device_id': device_id})
                     per_device_params.update({'device_name': device_name})
 
-                self.mutation.id = per_device_params['device_id']
-                response = execute_inventory_query(query=self.mutation.render(), variables=None)
+                self.uninstall_device.id = per_device_params['device_id']
+                query = self.uninstall_device.render()
+                response = execute_inventory_query(query=query.query, variables=query.variable)
 
                 match response.status:
                     case 'errors':
@@ -926,7 +938,7 @@ class InventoryService(ServiceWorkersImpl):
                     case 'data':
                         per_device_params.update({'status': 'success'})
 
-                device_status.update({self.mutation.id: per_device_params})
+                device_status.update({self.uninstall_device.id: per_device_params})
 
             return TaskResult(
                 status=TaskResultStatus.COMPLETED,
@@ -955,9 +967,9 @@ class InventoryService(ServiceWorkersImpl):
             response_timeout_seconds: int = 3600
 
         class WorkerInput(TaskInput):
-            cursors_groups: CoursorGroup
+            cursors_groups: CursorGroup
             task: str
-            task_input: Optional[DictAny]
+            task_input: Optional[DictAny] = None
             device_identifies: str = 'device_id'
 
         class WorkerOutput(TaskOutput):
@@ -997,7 +1009,7 @@ class InventoryService(ServiceWorkersImpl):
             )
 
 
-def response_handler(query: str, response: InventoryOutput) -> TaskResult:
+def response_handler(query: QueryForm, response: InventoryOutput) -> TaskResult:
     match response.status:
         case 'data':
             task_result = TaskResult(status=TaskResultStatus.COMPLETED)
@@ -1005,7 +1017,8 @@ def response_handler(query: str, response: InventoryOutput) -> TaskResult:
             task_result.output = dict(
                 response_code=response.code,
                 response_body=response.data,
-                query=query
+                query=query.query,
+                variable=query.variable
             )
             return task_result
         case _:
@@ -1015,6 +1028,7 @@ def response_handler(query: str, response: InventoryOutput) -> TaskResult:
             task_result.output = dict(
                 response_code=response.code,
                 response_body=response.data,
-                query=query
+                query=query.query,
+                variable=query.variable
             )
             return task_result
