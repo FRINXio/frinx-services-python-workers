@@ -84,15 +84,17 @@ class GenericRequestService(ServiceWorkflowsImpl):
 
         def workflow_builder(self, workflow_inputs: WorkflowInput) -> None:
             worker_input = SimpleTaskInputParameters(
-                uri=workflow_inputs.uri.wf_input,
-                method=workflow_inputs.method.wf_input,
-                connect_timeout=workflow_inputs.connect_timeout.wf_input,
-                read_timeout=workflow_inputs.read_timeout.wf_input,
-                headers=workflow_inputs.headers.wf_input,
-                content_type=workflow_inputs.content_type.wf_input,
-                body=workflow_inputs.body.wf_input,
-                cookies=workflow_inputs.cookies.wf_input,
-                basic_auth=workflow_inputs.basic_auth.wf_input
+                root=dict(
+                    uri=workflow_inputs.uri.wf_input,
+                    method=workflow_inputs.method.wf_input,
+                    connect_timeout=workflow_inputs.connect_timeout.wf_input,
+                    read_timeout=workflow_inputs.read_timeout.wf_input,
+                    headers=workflow_inputs.headers.wf_input,
+                    content_type=workflow_inputs.content_type.wf_input,
+                    body=workflow_inputs.body.wf_input,
+                    cookies=workflow_inputs.cookies.wf_input,
+                    basic_auth=workflow_inputs.basic_auth.wf_input
+                )
             )
 
             self.tasks.append(

@@ -27,7 +27,7 @@ class KafkaProducer(WorkflowImpl):
             frontend_default_value='SSL',
             description='Request url',
             type=FrontendWFInputFieldType.SELECT,
-            options=[status.value for status in SecurityProtocolType]
+            options=[str(status) for status in SecurityProtocolType]
         )
 
         message = WorkflowInputField(
@@ -73,11 +73,14 @@ class KafkaProducer(WorkflowImpl):
                 name=KafkaWorker.KafkaPublish,
                 task_reference_name='Kafka_publish',
                 input_parameters=SimpleTaskInputParameters(
-                    bootstrap_servers=workflow_inputs.servers.wf_input,
-                    topic=workflow_inputs.topic.wf_input,
-                    message=workflow_inputs.message.wf_input,
-                    security=workflow_inputs.security.wf_input,
-                    ssl_conf=workflow_inputs.ssl_conf.wf_input,
-                    key=workflow_inputs.key.wf_input
-                ))
+                    root=dict(
+                        bootstrap_servers=workflow_inputs.servers.wf_input,
+                        topic=workflow_inputs.topic.wf_input,
+                        message=workflow_inputs.message.wf_input,
+                        security=workflow_inputs.security.wf_input,
+                        ssl_conf=workflow_inputs.ssl_conf.wf_input,
+                        key=workflow_inputs.key.wf_input
+                    )
+                )
+            )
         )

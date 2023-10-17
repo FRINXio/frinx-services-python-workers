@@ -4,10 +4,9 @@ build-backend = "poetry.core.masonry.api"
 
 [tool.poetry.dependencies]
 python = "^3.10"
-pydantic = "^1.10.7"
-graphql-pydantic-transformer = "^0.0.1"
-frinx-python-sdk = {git = "https://github.com/FRINXio/frinx-python-sdk.git", rev = "main"}
-frinx-resource-manager-api = {git = "https://github.com/FRINXio/frinx-services-python-api.git", rev = "v0.0.3", subdirectory = "resource-manager/python"}
+pydantic = "^2"
+frinx-python-sdk = {git = "https://github.com/FRINXio/frinx-python-sdk.git", rev = "v1.0.0"}
+frinx-resource-manager-api = {git = "https://github.com/FRINXio/frinx-services-python-api.git", rev = "frinx-resource-manager-api_v2.0.0", subdirectory = "resource-manager/python"}
 
 [tool.poetry.group.dev.dependencies]
 ruff = "^0.0.263"
@@ -20,7 +19,7 @@ packages = [{ include = "frinx_worker" }]
 name = "frinx-resource-manager-worker"
 description = "Conductor worker for Frinx Resource Manager"
 authors = ["Jozef Volak <jozef.volak@elisapolystar.com>"]
-version = "0.0.1" # dynamically generated
+version = "0.0.1"
 readme = ["README.md", "CHANGELOG.md", "RELEASE.md"]
 keywords = ["frinx-machine", "resource-manager", "worker"]
 license = "Apache 2.0"
@@ -64,7 +63,7 @@ keep-runtime-typing = true
 
 [tool.ruff.pep8-naming]
 # Allow Pydantic's `@validator` decorator to trigger class method treatment.
-classmethod-decorators = ["classmethod", "pydantic.validator", "pydantic.root_validator"]
+classmethod-decorators = ["classmethod", "pydantic.field_validator", "pydantic.model_validator"]
 
 [tool.mypy]
 python_version = "3.10"

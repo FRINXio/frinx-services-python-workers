@@ -1,5 +1,6 @@
 from dataclasses import dataclass
 from typing import Any
+from typing import Optional
 from typing import TypeAlias
 
 import requests
@@ -7,8 +8,8 @@ from frinx.common.frinx_rest import INVENTORY_HEADERS
 from frinx.common.frinx_rest import INVENTORY_URL_BASE
 from frinx.common.type_aliases import DictAny
 
-CoursorGroup: TypeAlias = dict[str, list[dict[str, str]]]
-CoursorGroups: TypeAlias = dict[str, dict[str, list[dict[str, str]]]]
+CursorGroup: TypeAlias = dict[str, list[dict[str, str]]]
+CursorGroups: TypeAlias = dict[str, dict[str, list[dict[str, str]]]]
 
 
 @dataclass
@@ -20,7 +21,7 @@ class InventoryOutput:
 
 def execute_inventory_query(
     query: str,
-    variables: DictAny | None = None,
+    variables: Optional[DictAny] = None,
     inventory_url_base: str = INVENTORY_URL_BASE
 ) -> InventoryOutput:
     """

@@ -1,3 +1,5 @@
+from typing import Optional
+
 from frinx.common.type_aliases import DictAny
 from frinx.common.type_aliases import ListAny
 from frinx.common.type_aliases import ListStr
@@ -40,7 +42,6 @@ class Influx(ServiceWorkersImpl):
         def execute(self, worker_input: WorkerInput) -> TaskResult[WorkerOutput]:
             return utils.influx_write_data(self, worker_input)
 
-
     class InfluxQueryData(WorkerImpl):
 
         class ExecutionProperties(TaskExecutionProperties):
@@ -57,14 +58,13 @@ class Influx(ServiceWorkersImpl):
             org: str
             token: str
             query: str
-            format_data: ListStr | None
+            format_data: Optional[ListStr] = None
 
         class WorkerOutput(TaskOutput):
             data: ListAny
 
         def execute(self, worker_input: WorkerInput) -> TaskResult[WorkerOutput]:
             return utils.influx_query_data(self, worker_input)
-
 
     class InfluxCreateBucket(WorkerImpl):
 

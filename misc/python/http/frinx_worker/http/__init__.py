@@ -15,6 +15,7 @@ from frinx.common.worker.task_def import TaskOutput
 from frinx.common.worker.task_result import TaskResult
 from frinx.common.worker.worker import WorkerImpl
 from pydantic import AnyHttpUrl
+from pydantic import ConfigDict
 from pydantic import NonNegativeFloat
 
 from .enums import ContentType
@@ -47,11 +48,15 @@ class HTTPWorkersService(ServiceWorkersImpl):
             headers: DictStr | None = {}
             cookies: DictStr | None = {}
 
-            class Config(TaskInput.Config):
-                alias_generator = snake_to_camel_case
-                allow_population_by_field_name = True
-                arbitrary_types_allowed = True
-                use_enum_values = True
+            model_config = ConfigDict(
+                alias_generator=snake_to_camel_case,
+                str_min_length=1,
+                populate_by_name=True,
+                arbitrary_types_allowed=True,
+                use_enum_values=True,
+                frozen=False,
+                extra='allow',
+            )
 
         class WorkerOutput(TaskOutput):
             status_code: int
@@ -59,10 +64,13 @@ class HTTPWorkersService(ServiceWorkersImpl):
             cookies: DictAny
             logs: ListStr | str
 
-            class Config(TaskOutput.Config):
-                alias_generator = snake_to_camel_case
-                allow_population_by_field_name = True
-                min_anystr_length = 1
+            model_config = ConfigDict(
+                alias_generator=snake_to_camel_case,
+                populate_by_name=True,
+                str_min_length=1,
+                frozen=False,
+                extra='allow',
+            )
 
         def execute(self, worker_input: WorkerInput) -> TaskResult[Any]:
             response = http_task(worker_input)

@@ -4,10 +4,10 @@ build-backend = "poetry.core.masonry.api"
 
 [tool.poetry.dependencies]
 python = "^3.10"
-pydantic = "^1.10.7"
+pydantic = "^2"
 requests = "^2.31.0"
-frinx-python-sdk = {git = "https://github.com/FRINXio/frinx-python-sdk.git", rev = "main"}
-frinx-uniconfig-api = {git = "https://github.com/FRINXio/frinx-services-python-api.git", rev = "v0.0.3", subdirectory = "uniconfig/python"}
+frinx-python-sdk = {git = "https://github.com/FRINXio/frinx-python-sdk.git", rev = "v1.0.0"}
+frinx-uniconfig-api = {git = "https://github.com/FRINXio/frinx-services-python-api.git", rev = "frinx-uniconfig-api_v0.1.0", subdirectory = "uniconfig/python"}
 
 [tool.poetry.group.dev.dependencies]
 ruff = "^0.0.263"
@@ -20,7 +20,7 @@ packages = [{ include = "frinx_worker" }]
 name = "frinx-uniconfig-worker"
 description = "Conductor worker for Frinx Uniconfig"
 authors = ["Jozef Volak <jozef.volak@elisapolystar.com>"]
-version = "0.0.1"
+version = "1.0.0"
 readme = ["README.md", "CHANGELOG.md", "RELEASE.md"]
 keywords = ["frinx-machine", "uniconfig", "worker"]
 license = "Apache 2.0"
@@ -61,7 +61,7 @@ max-args = 10
 keep-runtime-typing = true
 
 [tool.ruff.pep8-naming]
-classmethod-decorators = ["classmethod", "pydantic.validator", "pydantic.root_validator"]
+classmethod-decorators = ["classmethod", "pydantic.field_validator", "pydantic.model_validator"]
 
 [tool.mypy]
 python_version = "3.10"

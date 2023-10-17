@@ -10,7 +10,8 @@ import cache3
 from kafka import KafkaProducer
 from kafka.errors import KafkaError
 from pydantic import BaseModel
-from pydantic import validator
+from pydantic import ConfigDict
+from pydantic import field_validator
 
 logger = logging.getLogger(__name__)
 
@@ -102,14 +103,15 @@ class ProducerConfigSSL(ProducerConfigCommon):
     ssl_password: str
     security_protocol: SecurityProtocolType = SecurityProtocolType.SSL
 
-    class Config:
-        use_enum_values = True
+    model_config = ConfigDict(
+        use_enum_values=True
+    )
 
-    @validator('ssl_cafile', 'ssl_certfile', 'ssl_keyfile')
+    @field_validator('ssl_cafile', 'ssl_certfile', 'ssl_keyfile')
     def check_env(cls, v: str) -> str:
         return construct_full_path(v)[0]
 
-    @validator('ssl_password')
+    @field_validator('ssl_password')
     def read_passwd(cls, v: str) -> Any:
         return construct_full_path(v, True)[1]
 
@@ -120,10 +122,11 @@ class ProducerConfigSaslPlain(ProducerConfigCommon):
     sasl_mechanism: str
     security_protocol: SecurityProtocolType = SecurityProtocolType.SASL_PLAINTEXT
 
-    class Config:
-        use_enum_values = True
+    model_config = ConfigDict(
+        use_enum_values=True
+    )
 
-    @validator('sasl_plain_username', 'sasl_plain_password')
+    @field_validator('sasl_plain_username', 'sasl_plain_password')
     def read_passwd(cls, v: str) -> Any:
         return construct_full_path(v, True)[1]
 

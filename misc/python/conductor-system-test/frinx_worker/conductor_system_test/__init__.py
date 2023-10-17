@@ -11,7 +11,7 @@ from frinx.common.worker.task_def import TaskInput
 from frinx.common.worker.task_def import TaskOutput
 from frinx.common.worker.task_result import TaskResult
 from frinx.common.worker.worker import WorkerImpl
-from pydantic import validator
+from pydantic import field_validator
 
 
 class TestWorker(ServiceWorkersImpl):
@@ -48,9 +48,9 @@ class TestWorker(ServiceWorkersImpl):
             response_timeout_seconds: int = 600
 
         class WorkerInput(TaskInput):
-            time: Optional[int]
+            time: Optional[int] = None
 
-            @validator('time')
+            @field_validator('time')
             def time_validator(cls, value: int) -> int:
                 if not 0 <= value <= TestWorker.Sleep.MAX_SLEEP_TIME:
                     raise ValueError(f'Invalid sleep time, must be > 0 and < {TestWorker.Sleep.MAX_SLEEP_TIME}')
