@@ -28,11 +28,11 @@ class KafkaWorker(ServiceWorkersImpl):
             transform_string_to_json_valid: bool = True
 
         class WorkerDefinition(TaskDefinition):
-            name = 'Kafka_publish'
-            description = 'Publish message to kafka broker'
-            labels = ['KAFKA']
-            timeout_seconds = 60
-            response_timeout_seconds = 60
+            name: str = 'Kafka_publish'
+            description: str = 'Publish message to kafka broker'
+            labels: list[str] = ['KAFKA']
+            timeout_seconds: int = 60
+            response_timeout_seconds: int = 60
 
         class WorkerInput(TaskInput):
             bootstrap_servers: str
