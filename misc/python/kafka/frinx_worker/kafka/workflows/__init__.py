@@ -9,20 +9,20 @@ from ..producer_cache import SecurityProtocolType
 
 
 class KafkaProducer(WorkflowImpl):
-    name = 'Kafka_producer'
-    version = 1
-    description = 'Simple Kafka producer'
-    labels = ['KAFKA']
+    name: str = 'Kafka_producer'
+    version: int = 1
+    description: str = 'Simple Kafka producer'
+    labels: list[str] = ['KAFKA']
 
     class WorkflowInput(WorkflowImpl.WorkflowInput):
-        servers = WorkflowInputField(
+        servers: WorkflowInputField = WorkflowInputField(
             name='servers',
             frontend_default_value='kafka:9092',
             description='Kafka bootstrap servers. Separated with coma',
             type=FrontendWFInputFieldType.STRING,
         )
 
-        security = WorkflowInputField(
+        security: WorkflowInputField = WorkflowInputField(
             name='security',
             frontend_default_value='SSL',
             description='Request url',
@@ -30,28 +30,28 @@ class KafkaProducer(WorkflowImpl):
             options=[str(status) for status in SecurityProtocolType]
         )
 
-        message = WorkflowInputField(
+        message: WorkflowInputField = WorkflowInputField(
             name='message',
             frontend_default_value='hello telemetry &^%#$#!',
             description='Request url',
             type=FrontendWFInputFieldType.TEXTAREA,
         )
 
-        key = WorkflowInputField(
+        key: WorkflowInputField = WorkflowInputField(
             name='key',
             frontend_default_value='telemetry_key',
             description='Request url',
             type=FrontendWFInputFieldType.TEXTAREA,
         )
 
-        topic = WorkflowInputField(
+        topic: WorkflowInputField = WorkflowInputField(
             name='topic',
             frontend_default_value='telemetry',
             description='kafka topic',
             type=FrontendWFInputFieldType.STRING,
         )
 
-        ssl_conf = WorkflowInputField(
+        ssl_conf: WorkflowInputField = WorkflowInputField(
             name='ssl_conf',
             frontend_default_value="""{
             "ssl_check_hostname": true,
