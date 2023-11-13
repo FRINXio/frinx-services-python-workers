@@ -126,10 +126,6 @@ class ProducerConfigSaslPlain(ProducerConfigCommon):
         use_enum_values=True
     )
 
-    @field_validator('sasl_plain_username', 'sasl_plain_password')
-    def read_passwd(cls, v: str) -> Any:
-        return construct_full_path(v, True)[1]
-
 
 class KafkaProducerCache:
     __ttl: int
