@@ -1,0 +1,8 @@
+name: Frinx Services Python Workers Bug
+description: Report a bug or unexpected behavior in frinx-services-python-workers
+labels: [bug, pending]
+
+body:
+  - type: markdown
+    attributes:
+      value:  Thank you for contributing to frinx-services-python-workers!

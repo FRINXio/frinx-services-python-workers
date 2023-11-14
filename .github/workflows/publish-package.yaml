@@ -1,0 +1,54 @@
+name: pr-check
+
+on:
+  workflow_dispatch:
+    inputs:
+      utils:
+        type: choice
+        description: Release package from utils
+        options:
+        - inventory/python
+        - resource-manager/python
+        - schellar/python
+        - topology-discovery/python
+        - uniconfig/python
+        - misc/python/http
+        - misc/python/kafka
+        - misc/python/influxdb
+        - misc/python/conductor-system-test
+
+jobs:
+  build:
+    name: Validate api packages
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    defaults:
+      run:
+        working-directory: ${{ inputs.utils }}
+    steps:
+      - uses: actions/checkout@v2
+      - uses: actions/setup-python@v4
+        with:
+          python-version: "3.10"
+      - uses: abatilo/actions-poetry@v2
+        with:
+          poetry-version: "1.7.0"
+      - name: Package naming
+        run: |
+          echo "PACKAGE_NAME=$(poetry version --no-interaction | cut -d ' ' -f 1)" >> "$GITHUB_ENV"
+          echo "PACKAGE_VERSION=$(poetry version --no-interaction --short)" >> "$GITHUB_ENV"
+          echo "RELEASE_TAG=$(poetry version --no-interaction | sed 's| |_v|g')" >> "$GITHUB_ENV"
+#      - name: Poetry publish
+#        run: poetry publish -u "__token__" -p "${{ secrets.PYPI_TOKEN }}" --build
+      - name: Create Release
+        id: create_release
+        uses: actions/create-release@latest
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          tag_name: ${{ env.PACKAGE_TAG }}
+          release_name: Release ${{ env.PACKAGE_TAG }}
+          body: |
+            - Release of ${{ env.PACKAGE_NAME }} version ${{ env.PACKAGE_VERSION }}
+          draft: false
+          prerelease: false
