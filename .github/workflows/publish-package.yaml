@@ -42,13 +42,14 @@ jobs:
 #        run: poetry publish -u "__token__" -p "${{ secrets.PYPI_TOKEN }}" --build
       - name: Create Release
         id: create_release
-        uses: actions/create-release@latest
+        uses: softprops/action-gh-release@v1
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
+          name: ${{ env.RELEASE_TAG }}
           tag_name: ${{ env.RELEASE_TAG }}
-          release_name: ${{ env.RELEASE_TAG }}
-          body: |
-            - Release of ${{ env.PACKAGE_NAME }} version ${{ env.PACKAGE_VERSION }}
+          generate_release_notes: false
           draft: false
           prerelease: false
+          body: |
+            - Release of ${{ env.PACKAGE_NAME }} version ${{ env.PACKAGE_VERSION }}
