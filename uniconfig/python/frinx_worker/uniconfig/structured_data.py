@@ -33,7 +33,7 @@ class StructuredData(ServiceWorkersImpl):
 
         class WorkerInput(TaskInput):
             node_id: str
-            uri: Optional[str]
+            uri: Optional[str] = None
             topology_id: str = 'uniconfig'
             transaction_id: Optional[str] = None
             uniconfig_server_id: Optional[str] = None
@@ -82,7 +82,7 @@ class StructuredData(ServiceWorkersImpl):
 
         class WorkerInput(TaskInput):
             node_id: str
-            uri: Optional[str]
+            uri: Optional[str] = None
             template: DictAny
             method: str = 'PUT'
             params: Optional[DictAny] = {}
