@@ -169,7 +169,7 @@ class InventoryService(ServiceWorkersImpl):
 
         class WorkerOutput(TaskOutput):
             query: str
-            variable: Optional[DictAny]
+            variable: Optional[DictAny] = None
             response_code: int
             response_body: Any
 
@@ -208,7 +208,7 @@ class InventoryService(ServiceWorkersImpl):
 
         class WorkerOutput(TaskOutput):
             query: str
-            variable: Optional[DictAny]
+            variable: Optional[DictAny] = None
             response_code: int
             response_body: Any
 
@@ -286,7 +286,7 @@ class InventoryService(ServiceWorkersImpl):
 
         class WorkerOutput(TaskOutput):
             query: str
-            variable: Optional[DictAny]
+            variable: Optional[DictAny] = None
             response_code: int
             response_body: Any
 
@@ -380,7 +380,7 @@ class InventoryService(ServiceWorkersImpl):
 
         class WorkerOutput(TaskOutput):
             query: str
-            variable: Optional[DictAny]
+            variable: Optional[DictAny] = None
             response_body: Any
 
         @classmethod
@@ -448,7 +448,7 @@ class InventoryService(ServiceWorkersImpl):
 
         class WorkerOutput(TaskOutput):
             query: str
-            variable: Optional[DictAny]
+            variable: Optional[DictAny] = None
             response_code: int
             response_body: Any
 
@@ -506,7 +506,7 @@ class InventoryService(ServiceWorkersImpl):
         class WorkerOutput(TaskOutput):
             labels_id: DictStr
             query: str
-            variable: Optional[DictAny]
+            variable: Optional[DictAny] = None
 
         def execute(self, worker_input: WorkerInput) -> TaskResult[WorkerOutput]:
 
@@ -559,7 +559,7 @@ class InventoryService(ServiceWorkersImpl):
 
         class WorkerOutput(TaskOutput):
             query: str
-            variable: Optional[DictAny]
+            variable: Optional[DictAny] = None
             response_body: Any
 
         def execute(self, worker_input: WorkerInput) -> TaskResult[WorkerOutput]:
@@ -610,14 +610,14 @@ class InventoryService(ServiceWorkersImpl):
             blueprint_id: Optional[str] = None
             address: Optional[str] = None
             port: Optional[int] = None
-            username: Optional[str]
+            username: Optional[str] = None
             password: Optional[str] = None
             version: Optional[str] = None
             device_type: Optional[str] = None
 
         class WorkerOutput(TaskOutput):
             query: str
-            variable: Optional[DictAny]
+            variable: Optional[DictAny] = None
             response_body: Any
 
         @staticmethod
@@ -645,36 +645,36 @@ class InventoryService(ServiceWorkersImpl):
 
             self.add_device.input.name = worker_input.device_name
             self.add_device.input.zone_id = worker_input.zone_id
-            self.add_device.input.service_state = worker_input.service_state,
-            self.add_device.input.device_size = worker_input.device_size,
+            self.add_device.input.service_state = worker_input.service_state
+            self.add_device.input.device_size = worker_input.device_size
             self.add_device.input.mount_parameters = str(worker_input.mount_parameters).replace("'", '\\"')
 
             if worker_input.label_ids:
-                self.add_device.input.label_ids = worker_input.label_ids,
+                self.add_device.input.label_ids = worker_input.label_ids
 
             if worker_input.vendor:
-                self.add_device.input.vendor = worker_input.vendor,
+                self.add_device.input.vendor = worker_input.vendor
 
             if worker_input.model:
-                self.add_device.input.model = worker_input.model,
+                self.add_device.input.model = worker_input.model
 
             if worker_input.device_type:
-                self.add_device.input.device_type = worker_input.device_type,
+                self.add_device.input.device_type = worker_input.device_type
 
             if worker_input.version:
-                self.add_device.input.version = worker_input.version,
+                self.add_device.input.version = worker_input.version
 
             if worker_input.address:
-                self.add_device.input.address = worker_input.address,
+                self.add_device.input.address = worker_input.address
 
             if worker_input.port:
-                self.add_device.input.port = worker_input.port,
+                self.add_device.input.port = worker_input.port
 
             if worker_input.username:
-                self.add_device.input.username = worker_input.username,
+                self.add_device.input.username = worker_input.username
 
             if worker_input.password:
-                self.add_device.input.password = worker_input.password,
+                self.add_device.input.password = worker_input.password
 
             query = self.add_device.render()
 
