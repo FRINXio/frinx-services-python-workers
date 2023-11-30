@@ -47,7 +47,6 @@ class DeviceDiscoveryWorkers(ServiceWorkersImpl):
             udp_port: list[UdpPortItem] | None = Field(None, max_length=500)
 
             @pydantic.field_validator('ip', mode='before')
-            @classmethod
             def validate_ip(cls, ip: str) -> list[Address]:
 
                 ip_list = get_list_of_ip_addresses(ip)
@@ -71,12 +70,10 @@ class DeviceDiscoveryWorkers(ServiceWorkersImpl):
                 return [address]
 
             @pydantic.field_validator('tcp_port', mode='before')
-            @classmethod
             def validate_tcp(cls, tcp_port: str) -> list[TcpPortItem]:
                 return [TcpPortItem(port=p) for p in parse_ranges(tcp_port.split(','))]
 
             @pydantic.field_validator('udp_port', mode='before')
-            @classmethod
             def validate_udp(cls, udp_port: str) -> list[UdpPortItem]:
                 return [UdpPortItem(port=p) for p in parse_ranges(udp_port.split(','))]
 
