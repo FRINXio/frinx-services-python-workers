@@ -148,7 +148,7 @@ class UniconfigManager(ServiceWorkersImpl):
             skip_unreachable_nodes: Optional[bool] = None
             transaction_id: Optional[str] = None
             uniconfig_server_id: Optional[str] = None
-            uniconfig_url_base: str
+            uniconfig_url_base: str = UNICONFIG_URL_BASE
 
         class WorkerOutput(TaskOutput):
             output: DictAny
