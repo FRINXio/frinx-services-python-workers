@@ -7,12 +7,12 @@ python = "^3.10"
 pydantic = "^2"
 requests = "^2.31.0"
 frinx-python-sdk = {git = "https://github.com/FRINXio/frinx-python-sdk.git", rev = "v1.0.0"}
-frinx-uniconfig-api = {git = "https://github.com/FRINXio/frinx-services-python-api.git", rev = "frinx-uniconfig-api_v0.1.0", subdirectory = "uniconfig/python"}
+frinx-uniconfig-api = {git = "https://github.com/FRINXio/frinx-services-python-api.git", rev = "frinx-uniconfig-api_v0.1.1", subdirectory = "uniconfig/python"}
 
 [tool.poetry.group.dev.dependencies]
 ruff = "^0.0.263"
 mypy = "^1.5.1"
-pyright = "^1.1.317"
+pyright = "^1.1.338"
 types-requests = "^2.31.0.2"
 
 [tool.poetry]
@@ -20,7 +20,7 @@ packages = [{ include = "frinx_worker" }]
 name = "frinx-uniconfig-worker"
 description = "Conductor worker for Frinx Uniconfig"
 authors = ["Jozef Volak <jozef.volak@elisapolystar.com>"]
-version = "1.0.1"
+version = "1.0.2"
 readme = ["README.md", "CHANGELOG.md", "RELEASE.md"]
 keywords = ["frinx-machine", "uniconfig", "worker"]
 license = "Apache 2.0"
@@ -32,6 +32,7 @@ Source = 'https://github.com/FRINXio/frinx-python-sdk'
 [tool.pyright]
 include = ['frinx_worker']
 reportGeneralTypeIssues = "none"
+reportIncompatibleVariableOverride = false
 
 [tool.ruff]
 line-length = 120
