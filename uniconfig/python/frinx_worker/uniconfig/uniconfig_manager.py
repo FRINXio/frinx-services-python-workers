@@ -151,23 +151,18 @@ class UniconfigManager(ServiceWorkersImpl):
             uniconfig_url_base: str
 
         class WorkerOutput(TaskOutput):
-            output: DictAny
+            output: Optional[str]
 
         def execute(self, worker_input: WorkerInput) -> TaskResult[WorkerOutput]:
             if self.UniconfigApi.request is None:
                 raise Exception(f'Failed to create request {self.UniconfigApi.request}')
 
             response = requests.request(
-                url=worker_input.uniconfig_url_base + self.UniconfigApi.uri,
+                    url=worker_input.uniconfig_url_base + '/operations/uniconfig-manager:commit',
                 method=self.UniconfigApi.method,
                 data=class_to_json(
                     self.UniconfigApi.request(
-                        input=self.CommitInput(
-                            do_confirmed_commit=worker_input.confirmed_commit,
-                            do_validate=worker_input.validate_commit,
-                            do_rollback=worker_input.rollback,
-                            skip_unreachable_nodes=worker_input.skip_unreachable_nodes,
-                        )
+                        input=self.CommitInput()
                     )
                 ),
                 cookies=uniconfig_zone_to_cookie(
@@ -178,7 +173,7 @@ class UniconfigManager(ServiceWorkersImpl):
                 params=UNICONFIG_REQUEST_PARAMS
             )
 
-            return handle_response(response, self.WorkerOutput(output=response.json()))
+            return handle_response(response, self.WorkerOutput(output=response.text))
 
     class ReplaceConfigWithOperational(WorkerImpl):
         from frinx_api.uniconfig.rest_api import ReplaceConfigWithOperational as UniconfigApi
@@ -200,7 +195,7 @@ class UniconfigManager(ServiceWorkersImpl):
             uniconfig_url_base: str = UNICONFIG_URL_BASE
 
         class WorkerOutput(TaskOutput):
-            output: DictAny
+            output: Optional[str] = None
 
         def execute(self, worker_input: WorkerInput) -> TaskResult[WorkerOutput]:
             if self.UniconfigApi.request is None:
@@ -224,7 +219,7 @@ class UniconfigManager(ServiceWorkersImpl):
                 params=UNICONFIG_REQUEST_PARAMS
             )
 
-            return handle_response(response, self.WorkerOutput(output=response.json()))
+            return handle_response(response, self.WorkerOutput(output=response.text))
 
     class SyncFromNetwork(WorkerImpl):
         from frinx_api.uniconfig.rest_api import SyncFromNetwork as UniconfigApi
@@ -246,7 +241,7 @@ class UniconfigManager(ServiceWorkersImpl):
             uniconfig_url_base: str = UNICONFIG_URL_BASE
 
         class WorkerOutput(TaskOutput):
-            output: DictAny
+            output: Optional[str] = None
 
         def execute(self, worker_input: WorkerInput) -> TaskResult[WorkerOutput]:
             if self.UniconfigApi.request is None:
@@ -270,7 +265,7 @@ class UniconfigManager(ServiceWorkersImpl):
                 params=UNICONFIG_REQUEST_PARAMS
             )
 
-            return handle_response(response, self.WorkerOutput(output=response.json()))
+            return handle_response(response, self.WorkerOutput(output=response.text))
 
     class DryRunCommit(WorkerImpl):
         from frinx_api.uniconfig.dryrun.manager.dryruncommit import Input
@@ -305,10 +300,7 @@ class UniconfigManager(ServiceWorkersImpl):
                 data=class_to_json(
                     self.UniconfigApi.request(
                         input=self.Input(
-                            do_rollback=worker_input.do_rollback,
-                            target_nodes=self.TargetNodes(
-                                node=worker_input.node
-                            )
+                            do_rollback=worker_input.do_rollback
                         )
                     )
                 ),
