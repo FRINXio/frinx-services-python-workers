@@ -69,7 +69,7 @@ class StructuredData(ServiceWorkersImpl):
             return handle_response(response, self.WorkerOutput(output=response.json()))
 
     class WriteStructuredData(WorkerImpl):
-        from frinx_api.uniconfig.rest_api import ReadStructuredData as UniconfigApi
+        from frinx_api.uniconfig.rest_api import WriteStructuredData as UniconfigApi
 
         class ExecutionProperties(TaskExecutionProperties):
             exclude_empty_inputs: bool = True
@@ -84,7 +84,6 @@ class StructuredData(ServiceWorkersImpl):
             node_id: str
             uri: Optional[str] = None
             template: DictAny
-            method: str = 'PUT'
             params: Optional[DictAny] = {}
             topology_id: str = 'uniconfig'
             transaction_id: Optional[str] = None
@@ -113,7 +112,7 @@ class StructuredData(ServiceWorkersImpl):
 
             response = requests.request(
                 url=url,
-                method=worker_input.method,
+                method=self.UniconfigApi.method,
                 data=class_to_json(worker_input.template),
                 cookies=uniconfig_zone_to_cookie(
                     uniconfig_server_id=worker_input.uniconfig_server_id,
@@ -148,7 +147,6 @@ class StructuredData(ServiceWorkersImpl):
             node_id: str
             uri: Optional[str] = None
             template: DictAny
-            method: str = 'DELETE'
             params: Optional[DictAny] = {}
             topology_id: str = 'uniconfig'
             transaction_id: Optional[str] = None
@@ -177,7 +175,7 @@ class StructuredData(ServiceWorkersImpl):
 
             response = requests.request(
                 url=url,
-                method=worker_input.method,
+                method=self.UniconfigApi.method,
                 data=class_to_json(worker_input.template),
                 cookies=uniconfig_zone_to_cookie(
                     uniconfig_server_id=worker_input.uniconfig_server_id,
