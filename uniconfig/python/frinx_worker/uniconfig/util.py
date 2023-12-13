@@ -4,9 +4,13 @@ def parse_ranges(list_of_strings: list[str]) -> list[int]:
     """Takes list containing integers (str) and ranges (str)
     and returns corresponding list of integers.
 
-    Example:
-        input: ["3", "5-6" , "8", "10 - 12"]
-        output: [3, 5, 6, 8, 10, 11, 12]
+    Args:
+        list_of_strings: List of strings representing integers or range of integers.
+            Example: ["3", "5-6" , "8", "10 - 12"]
+    Returns:
+        output: List of integers.
+            Example: [3, 5, 6, 8, 10, 11, 12]
+
     """
     output = []
     for x in list_of_strings:
