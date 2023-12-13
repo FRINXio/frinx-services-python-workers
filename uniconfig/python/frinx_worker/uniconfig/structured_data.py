@@ -148,7 +148,7 @@ class StructuredData(ServiceWorkersImpl):
             node_id: str
             uri: Optional[str] = None
             template: DictAny
-            method: str = 'PUT'
+            method: str = 'DELETE'
             params: Optional[DictAny] = {}
             topology_id: str = 'uniconfig'
             transaction_id: Optional[str] = None
