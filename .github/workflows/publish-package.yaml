@@ -16,6 +16,7 @@ on:
         - misc/python/kafka
         - misc/python/influxdb
         - misc/python/conductor-system-test
+        - mics/python/python-lambda
 
 jobs:
   build:
