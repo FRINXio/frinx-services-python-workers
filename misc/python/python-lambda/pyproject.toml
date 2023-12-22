@@ -4,14 +4,14 @@ build-backend = "poetry.core.masonry.api"
 
 [tool.poetry.dependencies]
 python = "^3.10"
-pydantic = "^2"
 frinx-python-sdk = {git = "https://github.com/FRINXio/frinx-python-sdk.git", rev = "main"}
-pyseccomp = "^0.1.2"
+timeout-decorator = "^0.5.0"
 
 [tool.poetry.group.dev.dependencies]
 ruff = "^0.0.263"
 mypy = "^1.3.0"
 pyright = "^1.1.317"
+pytest = "^7.4.3"
 
 [tool.poetry]
 packages = [{ include = "frinx_worker" }]
@@ -24,8 +24,8 @@ keywords = ["frinx-machine", "python-lambda", "worker"]
 license = "Apache 2.0"
 
 [project.urls]
-Homepage = 'https://github.com/FRINXio/frinx-python-sdk'
-Source = 'https://github.com/FRINXio/frinx-python-sdk'
+Homepage = 'https://github.com/FRINXio/frinx-services-python-workers/tree/main/misc/python/python-lambda'
+Source = 'https://github.com/FRINXio/frinx-services-python-workers/tree/main/misc/python/python-lambda'
 
 [tool.pyright]
 include = ['frinx_worker']

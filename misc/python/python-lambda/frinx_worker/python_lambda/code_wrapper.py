@@ -1,11 +1,11 @@
 import inspect
 from collections.abc import Callable
+from typing import Any
 
 executed_func_template: str = """
 def execute(worker_input: dict) -> None:
 {custom_execution_commands}
 
-worker_input = {custom_worker_inputs}
 result = execute(worker_input)
 """
 
@@ -20,7 +20,8 @@ def get_indentation(line: str) -> int:
     Returns:
     The number of leading spaces.
     """
-    leading_spaces = len(line) - len(line.lstrip())
+    first_code_line = line.split('\n')[1]
+    leading_spaces = len(first_code_line) - len(first_code_line.lstrip())
     return leading_spaces
 
 
@@ -46,7 +47,7 @@ def sanitize_lines(func: str, indent: int) -> str:
     return '\n'.join(new_lines)
 
 
-def python_lambda_stringify(func: Callable[[], str]) -> Callable[[], str]:
+def python_lambda_stringify(func: Callable[[Any], str]) -> Callable[[], str]:
     """
     Convert a function to a string and remove decorators, adjust indentation.
 
@@ -60,7 +61,9 @@ def python_lambda_stringify(func: Callable[[], str]) -> Callable[[], str]:
         # Get function in string format
         func_as_string = inspect.getsource(func)
         # Get indentation of the first line; then, all lines will be stripped with this indentation
-        indent = get_indentation(func_as_string.split('\n')[1])
+        indent = get_indentation(func_as_string)
         # Return function without decorators, with decreased indentation, and without custom defined def
         return sanitize_lines(func_as_string, indent)
     return wrap
+
+

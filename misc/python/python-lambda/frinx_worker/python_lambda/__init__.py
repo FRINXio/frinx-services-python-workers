@@ -1,8 +1,4 @@
 import ast
-import os
-import subprocess
-import sys
-import typing
 from typing import Any
 
 from frinx.common.conductor_enums import TaskResultStatus
@@ -13,12 +9,15 @@ from frinx.common.worker.task_def import TaskInput
 from frinx.common.worker.task_def import TaskOutput
 from frinx.common.worker.task_result import TaskResult
 from frinx.common.worker.worker import WorkerImpl
+from timeout_decorator import timeout
 
-from frinx_worker.python_lambda import execute
-from frinx_worker.python_lambda.utils import executed_func_template
+from frinx_worker.python_lambda.code_visitor import FunctionCallVisitor
+from frinx_worker.python_lambda.code_wrapper import executed_func_template
 
 
 class PythonLambda(WorkerImpl):
+
+    VISITOR = FunctionCallVisitor()
 
     class ExecutionProperties(TaskExecutionProperties):
         exclude_empty_inputs: bool = True
@@ -42,42 +41,28 @@ class PythonLambda(WorkerImpl):
     @staticmethod
     def _wrap_lambda_func(worker_input: WorkerInput) -> str:
         return executed_func_template.format(
-            custom_execution_commands=worker_input.lambda_function,
-            custom_worker_inputs={**worker_input.worker_inputs}
+            custom_execution_commands=worker_input.lambda_function
         )
+
+    @classmethod
+    def _validate_code(cls, code: str) -> None:
+        cls.VISITOR.visit(ast.parse(code))
 
     @staticmethod
-    def _create_subprocess(code: str) -> subprocess.Popen[bytes]:
-
-        env: typing.Mapping[str, str] = {'PATH': os.environ.get('PATH', '/usr/local/lib/python3')}
-
-        return subprocess.Popen(
-            [sys.executable, execute.__file__, code],
-            stdout=subprocess.PIPE,
-            stderr=subprocess.PIPE,
-            env=env
-        )
+    @timeout(5)  # type: ignore[misc]
+    def _process_code(code: str, worker_inputs: DictAny) -> DictAny:
+        ex_locals: dict[str, Any] = {'worker_input': worker_inputs}
+        exec(code, None, ex_locals)
+        return ex_locals.get('result', {})
 
     def execute(self, worker_input: WorkerInput) -> TaskResult[Any]:
         code = self._wrap_lambda_func(worker_input)
-        proc = self._create_subprocess(code)
+        self._validate_code(code)
 
-        try:
-            stdout, stderr = proc.communicate(timeout=50)
-            if stderr:
-                return TaskResult(
-                    status=TaskResultStatus.FAILED,
-                    logs=stderr.decode('ascii')
-                )
-
-            result = ast.literal_eval(str(stdout.decode('ascii')))
-            return TaskResult(
-                status=TaskResultStatus.COMPLETED,
-                output=self.WorkerOutput(
-                    result=result
-                )
+        result = self._process_code(code, worker_input.worker_inputs)
+        return TaskResult(
+            status=TaskResultStatus.COMPLETED,
+            output=self.WorkerOutput(
+                result=result
             )
-
-        except subprocess.TimeoutExpired:
-            proc.kill()
-            raise Exception('Process timed out')
+        )
