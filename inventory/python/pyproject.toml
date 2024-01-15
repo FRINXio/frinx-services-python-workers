@@ -31,6 +31,7 @@ Source = 'https://github.com/FRINXio/frinx-python-sdk'
 [tool.pyright]
 include = ['frinx_worker']
 reportGeneralTypeIssues = "none"
+reportIncompatibleVariableOverride = false
 
 [tool.ruff]
 line-length = 120
