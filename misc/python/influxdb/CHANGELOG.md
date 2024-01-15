@@ -3,3 +3,6 @@
 
 # 1.1.0
 - Fix project path to frinx_worker/influxdb
+
+# 1.1.1
+- Updated frinx-python-sdk to version ^1.1
