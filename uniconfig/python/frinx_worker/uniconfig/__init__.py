@@ -17,12 +17,32 @@ class TransactionContext(BaseModel):
     transaction_id: str
 
 
-def handle_response(response: Response, worker_output: Optional[TO] = None) -> TaskResult[TO]:
-    if not response.ok:
+def handle_response(response: Response, worker_output: Optional[TO] = None) -> TaskResult:
+    common_log_info = (
+        f"URL: {response.url}; "
+        f"HTTP Request Status: {response.status_code} - {response.reason}; "
+        f"Method: {response.request.method}; "
+        f"Response content: '{response.content.decode('utf-8', errors='replace')[:200]}' "
+    )
+
+    def failed_task_result(reason: str) -> TaskResult:
         return TaskResult(
             status=TaskResultStatus.FAILED,
-            logs=response.content.decode('utf8')
+            logs=f'{reason}; {common_log_info}'
         )
+
+    if not response.ok:
+        return failed_task_result(f'HTTP request failed with status code {response.status_code}')
+
+    try:
+        worker_output.output = response.json()
+        output_status = worker_output.output.get('output', {}).get('status')
+        if output_status in ['fail','error']:
+            return failed_task_result('The response indicates failure')
+
+    except json.JSONDecodeError:
+        return failed_task_result('JSON decoding failed - unparseable response content')
+
     return TaskResult(
         status=TaskResultStatus.COMPLETED,
         output=worker_output

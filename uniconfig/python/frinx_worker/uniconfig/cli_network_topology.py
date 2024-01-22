@@ -68,7 +68,7 @@ class CliNetworkTopology(ServiceWorkersImpl):
                 params=UNICONFIG_REQUEST_PARAMS,
             )
 
-            return handle_response(response, self.WorkerOutput(output=response.json()))
+            return handle_response(response, self.WorkerOutput(output=dict()))
 
     class Execute(WorkerImpl):
 
@@ -119,4 +119,4 @@ class CliNetworkTopology(ServiceWorkersImpl):
                 params=UNICONFIG_REQUEST_PARAMS
             )
 
-            return handle_response(response, self.WorkerOutput(output=response.json()))
+            return handle_response(response, self.WorkerOutput(output=dict()))
