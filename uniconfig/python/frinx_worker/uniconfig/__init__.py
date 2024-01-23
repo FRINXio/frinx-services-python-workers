@@ -35,13 +35,14 @@ def handle_response(response: Response, worker_output: Optional[TO] = None) -> T
         return failed_task_result(f'HTTP request failed with status code {response.status_code}')
 
     try:
-        worker_output.output = response.json()
-        output_status = worker_output.output.get('output', {}).get('status')
-        if output_status in ['fail','error']:
-            return failed_task_result('The response indicates failure')
+        if worker_output is not None:
+            worker_output.output = response.json()
+            output_status = worker_output.output.get('output', {}).get('status')
+            if output_status in ['fail','error']:
+                return failed_task_result('The response indicates failure')
 
     except json.JSONDecodeError:
-        return failed_task_result('JSON decoding failed - unparseable response content')
+        return failed_task_result('JSON decoding failed - unparsable response content')
 
     return TaskResult(
         status=TaskResultStatus.COMPLETED,
