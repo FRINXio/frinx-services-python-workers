@@ -1,4 +1,5 @@
 import copy
+import json
 from enum import Enum
 from typing import Any
 from typing import Optional
@@ -647,7 +648,7 @@ class InventoryService(ServiceWorkersImpl):
             self.add_device.input.zone_id = self._get_zone_id(worker_input.zone_id)
             self.add_device.input.service_state = worker_input.service_state
             self.add_device.input.device_size = worker_input.device_size
-            self.add_device.input.mount_parameters = str(worker_input.mount_parameters).replace("'", '\"')
+            self.add_device.input.mount_parameters = json.dumps(worker_input.mount_parameters)
 
             if worker_input.label_ids:
                 self.add_device.input.label_ids = worker_input.label_ids
