@@ -9,3 +9,6 @@
 
 # 1.0.3
 - Updated frinx-python-sdk to version ^1.1
+
+# 1.0.4
+- Enhanced 'handle_response' function for better error insights

@@ -66,7 +66,7 @@ class StructuredData(ServiceWorkersImpl):
                 params=UNICONFIG_REQUEST_PARAMS
             )
 
-            return handle_response(response, self.WorkerOutput(output=response.json()))
+            return handle_response(response, self.WorkerOutput(output=dict()))
 
     class WriteStructuredData(WorkerImpl):
         from frinx_api.uniconfig.rest_api import ReadStructuredData as UniconfigApi
