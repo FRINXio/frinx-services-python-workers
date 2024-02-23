@@ -4,7 +4,7 @@ build-backend = "poetry.core.masonry.api"
 
 [tool.poetry.dependencies]
 python = "^3.10"
-frinx-python-sdk = {git = "https://github.com/FRINXio/frinx-python-sdk.git", rev = "main"}
+frinx-python-sdk = "^1.1"
 timeout-decorator = "^0.5.0"
 
 [tool.poetry.group.dev.dependencies]

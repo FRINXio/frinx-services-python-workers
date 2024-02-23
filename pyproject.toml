@@ -4,19 +4,19 @@ version = "0.0.1"
 description = ""
 authors = ["Jozef Volak <jvolak@frinx.io>"]
 readme = "README.md"
-packages = [ {include = 'frinx_worker'} ]
+packages = [{ include = 'frinx_worker' }]
 
 [tool.poetry.dependencies]
 python = "^3.10"
-frinx-inventory-worker = {git = "ssh://git@github.com/FRINXio/frinx-services-python-workers.git", branch = "pydantic_v2", subdirectory = "inventory/python"}
-frinx-schellar-worker = {git = "ssh://git@github.com/FRINXio/frinx-services-python-workers.git", branch = "pydantic_v2", subdirectory = "schellar/python"}
-frinx-uniconfig-worker = {git = "ssh://git@github.com/FRINXio/frinx-services-python-workers.git", branch = "pydantic_v2", subdirectory = "uniconfig/python"}
-frinx-resource-manager-worker = {git = "ssh://git@github.com/FRINXio/frinx-services-python-workers.git", branch = "pydantic_v2", subdirectory = "resource-manager/python"}
-frinx-topology-discovery-worker = {git = "ssh://git@github.com/FRINXio/frinx-services-python-workers.git", branch = "pydantic_v2", subdirectory = "topology-discovery/python"}
-frinx-http-worker = {git = "ssh://git@github.com/FRINXio/frinx-services-python-workers.git", branch = "pydantic_v2", subdirectory = "misc/python/http"}
-frinx-kafka-worker = {git = "ssh://git@github.com/FRINXio/frinx-services-python-workers.git", branch = "pydantic_v2", subdirectory = "misc/python/kafka"}
-frinx-influxdb-worker = {git = "ssh://git@github.com/FRINXio/frinx-services-python-workers.git", branch = "pydantic_v2", subdirectory = "misc/python/influxdb"}
-frinx-conductor-system-test-worker = {git = "ssh://git@github.com/FRINXio/frinx-services-python-workers.git", branch = "pydantic_v2", subdirectory = "misc/python/conductor-system-test"}
+frinx-inventory-worker = { git = "ssh://git@github.com/FRINXio/frinx-services-python-workers.git", branch = "main", subdirectory = "inventory/python" }
+frinx-schellar-worker = { git = "ssh://git@github.com/FRINXio/frinx-services-python-workers.git", branch = "main", subdirectory = "schellar/python" }
+frinx-uniconfig-worker = { git = "ssh://git@github.com/FRINXio/frinx-services-python-workers.git", branch = "main", subdirectory = "uniconfig/python" }
+frinx-resource-manager-worker = { git = "ssh://git@github.com/FRINXio/frinx-services-python-workers.git", branch = "main", subdirectory = "resource-manager/python" }
+frinx-topology-discovery-worker = { git = "ssh://git@github.com/FRINXio/frinx-services-python-workers.git", branch = "main", subdirectory = "topology-discovery/python" }
+frinx-http-worker = { git = "ssh://git@github.com/FRINXio/frinx-services-python-workers.git", branch = "main", subdirectory = "misc/python/http" }
+frinx-kafka-worker = { git = "ssh://git@github.com/FRINXio/frinx-services-python-workers.git", branch = "main", subdirectory = "misc/python/kafka" }
+frinx-influxdb-worker = { git = "ssh://git@github.com/FRINXio/frinx-services-python-workers.git", branch = "main", subdirectory = "misc/python/influxdb" }
+frinx-conductor-system-test-worker = { git = "ssh://git@github.com/FRINXio/frinx-services-python-workers.git", branch = "main", subdirectory = "misc/python/conductor-system-test" }
 
 [build-system]
 requires = ["poetry-core"]
