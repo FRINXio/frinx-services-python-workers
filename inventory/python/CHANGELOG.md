@@ -7,3 +7,6 @@
 
 # 1.0.3
 - Updated frinx-python-sdk to version ^1.1
+
+# 1.0.4
+- Updated frinx-inventory-api to rev "graphql-pydantic-converter_v1.2.0"
