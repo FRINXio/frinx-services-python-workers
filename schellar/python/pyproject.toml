@@ -6,19 +6,19 @@ build-backend = "poetry.core.masonry.api"
 python = "^3.10"
 pydantic = "^2"
 frinx-python-sdk = "^1.1"
-frinx-schellar-api = { git = "https://github.com/FRINXio/frinx-services-python-api.git", rev = "frinx-schellar-api_v1.0.0", subdirectory = "schellar/python/" }
+frinx-schellar-api = { git = "https://github.com/FRINXio/frinx-services-python-api.git", rev = "graphql-pydantic-converter_v1.2.0", subdirectory = "schellar/python/" }
 
 [tool.poetry.group.dev.dependencies]
 ruff = "^0.0.263"
 mypy = "^1.5.1"
-pyright = "^1.1.317"
+pyright = "1.1.346"
 
 [tool.poetry]
 packages = [{ include = "frinx_worker" }]
 name = "frinx-schellar-worker"
 description = "Conductor worker for Schellar service"
 authors = ["Jozef Volak <jozef.volak@elisapolystar.com>"]
-version = "1.0.0"
+version = "1.0.2"
 readme = ["README.md", "CHANGELOG.md", "RELEASE.md"]
 keywords = ["frinx-machine", "schellar", "worker"]
 license = "Apache 2.0"

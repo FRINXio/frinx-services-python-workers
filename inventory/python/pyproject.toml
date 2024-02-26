@@ -6,12 +6,12 @@ build-backend = "poetry.core.masonry.api"
 python = "^3.10"
 pydantic = "^2"
 frinx-python-sdk = "^1.1"
-frinx-inventory-api = { git = "https://github.com/FRINXio/frinx-services-python-api.git", rev = "frinx-inventory-api_v1.0.0", subdirectory = "inventory/python" }
+frinx-inventory-api = { git = "https://github.com/FRINXio/frinx-services-python-api.git", rev = "graphql-pydantic-converter_v1.2.0", subdirectory = "inventory/python" }
 
 [tool.poetry.group.dev.dependencies]
 ruff = "^0.0.263"
 mypy = "^1.5.1"
-pyright = "^1.1.317"
+pyright = "1.1.346"
 types-requests = "^2.31.0.2"
 
 [tool.poetry]
@@ -19,7 +19,7 @@ packages = [{ include = "frinx_worker" }]
 name = "frinx-inventory-worker"
 description = "Conductor worker for Frinx Device Inventory"
 authors = ["Jozef Volak <jozef.volak@elisapolystar.com>"]
-version = "1.0.2"
+version = "1.0.4"
 readme = ["README.md", "CHANGELOG.md", "RELEASE.md"]
 keywords = ["frinx-machine", "device inventory", "worker"]
 license = "Apache 2.0"

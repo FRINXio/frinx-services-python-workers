@@ -6,19 +6,19 @@ build-backend = "poetry.core.masonry.api"
 python = "^3.10"
 pydantic = "^2"
 frinx-python-sdk = "^1.1"
-frinx-resource-manager-api = { git = "https://github.com/FRINXio/frinx-services-python-api.git", rev = "frinx-resource-manager-api_v2.0.0", subdirectory = "resource-manager/python" }
+frinx-resource-manager-api = { git = "https://github.com/FRINXio/frinx-services-python-api.git", rev = "graphql-pydantic-converter_v1.2.0", subdirectory = "resource-manager/python" }
 
 [tool.poetry.group.dev.dependencies]
 ruff = "^0.0.263"
 mypy = "^1.3.0"
-pyright = "^1.1.317"
+pyright = "1.1.346"
 
 [tool.poetry]
 packages = [{ include = "frinx_worker" }]
 name = "frinx-resource-manager-worker"
 description = "Conductor worker for Frinx Resource Manager"
 authors = ["Jozef Volak <jozef.volak@elisapolystar.com>"]
-version = "0.0.1"
+version = "0.0.2"
 readme = ["README.md", "CHANGELOG.md", "RELEASE.md"]
 keywords = ["frinx-machine", "resource-manager", "worker"]
 license = "Apache 2.0"
