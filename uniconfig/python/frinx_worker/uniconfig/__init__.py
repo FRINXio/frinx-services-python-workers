@@ -6,7 +6,6 @@ from typing import Optional
 from frinx.common.conductor_enums import TaskResultStatus
 from frinx.common.type_aliases import DictAny
 from frinx.common.util import remove_empty_elements_from_dict
-from frinx.common.worker.task_result import TO
 from frinx.common.worker.task_result import TaskResult
 from pydantic import BaseModel
 from requests import Response
@@ -17,7 +16,7 @@ class TransactionContext(BaseModel):
     transaction_id: str
 
 
-def handle_response(response: Response, worker_output: Optional[TO] = None) -> TaskResult:
+def handle_response(response: Response) -> TaskResult:
     common_log_info = (
         f"URL: {response.url}; "
         f"HTTP Request Status: {response.status_code} - {response.reason}; "
@@ -31,22 +30,19 @@ def handle_response(response: Response, worker_output: Optional[TO] = None) -> T
             logs=f'{reason}; {common_log_info}'
         )
 
-    if not response.ok:
-        return failed_task_result(f'HTTP request failed with status code {response.status_code}')
-
     try:
-        if worker_output is not None:
-            worker_output.output = response.json()
-            output_status = worker_output.output.get('output', {}).get('status')
-            if output_status in ['fail','error']:
-                return failed_task_result('The response indicates failure')
-
+        if not response.ok:
+            return failed_task_result(f'HTTP request failed with status code {response.status_code}')
+        elif response.status_code == 200:  # NOQA: PLR2004  - Consider replacing 200 with a constant variable
+            result = response.json()
+        else:
+            result = {'status_code': response.status_code}
     except json.JSONDecodeError:
         return failed_task_result('JSON decoding failed - unparsable response content')
 
     return TaskResult(
         status=TaskResultStatus.COMPLETED,
-        output=worker_output
+        output=result,
     )
 
 

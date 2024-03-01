@@ -66,7 +66,7 @@ class StructuredData(ServiceWorkersImpl):
                 params=UNICONFIG_REQUEST_PARAMS
             )
 
-            return handle_response(response, self.WorkerOutput(output=dict()))
+            return handle_response(response)
 
     class WriteStructuredData(WorkerImpl):
         from frinx_api.uniconfig.rest_api import ReadStructuredData as UniconfigApi
@@ -123,14 +123,7 @@ class StructuredData(ServiceWorkersImpl):
                 params=UNICONFIG_REQUEST_PARAMS
             )
 
-            return handle_response(
-                response,
-                self.WorkerOutput(
-                    output=dict(
-                        response_code=response.status_code
-                    )
-                )
-            )
+            return handle_response(response)
 
     class DeleteStructuredData(WorkerImpl):
         from frinx_api.uniconfig.rest_api import DeleteStructuredData as UniconfigApi
@@ -187,11 +180,4 @@ class StructuredData(ServiceWorkersImpl):
                 params=UNICONFIG_REQUEST_PARAMS
             )
 
-            return handle_response(
-                response,
-                self.WorkerOutput(
-                    output=dict(
-                        response_code=response.status_code
-                    )
-                )
-            )
+            return handle_response(response)

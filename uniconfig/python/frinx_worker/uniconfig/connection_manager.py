@@ -63,7 +63,7 @@ class ConnectionManager(ServiceWorkersImpl):
                 params=UNICONFIG_REQUEST_PARAMS
             )
 
-            return handle_response(response, self.WorkerOutput(output=dict()))
+            return handle_response(response)
 
     class UninstallNode(WorkerImpl):
         from frinx_api.uniconfig.connection.manager import ConnectionType
@@ -106,7 +106,7 @@ class ConnectionManager(ServiceWorkersImpl):
                 params=UNICONFIG_REQUEST_PARAMS
             )
 
-            return handle_response(response, self.WorkerOutput(output=dict()))
+            return handle_response(response)
 
     class InstallMultipleNodes(WorkerImpl):
         from frinx_api.uniconfig.connection.manager.installmultiplenodes import Input
@@ -149,7 +149,7 @@ class ConnectionManager(ServiceWorkersImpl):
                 headers=dict(UNICONFIG_HEADERS, accept='application/json')
             )
 
-            return handle_response(response, self.WorkerOutput(output=dict()))
+            return handle_response(response)
 
     class UninstallMultipleNodes(WorkerImpl):
         from frinx_api.uniconfig.connection.manager.uninstallmultiplenodes import Input
@@ -193,4 +193,4 @@ class ConnectionManager(ServiceWorkersImpl):
                 params=UNICONFIG_REQUEST_PARAMS
             )
 
-            return handle_response(response, self.WorkerOutput(output=dict()))
+            return handle_response(response)

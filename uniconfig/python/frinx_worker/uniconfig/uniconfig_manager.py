@@ -178,7 +178,7 @@ class UniconfigManager(ServiceWorkersImpl):
                 params=UNICONFIG_REQUEST_PARAMS
             )
 
-            return handle_response(response, self.WorkerOutput(output=dict()))
+            return handle_response(response)
 
     class ReplaceConfigWithOperational(WorkerImpl):
         from frinx_api.uniconfig.rest_api import ReplaceConfigWithOperational as UniconfigApi
@@ -224,7 +224,7 @@ class UniconfigManager(ServiceWorkersImpl):
                 params=UNICONFIG_REQUEST_PARAMS
             )
 
-            return handle_response(response, self.WorkerOutput(output=dict()))
+            return handle_response(response)
 
     class SyncFromNetwork(WorkerImpl):
         from frinx_api.uniconfig.rest_api import SyncFromNetwork as UniconfigApi
@@ -270,7 +270,7 @@ class UniconfigManager(ServiceWorkersImpl):
                 params=UNICONFIG_REQUEST_PARAMS
             )
 
-            return handle_response(response, self.WorkerOutput(output=dict()))
+            return handle_response(response)
 
     class DryRunCommit(WorkerImpl):
         from frinx_api.uniconfig.dryrun.manager.dryruncommit import Input
@@ -320,4 +320,4 @@ class UniconfigManager(ServiceWorkersImpl):
                 params=UNICONFIG_REQUEST_PARAMS
             )
 
-            return handle_response(response, self.WorkerOutput(output=dict()))
+            return handle_response(response)
