@@ -7,3 +7,6 @@
 
 # 1.0.3
 - Updated frinx-python-sdk to version ^1.1
+
+# 1.0.4
+- Utilize json.dumps for mount parameter serialization for InventoryAddDevice
