@@ -178,7 +178,13 @@ class UniconfigManager(ServiceWorkersImpl):
                 params=UNICONFIG_REQUEST_PARAMS
             )
 
-            return handle_response(response)
+            uniconfig_result = handle_response(response)
+            return TaskResult(
+                status=uniconfig_result.task_status,
+                logs=uniconfig_result.logs,
+                output=self.WorkerOutput(
+                    output=uniconfig_result.output,
+                ))
 
     class ReplaceConfigWithOperational(WorkerImpl):
         from frinx_api.uniconfig.rest_api import ReplaceConfigWithOperational as UniconfigApi
@@ -224,7 +230,14 @@ class UniconfigManager(ServiceWorkersImpl):
                 params=UNICONFIG_REQUEST_PARAMS
             )
 
-            return handle_response(response)
+            uniconfig_result = handle_response(response)
+
+            return TaskResult(
+                status=uniconfig_result.task_status,
+                logs=uniconfig_result.logs,
+                output=self.WorkerOutput(
+                    output=uniconfig_result.output,
+                ))
 
     class SyncFromNetwork(WorkerImpl):
         from frinx_api.uniconfig.rest_api import SyncFromNetwork as UniconfigApi
@@ -270,7 +283,14 @@ class UniconfigManager(ServiceWorkersImpl):
                 params=UNICONFIG_REQUEST_PARAMS
             )
 
-            return handle_response(response)
+            uniconfig_result = handle_response(response)
+
+            return TaskResult(
+                status=uniconfig_result.task_status,
+                logs=uniconfig_result.logs,
+                output=self.WorkerOutput(
+                    output=uniconfig_result.output,
+                ))
 
     class DryRunCommit(WorkerImpl):
         from frinx_api.uniconfig.dryrun.manager.dryruncommit import Input
@@ -320,4 +340,11 @@ class UniconfigManager(ServiceWorkersImpl):
                 params=UNICONFIG_REQUEST_PARAMS
             )
 
-            return handle_response(response)
+            uniconfig_result = handle_response(response)
+
+            return TaskResult(
+                status=uniconfig_result.task_status,
+                logs=uniconfig_result.logs,
+                output=self.WorkerOutput(
+                    output=uniconfig_result.output,
+                ))

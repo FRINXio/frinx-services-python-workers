@@ -68,7 +68,14 @@ class CliNetworkTopology(ServiceWorkersImpl):
                 params=UNICONFIG_REQUEST_PARAMS,
             )
 
-            return handle_response(response)
+            uniconfig_result = handle_response(response)
+
+            return TaskResult(
+                status=uniconfig_result.task_status,
+                logs=uniconfig_result.logs,
+                output=self.WorkerOutput(
+                    output=uniconfig_result.output,
+                ))
 
     class Execute(WorkerImpl):
 
@@ -119,4 +126,11 @@ class CliNetworkTopology(ServiceWorkersImpl):
                 params=UNICONFIG_REQUEST_PARAMS
             )
 
-            return handle_response(response)
+            uniconfig_result = handle_response(response)
+
+            return TaskResult(
+                status=uniconfig_result.task_status,
+                logs=uniconfig_result.logs,
+                output=self.WorkerOutput(
+                    output=uniconfig_result.output,
+                ))
