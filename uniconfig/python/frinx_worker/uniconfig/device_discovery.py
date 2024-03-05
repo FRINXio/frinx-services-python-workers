@@ -1,5 +1,6 @@
 from ipaddress import IPv4Address
 from ipaddress import IPv6Address
+from typing import cast
 
 import pydantic
 import requests
@@ -86,7 +87,7 @@ class DeviceDiscoveryWorkers(ServiceWorkersImpl):
                     return None
 
         class WorkerOutput(TaskOutput):
-            output: OperationsDiscoverPostResponse | None
+            output: OperationsDiscoverPostResponse
 
         def execute(self, worker_input: WorkerInput) -> TaskResult[WorkerOutput]:
             if Discover.request is None:
@@ -119,5 +120,5 @@ class DeviceDiscoveryWorkers(ServiceWorkersImpl):
                 status=uniconfig_result.task_status,
                 logs=uniconfig_result.logs,
                 output=self.WorkerOutput(
-                    output=uniconfig_result.output.get('output', None),
+                    output=cast(OperationsDiscoverPostResponse,uniconfig_result.output),
                 ))
