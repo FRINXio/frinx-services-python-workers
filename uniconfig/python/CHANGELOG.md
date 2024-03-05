@@ -12,3 +12,6 @@
 
 # 1.0.4
 - Enhanced 'handle_response' function for better error insights
+
+# 1.0.5
+- Simplified response handling from UniConfig and refactored DeviceDiscovery
