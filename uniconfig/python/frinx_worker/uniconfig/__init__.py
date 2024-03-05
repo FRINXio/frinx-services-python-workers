@@ -1,4 +1,5 @@
 import dataclasses
+import http.client
 import json
 from typing import Any
 from typing import Optional
@@ -27,7 +28,7 @@ def handle_response(response: Response) -> UniconfigResultDetails:
         logs=f'{response.request.method} request to {response.url} returned with status code {response.status_code}.'
     )
 
-    if response.status_code != 204:  # NOQA: PLR2004  - Consider replacing 204 with a constant variable
+    if response.status_code != http.client.NO_CONTENT:
         try:
             uniconfig_result.output = response.json()
         except json.JSONDecodeError:
