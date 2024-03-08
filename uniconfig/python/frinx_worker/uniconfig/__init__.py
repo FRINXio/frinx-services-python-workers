@@ -1,7 +1,7 @@
 import dataclasses
 import http.client
 import json
-from typing import Any
+from typing import Any, cast
 from typing import Optional
 
 from frinx.common.conductor_enums import TaskResultStatus
@@ -22,15 +22,18 @@ class UniconfigResultDetails(BaseModel):
     task_status: TaskResultStatus
 
 
-def handle_response(response: Response) -> UniconfigResultDetails:
+def handle_response(response: Response, model: Optional[type[BaseModel]] = None) -> UniconfigResultDetails:
     uniconfig_result = UniconfigResultDetails(
         task_status=TaskResultStatus.COMPLETED if response.ok else TaskResultStatus.FAILED,
         logs=f'{response.request.method} request to {response.url} returned with status code {response.status_code}.'
     )
-
     if response.status_code != http.client.NO_CONTENT:
         try:
-            uniconfig_result.output = response.json()
+            response_json = response.json()
+            if model is not None:
+                uniconfig_result.output = model.parse_obj(response_json).dict()
+            else:
+                uniconfig_result.output = response_json
         except json.JSONDecodeError:
             uniconfig_result.logs += 'ERROR: JSON decoding failed - unparsable response content.'
     return uniconfig_result
