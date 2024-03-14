@@ -1,4 +1,5 @@
 import dataclasses
+import http.client
 import json
 from typing import Any
 from typing import Optional
@@ -6,7 +7,6 @@ from typing import Optional
 from frinx.common.conductor_enums import TaskResultStatus
 from frinx.common.type_aliases import DictAny
 from frinx.common.util import remove_empty_elements_from_dict
-from frinx.common.worker.task_result import TO
 from frinx.common.worker.task_result import TaskResult
 from pydantic import BaseModel
 from requests import Response
@@ -17,36 +17,41 @@ class TransactionContext(BaseModel):
     transaction_id: str
 
 
-def handle_response(response: Response, worker_output: Optional[TO] = None) -> TaskResult:
-    common_log_info = (
-        f"URL: {response.url}; "
-        f"HTTP Request Status: {response.status_code} - {response.reason}; "
-        f"Method: {response.request.method}; "
-        f"Response content: '{response.content.decode('utf-8', errors='replace')[:200]}' "
-    )
+def handle_response(response: Response, worker_output: Any) -> TaskResult:
+    """
+    Handles an HTTP response from Uniconfig by logging the request details and processing the response content.
 
-    def failed_task_result(reason: str) -> TaskResult:
-        return TaskResult(
-            status=TaskResultStatus.FAILED,
-            logs=f'{reason}; {common_log_info}'
-        )
+    Args:
+        response: The HTTP response from Uniconfig.
+        worker_output:  Typically a callable Type[WorkerOutput]. It's common for this callable to be a method like
+        `self.WorkerOutput`, which can construct an instance of `WorkerOutput`.
 
-    if not response.ok:
-        return failed_task_result(f'HTTP request failed with status code {response.status_code}')
+    Returns:
+        TaskResult: An object representing the result of the task. It includes the task status (COMPLETED on success,
+                    FAILED otherwise), logs detailing the response, and the processed output.
+    """
+    # Check if 'worker_output' has the 'model_fields' attribute and the 'output' field is present
+    if not hasattr(worker_output, 'model_fields') or 'output' not in worker_output.model_fields:
+        raise ValueError("The worker_output does not have the expected 'output' field. "
+                         "Function handle_response expects WorkerOutput with a field named 'output'.")
 
-    try:
-        if worker_output is not None:
-            worker_output.output = response.json()
-            output_status = worker_output.output.get('output', {}).get('status')
-            if output_status in ['fail','error']:
-                return failed_task_result('The response indicates failure')
+    output = dict()
+    status = TaskResultStatus.COMPLETED if response.ok else TaskResultStatus.FAILED
+    logs = (f'{response.request.method} request to {response.url} returned with status code {response.status_code}.  '
+            f'CONTENT: {response.content.decode("utf-8")}')
 
-    except json.JSONDecodeError:
-        return failed_task_result('JSON decoding failed - unparsable response content')
+    # Attempt to parse response content as JSON if the response contains content.
+    if response.status_code != http.client.NO_CONTENT:
+        try:
+            output = response.json()
+        except json.JSONDecodeError:
+            logs += 'ERROR: JSON decoding failed - unparsable response content. '
+            status = TaskResultStatus.FAILED
 
     return TaskResult(
-        status=TaskResultStatus.COMPLETED,
-        output=worker_output
+        status=status,
+        logs=logs,
+        output=worker_output(output=output)
     )
 
 

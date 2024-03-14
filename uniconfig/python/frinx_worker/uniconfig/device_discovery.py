@@ -3,7 +3,8 @@ from ipaddress import IPv6Address
 
 import pydantic
 import requests
-from frinx.common.conductor_enums import TaskResultStatus
+from frinx.common.frinx_rest import UNICONFIG_HEADERS
+from frinx.common.frinx_rest import UNICONFIG_REQUEST_PARAMS
 from frinx.common.frinx_rest import UNICONFIG_URL_BASE
 from frinx.common.type_aliases import ListStr
 from frinx.common.worker.service import ServiceWorkersImpl
@@ -24,6 +25,7 @@ from pydantic import IPvAnyAddress
 from pydantic import IPvAnyNetwork
 
 from . import class_to_json
+from . import handle_response
 from .util import get_list_of_ip_addresses
 from .util import parse_ranges
 
@@ -70,12 +72,18 @@ class DeviceDiscoveryWorkers(ServiceWorkersImpl):
                 return [address]
 
             @pydantic.field_validator('tcp_port', mode='before')
-            def validate_tcp(cls, tcp_port: str) -> list[TcpPortItem]:
-                return [TcpPortItem(port=p) for p in parse_ranges(tcp_port.split(','))]
+            def validate_tcp(cls, tcp_port: str) -> list[TcpPortItem] | None:
+                if tcp_port:
+                    return [TcpPortItem(port=p) for p in parse_ranges(tcp_port.split(','))]
+                else:
+                    return None
 
             @pydantic.field_validator('udp_port', mode='before')
-            def validate_udp(cls, udp_port: str) -> list[UdpPortItem]:
-                return [UdpPortItem(port=p) for p in parse_ranges(udp_port.split(','))]
+            def validate_udp(cls, udp_port: str) -> list[UdpPortItem] | None:
+                if udp_port:
+                    return [UdpPortItem(port=p) for p in parse_ranges(udp_port.split(','))]
+                else:
+                    return None
 
         class WorkerOutput(TaskOutput):
             output: OperationsDiscoverPostResponse
@@ -95,6 +103,8 @@ class DeviceDiscoveryWorkers(ServiceWorkersImpl):
 
             response = requests.request(
                 url=UNICONFIG_URL_BASE + Discover.uri,
+                headers=dict(UNICONFIG_HEADERS),
+                params=UNICONFIG_REQUEST_PARAMS,
                 method=Discover.method,
                 data=class_to_json(
                     Discover.request(
@@ -103,22 +113,4 @@ class DeviceDiscoveryWorkers(ServiceWorkersImpl):
                 ),
             )
 
-            if response.ok:
-                status = TaskResultStatus.COMPLETED
-
-                return TaskResult(
-                    status=status,
-                    output=self.WorkerOutput(
-                        output=Discover.response(
-                            output=response.json()['output']
-                        )
-                    )
-                )
-
-            status = TaskResultStatus.FAILED
-            return TaskResult(
-                status=status,
-                output=self.WorkerOutput(
-                    output=response.json()
-                    )
-                )
+            return handle_response(response, self.WorkerOutput)

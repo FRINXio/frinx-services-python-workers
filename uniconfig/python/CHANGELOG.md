@@ -12,3 +12,7 @@
 
 # 1.0.4
 - Enhanced 'handle_response' function for better error insights
+
+# 2.0.0
+- Updated API dependency frinx-uniconfig-api to rev "[frinx-uniconfig-api_v1.0.0](https://github.com/FRINXio/frinx-services-python-api/blob/main/uniconfig/python/CHANGELOG.md)"
+- Simplified response handling from UniConfig and refactored DeviceDiscovery
