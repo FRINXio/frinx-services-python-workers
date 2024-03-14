@@ -30,6 +30,11 @@ def handle_response(response: Response, worker_output: Any) -> TaskResult:
         TaskResult: An object representing the result of the task. It includes the task status (COMPLETED on success,
                     FAILED otherwise), logs detailing the response, and the processed output.
     """
+    # Check if 'worker_output' has the 'model_fields' attribute and the 'output' field is present
+    if not hasattr(worker_output, 'model_fields') or 'output' not in worker_output.model_fields:
+        raise ValueError("The worker_output does not have the expected 'output' field. "
+                         "Function handle_response expects WorkerOutput with a field named 'output'.")
+
     output = dict()
     status = TaskResultStatus.COMPLETED if response.ok else TaskResultStatus.FAILED
     logs = (f'{response.request.method} request to {response.url} returned with status code {response.status_code}.  '
