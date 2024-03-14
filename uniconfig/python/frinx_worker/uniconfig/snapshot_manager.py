@@ -65,14 +65,7 @@ class SnapshotManager(ServiceWorkersImpl):
                 params=UNICONFIG_REQUEST_PARAMS
             )
 
-            uniconfig_result = handle_response(response)
-
-            return TaskResult(
-                status=uniconfig_result.task_status,
-                logs=uniconfig_result.logs,
-                output=self.WorkerOutput(
-                    output=uniconfig_result.output,
-                ))
+            return handle_response(response, self.WorkerOutput)
 
     class DeleteSnapshot(WorkerImpl):
         from frinx_api.uniconfig.rest_api import DeleteSnapshot as UniconfigApi
@@ -117,14 +110,7 @@ class SnapshotManager(ServiceWorkersImpl):
                 params=UNICONFIG_REQUEST_PARAMS
             )
 
-            uniconfig_result = handle_response(response)
-
-            return TaskResult(
-                status=uniconfig_result.task_status,
-                logs=uniconfig_result.logs,
-                output=self.WorkerOutput(
-                    output=uniconfig_result.output,
-                ))
+            return handle_response(response, self.WorkerOutput)
 
     class ReplaceConfigWithSnapshot(WorkerImpl):
         from frinx_api.uniconfig.rest_api import ReplaceConfigWithSnapshot as UniconfigApi
@@ -172,11 +158,4 @@ class SnapshotManager(ServiceWorkersImpl):
                 params=UNICONFIG_REQUEST_PARAMS
             )
 
-            uniconfig_result = handle_response(response)
-
-            return TaskResult(
-                status=uniconfig_result.task_status,
-                logs=uniconfig_result.logs,
-                output=self.WorkerOutput(
-                    output=uniconfig_result.output,
-                ))
+            return handle_response(response, self.WorkerOutput)

@@ -7,6 +7,7 @@ from typing import Optional
 from frinx.common.conductor_enums import TaskResultStatus
 from frinx.common.type_aliases import DictAny
 from frinx.common.util import remove_empty_elements_from_dict
+from frinx.common.worker.task_result import TaskResult
 from pydantic import BaseModel
 from requests import Response
 
@@ -16,27 +17,37 @@ class TransactionContext(BaseModel):
     transaction_id: str
 
 
-class UniconfigResultDetails(BaseModel):
-    logs: str
-    output: DictAny = {}
-    task_status: TaskResultStatus
+def handle_response(response: Response, worker_output: Any) -> TaskResult:
+    """
+    Handles an HTTP response from Uniconfig by logging the request details and processing the response content.
 
+    Args:
+        response: The HTTP response from Uniconfig.
+        worker_output:  Typically a callable Type[WorkerOutput]. It's common for this callable to be a method like
+        `self.WorkerOutput`, which can construct an instance of `WorkerOutput`.
 
-def handle_response(response: Response, model: Optional[type[BaseModel]] = None) -> UniconfigResultDetails:
-    uniconfig_result = UniconfigResultDetails(
-        task_status=TaskResultStatus.COMPLETED if response.ok else TaskResultStatus.FAILED,
-        logs=f'{response.request.method} request to {response.url} returned with status code {response.status_code}.'
-    )
+    Returns:
+        TaskResult: An object representing the result of the task. It includes the task status (COMPLETED on success,
+                    FAILED otherwise), logs detailing the response, and the processed output.
+    """
+    output = dict()
+    status = TaskResultStatus.COMPLETED if response.ok else TaskResultStatus.FAILED
+    logs = (f'{response.request.method} request to {response.url} returned with status code {response.status_code}.  '
+            f'CONTENT: {response.content.decode("utf-8")}')
+
+    # Attempt to parse response content as JSON if the response contains content.
     if response.status_code != http.client.NO_CONTENT:
         try:
-            response_json = response.json()
-            if model is not None:
-                uniconfig_result.output = model.parse_obj(response_json).dict()
-            else:
-                uniconfig_result.output = response_json
+            output = response.json()
         except json.JSONDecodeError:
-            uniconfig_result.logs += 'ERROR: JSON decoding failed - unparsable response content.'
-    return uniconfig_result
+            logs += 'ERROR: JSON decoding failed - unparsable response content. '
+            status = TaskResultStatus.FAILED
+
+    return TaskResult(
+        status=status,
+        logs=logs,
+        output=worker_output(output=output)
+    )
 
 
 def uniconfig_zone_to_cookie(

@@ -6,7 +6,6 @@ import requests
 from frinx.common.frinx_rest import UNICONFIG_HEADERS
 from frinx.common.frinx_rest import UNICONFIG_REQUEST_PARAMS
 from frinx.common.frinx_rest import UNICONFIG_URL_BASE
-from frinx.common.type_aliases import DictAny
 from frinx.common.type_aliases import ListStr
 from frinx.common.worker.service import ServiceWorkersImpl
 from frinx.common.worker.service import WorkerImpl
@@ -87,7 +86,7 @@ class DeviceDiscoveryWorkers(ServiceWorkersImpl):
                     return None
 
         class WorkerOutput(TaskOutput):
-            output: DictAny
+            output: OperationsDiscoverPostResponse
 
         def execute(self, worker_input: WorkerInput) -> TaskResult[WorkerOutput]:
             if Discover.request is None:
@@ -114,11 +113,4 @@ class DeviceDiscoveryWorkers(ServiceWorkersImpl):
                 ),
             )
 
-            uniconfig_result = handle_response(response, OperationsDiscoverPostResponse)
-
-            return TaskResult(
-                status=uniconfig_result.task_status,
-                logs=uniconfig_result.logs,
-                output=self.WorkerOutput(
-                    output=uniconfig_result.output,
-                ))
+            return handle_response(response, self.WorkerOutput)

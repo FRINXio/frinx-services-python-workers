@@ -19,7 +19,6 @@ from . import uniconfig_zone_to_cookie
 
 
 class CliNetworkTopology(ServiceWorkersImpl):
-
     class ExecuteAndRead(WorkerImpl):
 
         from frinx_api.uniconfig.cli.unit.generic.executeandread import Input
@@ -68,14 +67,7 @@ class CliNetworkTopology(ServiceWorkersImpl):
                 params=UNICONFIG_REQUEST_PARAMS,
             )
 
-            uniconfig_result = handle_response(response)
-
-            return TaskResult(
-                status=uniconfig_result.task_status,
-                logs=uniconfig_result.logs,
-                output=self.WorkerOutput(
-                    output=uniconfig_result.output,
-                ))
+            return handle_response(response, self.WorkerOutput)
 
     class Execute(WorkerImpl):
 
@@ -126,11 +118,4 @@ class CliNetworkTopology(ServiceWorkersImpl):
                 params=UNICONFIG_REQUEST_PARAMS
             )
 
-            uniconfig_result = handle_response(response)
-
-            return TaskResult(
-                status=uniconfig_result.task_status,
-                logs=uniconfig_result.logs,
-                output=self.WorkerOutput(
-                    output=uniconfig_result.output,
-                ))
+            return handle_response(response, self.WorkerOutput)

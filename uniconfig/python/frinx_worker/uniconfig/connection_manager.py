@@ -63,14 +63,7 @@ class ConnectionManager(ServiceWorkersImpl):
                 params=UNICONFIG_REQUEST_PARAMS
             )
 
-            uniconfig_result = handle_response(response)
-
-            return TaskResult(
-                status=uniconfig_result.task_status,
-                logs=uniconfig_result.logs,
-                output=self.WorkerOutput(
-                    output=uniconfig_result.output,
-                ))
+            return handle_response(response, self.WorkerOutput)
 
     class UninstallNode(WorkerImpl):
         from frinx_api.uniconfig.connection.manager import ConnectionType
@@ -113,14 +106,7 @@ class ConnectionManager(ServiceWorkersImpl):
                 params=UNICONFIG_REQUEST_PARAMS
             )
 
-            uniconfig_result = handle_response(response)
-
-            return TaskResult(
-                status=uniconfig_result.task_status,
-                logs=uniconfig_result.logs,
-                output=self.WorkerOutput(
-                    output=uniconfig_result.output,
-                ))
+            return handle_response(response, self.WorkerOutput)
 
     class InstallMultipleNodes(WorkerImpl):
         from frinx_api.uniconfig.connection.manager.installmultiplenodes import Input
@@ -162,15 +148,7 @@ class ConnectionManager(ServiceWorkersImpl):
                 ),
                 headers=dict(UNICONFIG_HEADERS, accept='application/json')
             )
-
-            uniconfig_result = handle_response(response)
-
-            return TaskResult(
-                status=uniconfig_result.task_status,
-                logs=uniconfig_result.logs,
-                output=self.WorkerOutput(
-                    output=uniconfig_result.output,
-                ))
+            return handle_response(response, self.WorkerOutput)
 
     class UninstallMultipleNodes(WorkerImpl):
         from frinx_api.uniconfig.connection.manager.uninstallmultiplenodes import Input
@@ -214,11 +192,4 @@ class ConnectionManager(ServiceWorkersImpl):
                 params=UNICONFIG_REQUEST_PARAMS
             )
 
-            uniconfig_result = handle_response(response)
-
-            return TaskResult(
-                status=uniconfig_result.task_status,
-                logs=uniconfig_result.logs,
-                output=self.WorkerOutput(
-                    output=uniconfig_result.output,
-                ))
+            return handle_response(response, self.WorkerOutput)
