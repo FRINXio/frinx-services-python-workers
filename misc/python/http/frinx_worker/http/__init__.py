@@ -1,12 +1,8 @@
-from typing import Any
-
 from frinx.common.conductor_enums import TaskResultStatus
 from frinx.common.type_aliases import DictAny
 from frinx.common.type_aliases import DictStr
 from frinx.common.type_aliases import ListAny
-from frinx.common.type_aliases import ListStr
 from frinx.common.util import parse_response
-from frinx.common.util import snake_to_camel_case
 from frinx.common.worker.service import ServiceWorkersImpl
 from frinx.common.worker.task_def import TaskDefinition
 from frinx.common.worker.task_def import TaskExecutionProperties
@@ -15,21 +11,20 @@ from frinx.common.worker.task_def import TaskOutput
 from frinx.common.worker.task_result import TaskResult
 from frinx.common.worker.worker import WorkerImpl
 from pydantic import AnyHttpUrl
-from pydantic import ConfigDict
 from pydantic import NonNegativeFloat
+from requests import request
+from requests.auth import HTTPBasicAuth
 
 from .enums import ContentType
 from .enums import HttpMethod
-from .utils import BasicAuth
-from .utils import http_task
 
 
 class HTTPWorkersService(ServiceWorkersImpl):
     class GenericHTTPWorker(WorkerImpl):
         class WorkerDefinition(TaskDefinition):
-            name: str = 'HTTP_task'
-            description: str = 'Generic http task'
-            labels: ListAny = ['SIMPLE']
+            name: str = "HTTP_task"
+            description: str = "Generic http task"
+            labels: ListAny = ["SIMPLE"]
             timeout_seconds: int = 360
             response_timeout_seconds: int = 360
 
@@ -38,51 +33,68 @@ class HTTPWorkersService(ServiceWorkersImpl):
             exclude_empty_inputs: bool = True
 
         class WorkerInput(TaskInput):
-            uri: AnyHttpUrl
+            url: AnyHttpUrl
             method: HttpMethod
-            basic_auth: BasicAuth | None = None
+            headers: DictStr = {}
+            cookies: DictStr = {}
+            connect_timeout: NonNegativeFloat = 360
             content_type: ContentType | None = None
+            basic_auth_name: str | None = None
+            basic_auth_passwd: str | None = None
             body: DictAny | ListAny | str | None = None
             read_timeout: NonNegativeFloat | None = None
-            connect_timeout: NonNegativeFloat = 360
-            headers: DictStr | None = {}
-            cookies: DictStr | None = {}
 
-            model_config = ConfigDict(
-                alias_generator=snake_to_camel_case,
-                str_min_length=1,
-                populate_by_name=True,
-                arbitrary_types_allowed=True,
-                use_enum_values=True,
-                frozen=False,
-                extra='allow',
-            )
+            model_config = TaskInput.model_config
+            model_config["use_enum_values"] = True
 
         class WorkerOutput(TaskOutput):
             status_code: int
             response: DictAny | ListAny | str
             cookies: DictAny
-            logs: ListStr | str
 
-            model_config = ConfigDict(
-                alias_generator=snake_to_camel_case,
-                populate_by_name=True,
-                str_min_length=1,
-                frozen=False,
-                extra='allow',
+        def execute(self, worker_input: WorkerInput) -> TaskResult[WorkerOutput]:
+            if worker_input.content_type:
+                worker_input.headers["Content-Type"] = worker_input.content_type
+
+            data_body, json_doby = None, None
+            match worker_input.body:
+                case dict() | list():
+                    json_doby = worker_input.body
+                case str():
+                    data_body = worker_input.body
+
+            auth = None
+            if worker_input.basic_auth_name and worker_input.basic_auth_passwd:
+                auth = HTTPBasicAuth(username=worker_input.basic_auth_name, password=worker_input.basic_auth_passwd)
+            elif worker_input.basic_auth_name or worker_input.basic_auth_passwd:
+                raise Exception("Missing basic_auth_name or basic_auth_passwd")
+
+            timeout: float | tuple[float, float] = worker_input.connect_timeout
+            if worker_input.read_timeout:
+                timeout = (worker_input.connect_timeout, worker_input.read_timeout)
+
+            response = request(
+                url=str(worker_input.url),
+                timeout=timeout,
+                method=worker_input.method,
+                cookies=worker_input.cookies,
+                headers=worker_input.headers,
+                auth=auth,
+                json=json_doby,
+                data=data_body,
             )
 
-        def execute(self, worker_input: WorkerInput) -> TaskResult[Any]:
-            response = http_task(worker_input)
-            logs = f'{worker_input.method} {worker_input.uri} {response.status_code} {response.reason}'
+            if not response.ok:
+                raise Exception(response.reason)
+
+            cookies: DictAny = response.cookies.get_dict()  # type: ignore[no-untyped-call]
 
             return TaskResult(
-                logs=logs,
-                status=TaskResultStatus.COMPLETED if response.ok else TaskResultStatus.FAILED,
+                status=TaskResultStatus.COMPLETED,
                 output=self.WorkerOutput(
                     status_code=response.status_code,
-                    response=parse_response(response),
-                    cookies=response.cookies.get_dict(),  # type: ignore[no-untyped-call]
-                    logs=logs
-                )
+                    cookies=cookies,
+                    response=parse_response(response=response),
+                ),
+                logs=f"{worker_input.method} {worker_input.url} {response.status_code} {response.reason}",
             )

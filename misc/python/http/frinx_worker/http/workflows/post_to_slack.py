@@ -12,24 +12,24 @@ from .. import HTTPWorkersService
 
 class PostToSlackService(ServiceWorkflowsImpl):
     class PostToSlackV1(WorkflowImpl):
-        name: str = 'Post_to_Slack'
+        name: str = "Post_to_Slack"
         version: int = 1
-        description: str = 'Post a message to your favorite Slack channel'
+        description: str = "Post a message to your favorite Slack channel"
         restartable: bool = True
-        labels: ListStr = ['HTTP', 'SLACK']
+        labels: ListStr = ["HTTP", "SLACK"]
 
         class WorkflowInput(WorkflowImpl.WorkflowInput):
             slack_webhook_id: WorkflowInputField = WorkflowInputField(
-                name='slack_webhook_id',
-                description='The Slack webhook ID that you want to send this message to',
+                name="slack_webhook_id",
+                description="The Slack webhook ID that you want to send this message to",
                 frontend_default_value=None,
-                type=FrontendWFInputFieldType.STRING
+                type=FrontendWFInputFieldType.STRING,
             )
             message_text: WorkflowInputField = WorkflowInputField(
-                name='message_text',
-                description='The message that you want to send to Slack',
+                name="message_text",
+                description="The message that you want to send to Slack",
                 frontend_default_value=None,
-                type=FrontendWFInputFieldType.TEXTAREA
+                type=FrontendWFInputFieldType.TEXTAREA,
             )
 
         class WorkflowOutput(WorkflowImpl.WorkflowOutput):
@@ -38,16 +38,16 @@ class PostToSlackService(ServiceWorkflowsImpl):
         def workflow_builder(self, workflow_inputs: WorkflowInput) -> None:
             worker_input = SimpleTaskInputParameters(
                 root=dict(
-                    uri=f'https://hooks.slack.com/services/{workflow_inputs.slack_webhook_id.wf_input}',
-                    body={'text': workflow_inputs.message_text.wf_input},
-                    method='POST'
+                    url=f"https://hooks.slack.com/services/{workflow_inputs.slack_webhook_id.wf_input}",
+                    body={"text": workflow_inputs.message_text.wf_input},
+                    method="POST",
                 )
             )
 
             self.tasks.append(
                 SimpleTask(
                     name=HTTPWorkersService.GenericHTTPWorker,
-                    task_reference_name='HTTP_SLACK',
-                    input_parameters=worker_input
+                    task_reference_name="HTTP_SLACK",
+                    input_parameters=worker_input,
                 )
             )

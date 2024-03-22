@@ -1,6 +1,5 @@
 import random
 import time
-from typing import Optional
 
 from frinx.common.conductor_enums import TaskResultStatus
 from frinx.common.type_aliases import DictAny
@@ -17,9 +16,9 @@ from pydantic import field_validator
 class TestWorker(ServiceWorkersImpl):
     class Echo(WorkerImpl):
         class WorkerDefinition(TaskDefinition):
-            name: str = 'TEST_echo'
-            description: str = 'testing purposes: returns input unchanged'
-            labels: ListAny = ['TEST']
+            name: str = "TEST_echo"
+            description: str = "testing purposes: returns input unchanged"
+            labels: ListAny = ["TEST"]
             timeout_seconds: int = 60
             response_timeout_seconds: int = 60
 
@@ -32,8 +31,8 @@ class TestWorker(ServiceWorkersImpl):
         def execute(self, worker_input: WorkerInput) -> TaskResult[WorkerOutput]:
             return TaskResult(
                 status=TaskResultStatus.COMPLETED,
-                logs=['Echo worker invoked successfully'],
-                output=self.WorkerOutput(output=worker_input.input)
+                logs=["Echo worker invoked successfully"],
+                output=self.WorkerOutput(output=worker_input.input),
             )
 
     class Sleep(WorkerImpl):
@@ -41,19 +40,19 @@ class TestWorker(ServiceWorkersImpl):
         MAX_SLEEP_TIME = 600
 
         class WorkerDefinition(TaskDefinition):
-            name: str = 'TEST_sleep'
-            description: str = 'testing purposes: sleep'
-            labels: ListAny = ['TEST']
+            name: str = "TEST_sleep"
+            description: str = "testing purposes: sleep"
+            labels: ListAny = ["TEST"]
             timeout_seconds: int = 600
             response_timeout_seconds: int = 600
 
         class WorkerInput(TaskInput):
-            time: Optional[int] = None
+            time: int | None = None
 
-            @field_validator('time')
+            @field_validator("time")
             def time_validator(cls, value: int) -> int:
                 if not 0 <= value <= TestWorker.Sleep.MAX_SLEEP_TIME:
-                    raise ValueError(f'Invalid sleep time, must be > 0 and < {TestWorker.Sleep.MAX_SLEEP_TIME}')
+                    raise ValueError(f"Invalid sleep time, must be > 0 and < {TestWorker.Sleep.MAX_SLEEP_TIME}")
                 return value
 
         class WorkerOutput(TaskOutput):
@@ -66,22 +65,22 @@ class TestWorker(ServiceWorkersImpl):
             time.sleep(self.sleep)
             return TaskResult(
                 status=TaskResultStatus.COMPLETED,
-                logs=['Sleep worker invoked. Sleeping'],
-                output=self.WorkerOutput(time=self.sleep)
+                logs=["Sleep worker invoked. Sleeping"],
+                output=self.WorkerOutput(time=self.sleep),
             )
 
     class DynamicForkGenerator(WorkerImpl):
         class WorkerDefinition(TaskDefinition):
-            name: str = 'TEST_dynamic_fork_generate'
-            description: str = 'testing purposes: generate dynamic fork tasks'
-            labels: ListAny = ['TEST']
+            name: str = "TEST_dynamic_fork_generate"
+            description: str = "testing purposes: generate dynamic fork tasks"
+            labels: ListAny = ["TEST"]
             timeout_seconds: int = 60
             response_timeout_seconds: int = 60
 
         class WorkerInput(TaskInput):
             wf_count: int = 10
-            wf_name: str = 'Test_workflow'
-            wf_inputs: Optional[DictAny] = {}
+            wf_name: str = "Test_workflow"
+            wf_inputs: DictAny | None = {}
 
         class WorkerOutput(TaskOutput):
             dynamic_tasks_i: DictAny
@@ -97,31 +96,27 @@ class TestWorker(ServiceWorkersImpl):
             for task_ref in range(0, wf_count):
                 dynamic_tasks.append(
                     {
-                        'name': 'sub_task',
-                        'taskReferenceName': str(task_ref),
-                        'type': 'SUB_WORKFLOW',
-                        'subWorkflowParam': {'name': wf_name, 'version': 1},
+                        "name": "sub_task",
+                        "taskReferenceName": str(task_ref),
+                        "type": "SUB_WORKFLOW",
+                        "subWorkflowParam": {"name": wf_name, "version": 1},
                     }
                 )
                 dynamic_tasks_i[str(task_ref)] = wf_inputs
 
             return TaskResult(
                 status=TaskResultStatus.COMPLETED,
-                logs=['Dynamic fork generator worker invoked successfully'],
-                output=self.WorkerOutput(
-                    dynamic_tasks_i=dynamic_tasks_i,
-                    dynamic_tasks=dynamic_tasks
-                )
+                logs=["Dynamic fork generator worker invoked successfully"],
+                output=self.WorkerOutput(dynamic_tasks_i=dynamic_tasks_i, dynamic_tasks=dynamic_tasks),
             )
 
     class LoremIpsum(WorkerImpl):
-
-        WORDS = ['lorem', 'ipsum', 'dolor', 'sit', 'amet', 'consectetur', 'adipiscing', 'elit']
+        WORDS = ["lorem", "ipsum", "dolor", "sit", "amet", "consectetur", "adipiscing", "elit"]
 
         class WorkerDefinition(TaskDefinition):
-            name: str = 'TEST_lorem_ipsum'
-            description: str = 'testing purposes: text generator'
-            labels: ListAny = ['TEST']
+            name: str = "TEST_lorem_ipsum"
+            description: str = "testing purposes: text generator"
+            labels: ListAny = ["TEST"]
             timeout_seconds: int = 60
             response_timeout_seconds: int = 60
 
@@ -139,21 +134,21 @@ class TestWorker(ServiceWorkersImpl):
             sentence = []
             for i in range(num_words):
                 sentence.append(random.choice(cls.WORDS))
-            return ' '.join(sentence).capitalize() + '.'
+            return " ".join(sentence).capitalize() + "."
 
         @classmethod
         def generate_paragraph(cls, num_sentences: int, num_words: int) -> str:
             paragraph = []
             for i in range(num_sentences):
                 paragraph.append(cls.generate_sentence(num_words))
-            return ' '.join(paragraph)
+            return " ".join(paragraph)
 
         @classmethod
         def generate_text(cls, num_paragraphs: int, num_sentences: int, num_words: int) -> str:
             text = []
             for i in range(num_paragraphs):
                 text.append(cls.generate_paragraph(num_sentences, num_words))
-            return '\n\n'.join(text)
+            return "\n\n".join(text)
 
         def execute(self, worker_input: WorkerInput) -> TaskResult[WorkerOutput]:
             text = self.generate_text(
@@ -164,9 +159,6 @@ class TestWorker(ServiceWorkersImpl):
 
             return TaskResult(
                 status=TaskResultStatus.COMPLETED,
-                logs=['Lorem ipsum worker invoked successfully'],
-                output=self.WorkerOutput(
-                    text=text,
-                    bytes=len(text.encode('utf-8'))
-                )
+                logs=["Lorem ipsum worker invoked successfully"],
+                output=self.WorkerOutput(text=text, bytes=len(text.encode("utf-8"))),
             )

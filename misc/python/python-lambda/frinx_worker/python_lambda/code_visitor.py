@@ -16,7 +16,7 @@ class FunctionCallVisitor(ast.NodeVisitor):
         visit_Name(self, node): Checks if a variable name involves dunder operations and raises an error if so.
     """
 
-    ALLOWED_FUNCTIONS = {'execute'}
+    ALLOWED_FUNCTIONS = {"execute"}
 
     def visit_Import(self, node: ast.Import) -> None:  # noqa: N802
         """
@@ -27,7 +27,7 @@ class FunctionCallVisitor(ast.NodeVisitor):
         Raises:
             ValueError: Always raised to indicate that import statements are not allowed.
         """
-        raise ValueError('Import statements are not allowed.')
+        raise ValueError("Import statements are not allowed.")
 
     def visit_ImportFrom(self, node: ast.ImportFrom) -> None:  # noqa: N802
         """
@@ -38,7 +38,7 @@ class FunctionCallVisitor(ast.NodeVisitor):
         Raises:
             ValueError: Always raised to indicate that import from statements are not allowed.
         """
-        raise ValueError('Import from statements are not allowed.')
+        raise ValueError("Import from statements are not allowed.")
 
     def visit_Call(self, node: ast.Call) -> None:  # noqa: N802
         """
@@ -52,7 +52,7 @@ class FunctionCallVisitor(ast.NodeVisitor):
         if isinstance(node.func, ast.Name) and isinstance(node.func.ctx, ast.Load):
             func_name = node.func.id
             if func_name not in self.ALLOWED_FUNCTIONS:
-                raise ValueError(f'Function {func_name} is not allowed.')
+                raise ValueError(f"Function {func_name} is not allowed.")
         self.generic_visit(node)
 
     def visit_Attribute(self, node: ast.Attribute) -> None:  # noqa: N802
@@ -64,12 +64,8 @@ class FunctionCallVisitor(ast.NodeVisitor):
         Raises:
             ValueError: Raised if the attribute access involves dunder operations.
         """
-        if (
-            isinstance(node.value, ast.Name)
-            and node.attr.startswith('__')
-            and node.attr.endswith('__')
-        ):
-            raise ValueError(f'Dunder operation {node.attr} is not allowed.')
+        if isinstance(node.value, ast.Name) and node.attr.startswith("__") and node.attr.endswith("__"):
+            raise ValueError(f"Dunder operation {node.attr} is not allowed.")
         self.generic_visit(node)
 
     def visit_Name(self, node: ast.Name) -> None:  # noqa: N802
@@ -81,10 +77,6 @@ class FunctionCallVisitor(ast.NodeVisitor):
         Raises:
             ValueError: Raised if the variable name involves dunder operations.
         """
-        if (
-            isinstance(node, ast.Name)
-            and node.id.startswith('__')
-            and node.id.endswith('__')
-        ):
-            raise ValueError(f'Usage of {node.id} is not allowed.')
+        if isinstance(node, ast.Name) and node.id.startswith("__") and node.id.endswith("__"):
+            raise ValueError(f"Usage of {node.id} is not allowed.")
         self.generic_visit(node)

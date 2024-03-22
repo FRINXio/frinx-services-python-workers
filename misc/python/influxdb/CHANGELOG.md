@@ -6,3 +6,7 @@
 
 # 1.1.1
 - Updated frinx-python-sdk to version ^1.1
+
+# 1.2.1
+- Updated dependencies
+- Simplify task, remove generic code

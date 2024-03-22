@@ -23,7 +23,7 @@ class TestCodeVisitor:
         sanitized_code = sanitize_lines(code, get_indentation(code))
         with pytest.raises(ValueError) as error:
             VISITOR.visit(ast.parse(sanitized_code))
-        assert str(error.value) == 'Import statements are not allowed.'
+        assert str(error.value) == "Import statements are not allowed."
 
     def test_from_import_exception(self) -> None:
         code = """
@@ -34,7 +34,7 @@ class TestCodeVisitor:
         sanitized_code = sanitize_lines(code, get_indentation(code))
         with pytest.raises(ValueError) as error:
             VISITOR.visit(ast.parse(sanitized_code))
-        assert str(error.value) == 'Import from statements are not allowed.'
+        assert str(error.value) == "Import from statements are not allowed."
 
     def test_call_exception_print(self) -> None:
         code = """
@@ -44,7 +44,7 @@ class TestCodeVisitor:
         sanitized_code = sanitize_lines(code, get_indentation(code))
         with pytest.raises(ValueError) as error:
             VISITOR.visit(ast.parse(sanitized_code))
-        assert str(error.value) == 'Function print is not allowed.'
+        assert str(error.value) == "Function print is not allowed."
 
     def test_call_exception_open(self) -> None:
         code = """
@@ -55,7 +55,7 @@ class TestCodeVisitor:
         sanitized_code = sanitize_lines(code, get_indentation(code))
         with pytest.raises(ValueError) as error:
             VISITOR.visit(ast.parse(sanitized_code))
-        assert str(error.value) == 'Function open is not allowed.'
+        assert str(error.value) == "Function open is not allowed."
 
     def test_attribute_exception(self) -> None:
         code = """
@@ -66,7 +66,7 @@ class TestCodeVisitor:
         sanitized_code = sanitize_lines(code, get_indentation(code))
         with pytest.raises(ValueError) as error:
             VISITOR.visit(ast.parse(sanitized_code))
-        assert str(error.value) == 'Dunder operation __class__ is not allowed.'
+        assert str(error.value) == "Dunder operation __class__ is not allowed."
 
     def test_name_exception(self) -> None:
         code = """
@@ -76,36 +76,30 @@ class TestCodeVisitor:
         sanitized_code = sanitize_lines(code, get_indentation(code))
         with pytest.raises(ValueError) as error:
             VISITOR.visit(ast.parse(sanitized_code))
-        assert str(error.value) == 'Usage of __builtin__ is not allowed.'
+        assert str(error.value) == "Usage of __builtin__ is not allowed."
 
 
 class TestCodeWrapper:
     def test_python_lambda_execution(self) -> None:
         @python_lambda_stringify
         def execute(worker_input: dict[str, Any]) -> Any:
-            return worker_input['username']
+            return worker_input["username"]
 
         python_lambda = PythonLambda()
-        worker_inputs = python_lambda.WorkerInput(
-            lambda_function=execute(),
-            worker_inputs={'username': 'cisco'}
-        )
+        worker_inputs = python_lambda.WorkerInput(lambda_function=execute(), worker_inputs={"username": "cisco"})
         result = python_lambda.execute(worker_input=worker_inputs)
 
         assert result.status == TaskResultStatus.COMPLETED
-        assert result.output == python_lambda.WorkerOutput(result='cisco')
+        assert result.output == python_lambda.WorkerOutput(result="cisco")
         assert result.logs == []
 
     def test_python_lambda_execution_exception(self) -> None:
         @python_lambda_stringify
         def execute(worker_input: dict[str, Any]) -> Any:
-            return worker_input['password']
+            return worker_input["password"]
 
         python_lambda = PythonLambda()
-        worker_inputs = python_lambda.WorkerInput(
-            lambda_function=execute(),
-            worker_inputs={'username': 'cisco'}
-        )
+        worker_inputs = python_lambda.WorkerInput(lambda_function=execute(), worker_inputs={"username": "cisco"})
 
         with pytest.raises(KeyError) as error:
             python_lambda.execute(worker_input=worker_inputs)

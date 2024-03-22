@@ -3,3 +3,7 @@
 
 # 1.0.1
 - Updated frinx-python-sdk to version ^1.1
+
+# 2.0.0
+- Simplify HTTP task, remove generic code
+- Change input name 'uri' to 'url'
