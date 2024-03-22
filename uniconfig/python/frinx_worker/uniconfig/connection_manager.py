@@ -29,12 +29,12 @@ class ConnectionManager(ServiceWorkersImpl):
             transform_string_to_json_valid: bool = True
 
         class WorkerDefinition(TaskDefinition):
-            name: str = 'UNICONFIG_Install_node_RPC'
-            description: str = 'Install node to Uniconfig'
+            name: str = "UNICONFIG_Install_node_RPC"
+            description: str = "Install node to Uniconfig"
 
         class WorkerInput(TaskInput):
             node_id: str
-            connection_type: Literal['netconf', 'cli']
+            connection_type: Literal["netconf", "cli"]
             install_params: DictAny
             uniconfig_url_base: str = UNICONFIG_URL_BASE
 
@@ -43,7 +43,7 @@ class ConnectionManager(ServiceWorkersImpl):
 
         def execute(self, worker_input: WorkerInput) -> TaskResult[WorkerOutput]:
             if self.UniconfigApi.request is None:
-                raise Exception(f'Failed to create request {self.UniconfigApi.request}')
+                raise Exception(f"Failed to create request {self.UniconfigApi.request}")
 
             response = requests.request(
                 url=worker_input.uniconfig_url_base + self.UniconfigApi.uri,
@@ -52,15 +52,17 @@ class ConnectionManager(ServiceWorkersImpl):
                     self.UniconfigApi.request(
                         input=self.Input(
                             node_id=worker_input.node_id,
-                            cli=self.Cli(**worker_input.install_params) if
-                            worker_input.connection_type == 'cli' else None,
-                            netconf=self.Netconf(**worker_input.install_params) if
-                            worker_input.connection_type == 'netconf' else None,
+                            cli=self.Cli(**worker_input.install_params)
+                            if worker_input.connection_type == "cli"
+                            else None,
+                            netconf=self.Netconf(**worker_input.install_params)
+                            if worker_input.connection_type == "netconf"
+                            else None,
                         ),
                     ),
                 ),
                 headers=dict(UNICONFIG_HEADERS),
-                params=UNICONFIG_REQUEST_PARAMS
+                params=UNICONFIG_REQUEST_PARAMS,
             )
 
             return handle_response(response, self.WorkerOutput)
@@ -74,12 +76,12 @@ class ConnectionManager(ServiceWorkersImpl):
             exclude_empty_inputs: bool = True
 
         class WorkerDefinition(TaskDefinition):
-            name: str = 'UNICONFIG_Uninstall_node_RPC'
-            description: str = 'Uninstall node from Uniconfig'
+            name: str = "UNICONFIG_Uninstall_node_RPC"
+            description: str = "Uninstall node from Uniconfig"
 
         class WorkerInput(TaskInput):
             node_id: str
-            connection_type: Literal['netconf', 'cli']
+            connection_type: Literal["netconf", "cli"]
             uniconfig_url_base: str = UNICONFIG_URL_BASE
 
         class WorkerOutput(TaskOutput):
@@ -87,7 +89,7 @@ class ConnectionManager(ServiceWorkersImpl):
 
         def execute(self, worker_input: WorkerInput) -> TaskResult[WorkerOutput]:
             if self.UniconfigApi.request is None:
-                raise Exception(f'Failed to create request {self.UniconfigApi.request}')
+                raise Exception(f"Failed to create request {self.UniconfigApi.request}")
 
             response = requests.request(
                 url=worker_input.uniconfig_url_base + self.UniconfigApi.uri,
@@ -96,14 +98,12 @@ class ConnectionManager(ServiceWorkersImpl):
                     self.UniconfigApi.request(
                         input=self.Input(
                             node_id=worker_input.node_id,
-                            connection_type=self.ConnectionType(
-                                worker_input.connection_type
-                            )
+                            connection_type=self.ConnectionType(worker_input.connection_type),
                         ),
                     ),
                 ),
                 headers=dict(UNICONFIG_HEADERS),
-                params=UNICONFIG_REQUEST_PARAMS
+                params=UNICONFIG_REQUEST_PARAMS,
             )
 
             return handle_response(response, self.WorkerOutput)
@@ -118,8 +118,8 @@ class ConnectionManager(ServiceWorkersImpl):
             transform_string_to_json_valid: bool = True
 
         class WorkerDefinition(TaskDefinition):
-            name: str = 'UNICONFIG_Install_multiple_nodes_RPC'
-            description: str = 'Install nodes to Uniconfig'
+            name: str = "UNICONFIG_Install_multiple_nodes_RPC"
+            description: str = "Install nodes to Uniconfig"
 
         class WorkerInput(TaskInput):
             nodes: list[DictAny]
@@ -130,7 +130,7 @@ class ConnectionManager(ServiceWorkersImpl):
 
         def execute(self, worker_input: WorkerInput) -> TaskResult[WorkerOutput]:
             if self.UniconfigApi.request is None:
-                raise Exception(f'Failed to create request {self.UniconfigApi.request}')
+                raise Exception(f"Failed to create request {self.UniconfigApi.request}")
 
             nodes = []
             for node in worker_input.nodes:
@@ -146,7 +146,7 @@ class ConnectionManager(ServiceWorkersImpl):
                         ),
                     ),
                 ),
-                headers=dict(UNICONFIG_HEADERS, accept='application/json')
+                headers=dict(UNICONFIG_HEADERS, accept="application/json"),
             )
             return handle_response(response, self.WorkerOutput)
 
@@ -160,8 +160,8 @@ class ConnectionManager(ServiceWorkersImpl):
             transform_string_to_json_valid: bool = True
 
         class WorkerDefinition(TaskDefinition):
-            name: str = 'UNICONFIG_Uninstall_multiple_nodes_RPC'
-            description: str = 'Uninstall nodes from Uniconfig'
+            name: str = "UNICONFIG_Uninstall_multiple_nodes_RPC"
+            description: str = "Uninstall nodes from Uniconfig"
 
         class WorkerInput(TaskInput):
             nodes: list[DictAny]
@@ -172,7 +172,7 @@ class ConnectionManager(ServiceWorkersImpl):
 
         def execute(self, worker_input: WorkerInput) -> TaskResult[WorkerOutput]:
             if self.UniconfigApi.request is None:
-                raise Exception(f'Failed to create request {self.UniconfigApi.request}')
+                raise Exception(f"Failed to create request {self.UniconfigApi.request}")
 
             nodes = []
             for node in worker_input.nodes:
@@ -189,7 +189,7 @@ class ConnectionManager(ServiceWorkersImpl):
                     ),
                 ),
                 headers=dict(UNICONFIG_HEADERS),
-                params=UNICONFIG_REQUEST_PARAMS
+                params=UNICONFIG_REQUEST_PARAMS,
             )
 
             return handle_response(response, self.WorkerOutput)
