@@ -2,7 +2,6 @@ import copy
 import json
 from enum import Enum
 from typing import Any
-from typing import Optional
 
 from frinx.common.conductor_enums import TaskResultStatus
 from frinx.common.type_aliases import DictAny
@@ -51,22 +50,15 @@ from .utils import execute_inventory_query
 
 
 class PaginationCursorType(str, Enum):
-    AFTER = 'after'
-    BEFORE = 'before'
+    AFTER = "after"
+    BEFORE = "before"
     NONE = None
 
 
 class InventoryService(ServiceWorkersImpl):
-
     class InventoryGetDevicesInfo(WorkerImpl):
-
         DEVICES: DeviceConnection = DeviceConnection(
-            pageInfo=PageInfo(
-                hasNextPage=True,
-                hasPreviousPage=True,
-                startCursor=True,
-                endCursor=True
-            ),
+            pageInfo=PageInfo(hasNextPage=True, hasPreviousPage=True, startCursor=True, endCursor=True),
             edges=DeviceEdge(
                 node=Device(
                     id=True,
@@ -75,54 +67,46 @@ class InventoryService(ServiceWorkersImpl):
                     serviceState=True,
                     isInstalled=True,
                     mountParameters=True,
-                    zone=Zone(
-                        name=True,
-                        id=True
-                    )
+                    zone=Zone(name=True, id=True),
                 )
-            )
+            ),
         )
 
         DevicesQuery(
             payload=DEVICES,
-            filter=FilterDevicesInput(
-                deviceName='name',
-                labels=['LABELS']
-            ),
+            filter=FilterDevicesInput(deviceName="name", labels=["LABELS"]),
             first=10,
             last=10,
-            after='after',
-            before='before',
+            after="after",
+            before="before",
         )
 
         class ExecutionProperties(TaskExecutionProperties):
             exclude_empty_inputs: bool = True
 
         class WorkerDefinition(TaskDefinition):
-            name: str = 'INVENTORY_get_device_info'
-            description: str = 'Get a list of pages cursors from device inventory'
-            labels: ListStr = ['BASIC', 'INVENTORY']
+            name: str = "INVENTORY_get_device_info"
+            description: str = "Get a list of pages cursors from device inventory"
+            labels: ListStr = ["BASIC", "INVENTORY"]
 
         class WorkerInput(TaskInput):
-            device_name: Optional[str] = None
-            labels: Optional[ListStr] = None
-            size: Optional[int] = None
-            cursor: Optional[str] = None
-            type: Optional[PaginationCursorType] = None
+            device_name: str | None = None
+            labels: ListStr | None = None
+            size: int | None = None
+            cursor: str | None = None
+            type: PaginationCursorType | None = None
 
         class WorkerOutput(TaskOutput):
             query: str
-            variable: Optional[DictAny] = None
+            variable: DictAny | None = None
             response: DictAny
 
         def execute(self, worker_input: WorkerInput) -> TaskResult[WorkerOutput]:
-
             devices = DevicesQuery(
                 payload=self.DEVICES,
                 filter=FilterDevicesInput(
-                    deviceName=worker_input.device_name or None,
-                    labels=worker_input.labels or None
-                )
+                    deviceName=worker_input.device_name or None, labels=worker_input.labels or None
+                ),
             )
 
             match worker_input.type:
@@ -139,29 +123,20 @@ class InventoryService(ServiceWorkersImpl):
             return response_handler(query=query, response=response)
 
     class InventoryInstallDeviceById(WorkerImpl):
-
         install_device: InstallDeviceMutation = InstallDeviceMutation(
             payload=InstallDevicePayload(
-                device=Device(
-                    name=True,
-                    id=True,
-                    isInstalled=True,
-                    zone=Zone(
-                        name=True,
-                        id=True
-                    )
-                )
+                device=Device(name=True, id=True, isInstalled=True, zone=Zone(name=True, id=True))
             ),
-            id='id'
+            id="id",
         )
 
         class ExecutionProperties(TaskExecutionProperties):
             exclude_empty_inputs: bool = True
 
         class WorkerDefinition(TaskDefinition):
-            name: str = 'INVENTORY_install_device_by_id'
-            description: str = 'Install device by device ID'
-            labels: ListStr = ['BASIC', 'INVENTORY']
+            name: str = "INVENTORY_install_device_by_id"
+            description: str = "Install device by device ID"
+            labels: ListStr = ["BASIC", "INVENTORY"]
             timeout_seconds: int = 3600
             response_timeout_seconds: int = 3600
 
@@ -170,7 +145,7 @@ class InventoryService(ServiceWorkersImpl):
 
         class WorkerOutput(TaskOutput):
             query: str
-            variable: Optional[DictAny] = None
+            variable: DictAny | None = None
             response_code: int
             response_body: Any
 
@@ -181,26 +156,17 @@ class InventoryService(ServiceWorkersImpl):
             return response_handler(query, response)
 
     class InventoryUninstallDeviceById(WorkerImpl):
-
         uninstall_device: UninstallDeviceMutation = UninstallDeviceMutation(
             payload=UninstallDevicePayload(
-                device=Device(
-                    name=True,
-                    id=True,
-                    isInstalled=True,
-                    zone=Zone(
-                        name=True,
-                        id=True
-                    )
-                )
+                device=Device(name=True, id=True, isInstalled=True, zone=Zone(name=True, id=True))
             ),
-            id='id'
+            id="id",
         )
 
         class WorkerDefinition(TaskDefinition):
-            name: str = 'INVENTORY_uninstall_device_by_id'
-            description: str = 'Uninstall device by device ID'
-            labels: ListStr = ['BASIC', 'INVENTORY']
+            name: str = "INVENTORY_uninstall_device_by_id"
+            description: str = "Uninstall device by device ID"
+            labels: ListStr = ["BASIC", "INVENTORY"]
             timeout_seconds: int = 3600
             response_timeout_seconds: int = 3600
 
@@ -209,7 +175,7 @@ class InventoryService(ServiceWorkersImpl):
 
         class WorkerOutput(TaskOutput):
             query: str
-            variable: Optional[DictAny] = None
+            variable: DictAny | None = None
             response_code: int
             response_body: Any
 
@@ -220,14 +186,8 @@ class InventoryService(ServiceWorkersImpl):
             return response_handler(query, response)
 
     class InventoryInstallDeviceByName(WorkerImpl):
-
         DEVICES: DeviceConnection = DeviceConnection(
-            pageInfo=PageInfo(
-                hasNextPage=True,
-                hasPreviousPage=True,
-                startCursor=True,
-                endCursor=True
-            ),
+            pageInfo=PageInfo(hasNextPage=True, hasPreviousPage=True, startCursor=True, endCursor=True),
             edges=DeviceEdge(
                 node=Device(
                     id=True,
@@ -236,49 +196,27 @@ class InventoryService(ServiceWorkersImpl):
                     serviceState=True,
                     isInstalled=True,
                     mountParameters=True,
-                    zone=Zone(
-                        name=True,
-                        id=True
-                    )
+                    zone=Zone(name=True, id=True),
                 )
-            )
+            ),
         )
 
         DevicesQuery(
             payload=DEVICES,
-            filter=FilterDevicesInput(
-                deviceName='name',
-                labels=['LABELS']
-            ),
+            filter=FilterDevicesInput(deviceName="name", labels=["LABELS"]),
             first=10,
             last=10,
-            after='after',
-            before='before',
-        )
-
-        install_device: InstallDeviceMutation = InstallDeviceMutation(
-            payload=InstallDevicePayload(
-                device=Device(
-                    name=True,
-                    id=True,
-                    isInstalled=True,
-                    zone=Zone(
-                        name=True,
-                        id=True
-                    )
-                )
-            ),
-            id=''
+            after="after",
+            before="before",
         )
 
         class ExecutionProperties(TaskExecutionProperties):
             exclude_empty_inputs: bool = True
 
         class WorkerDefinition(TaskDefinition):
-
-            name: str = 'INVENTORY_install_device_by_name'
-            description: str = 'Install device by device name'
-            labels: ListAny = ['BASIC', 'INVENTORY']
+            name: str = "INVENTORY_install_device_by_name"
+            description: str = "Install device by device name"
+            labels: ListAny = ["BASIC", "INVENTORY"]
             timeout_seconds: int = 3600
             response_timeout_seconds: int = 3600
 
@@ -287,42 +225,38 @@ class InventoryService(ServiceWorkersImpl):
 
         class WorkerOutput(TaskOutput):
             query: str
-            variable: Optional[DictAny] = None
+            variable: DictAny | None = None
             response_code: int
             response_body: Any
 
         @classmethod
-        def _get_device_id(cls, device_name: str) -> str | None:
-            query = DevicesQuery(
-                payload=cls.DEVICES,
-                filter=FilterDevicesInput(
-                    deviceName=device_name
-                )
-            ).render()
+        def _get_device_id(cls, device_name: str) -> str:
+            query = DevicesQuery(payload=cls.DEVICES, filter=FilterDevicesInput(deviceName=device_name)).render()
 
             response = execute_inventory_query(query=query.query, variables=query.variable)
 
-            for node in response.data['devices']['edges']:
-                if node['node']['name'] == device_name:
-                    return node['node']['id'] or None
+            for node in response.data["devices"]["edges"]:
+                if node["node"]["name"] == device_name:
+                    return str(node["node"]["id"])
 
-            raise Exception('Device ' + device_name + ' missing in inventory')
+            raise Exception("Device " + device_name + " missing in inventory")
 
         def execute(self, worker_input: WorkerInput) -> TaskResult[WorkerOutput]:
-            self.install_device.id = self._get_device_id(worker_input.device_name)
-            query = self.install_device.render()
+
+            install_device: InstallDeviceMutation = InstallDeviceMutation(
+                payload=InstallDevicePayload(
+                    device=Device(name=True, id=True, isInstalled=True, zone=Zone(name=True, id=True))
+                ),
+                id=self._get_device_id(worker_input.device_name)
+            )
+            
+            query = install_device.render()
             response = execute_inventory_query(query=query.query, variables=query.variable)
             return response_handler(query, response)
 
     class InventoryUninstallDeviceByName(WorkerImpl):
-
         DEVICES: DeviceConnection = DeviceConnection(
-            pageInfo=PageInfo(
-                hasNextPage=True,
-                hasPreviousPage=True,
-                startCursor=True,
-                endCursor=True
-            ),
+            pageInfo=PageInfo(hasNextPage=True, hasPreviousPage=True, startCursor=True, endCursor=True),
             edges=DeviceEdge(
                 node=Device(
                     id=True,
@@ -331,48 +265,27 @@ class InventoryService(ServiceWorkersImpl):
                     serviceState=True,
                     isInstalled=True,
                     mountParameters=True,
-                    zone=Zone(
-                        name=True,
-                        id=True
-                    )
+                    zone=Zone(name=True, id=True),
                 )
-            )
+            ),
         )
 
         DevicesQuery(
             payload=DEVICES,
-            filter=FilterDevicesInput(
-                deviceName='name',
-                labels=['LABELS']
-            ),
+            filter=FilterDevicesInput(deviceName="name", labels=["LABELS"]),
             first=10,
             last=10,
-            after='after',
-            before='before',
-        )
-
-        uninstall_device: UninstallDeviceMutation = UninstallDeviceMutation(
-            payload=UninstallDevicePayload(
-                device=Device(
-                    name=True,
-                    id=True,
-                    isInstalled=True,
-                    zone=Zone(
-                        name=True,
-                        id=True
-                    )
-                )
-            ),
-            id=''
+            after="after",
+            before="before",
         )
 
         class ExecutionProperties(TaskExecutionProperties):
             exclude_empty_inputs: bool = True
 
         class WorkerDefinition(TaskDefinition):
-            name: str = 'INVENTORY_uninstall_device_by_name'
-            description: str = 'Uninstall device by device name'
-            labels: ListStr = ['BASIC', 'INVENTORY']
+            name: str = "INVENTORY_uninstall_device_by_name"
+            description: str = "Uninstall device by device name"
+            labels: ListStr = ["BASIC", "INVENTORY"]
             timeout_seconds: int = 3600
             response_timeout_seconds: int = 3600
 
@@ -381,80 +294,74 @@ class InventoryService(ServiceWorkersImpl):
 
         class WorkerOutput(TaskOutput):
             query: str
-            variable: Optional[DictAny] = None
+            variable: DictAny | None = None
             response_body: Any
 
-        @classmethod
-        def _get_device_id(cls, device_name: str) -> str | None:
-            query = DevicesQuery(
-                payload=cls.DEVICES,
-                filter=FilterDevicesInput(
-                    deviceName=device_name
-                )
-            ).render()
+        def _get_device_id(self, device_name: str) -> str:
+            query = DevicesQuery(payload=self.DEVICES, filter=FilterDevicesInput(deviceName=device_name)).render()
 
             response = execute_inventory_query(query=query.query, variables=query.variable)
 
-            for node in response.data['devices']['edges']:
-                if node['node']['name'] == device_name:
-                    return node['node']['id'] or None
+            for node in response.data["devices"]["edges"]:
+                if node["node"]["name"] == device_name:
+                    return str(node["node"]["id"])
 
-            raise Exception('Device ' + device_name + ' missing in inventory')
+            raise Exception("Device " + device_name + " missing in inventory")
 
         def execute(self, worker_input: WorkerInput) -> TaskResult[WorkerOutput]:
-            self.uninstall_device.id = self._get_device_id(worker_input.device_name)
-            query = self.uninstall_device.render()
+
+            uninstall_device: UninstallDeviceMutation = UninstallDeviceMutation(
+                payload=UninstallDevicePayload(
+                    device=Device(name=True, id=True, isInstalled=True, zone=Zone(name=True, id=True))
+                ),
+                id=self._get_device_id(worker_input.device_name)
+            )
+            
+            query = uninstall_device.render()
             response = execute_inventory_query(query=query.query, variables=query.variable)
             return response_handler(query, response)
 
     class InventoryGetLabels(WorkerImpl):
-
         LABELS: LabelConnection = LabelConnection(
-            pageInfo=PageInfo(
-                hasNextPage=True,
-                hasPreviousPage=True,
-                startCursor=True,
-                endCursor=True
-            ),
+            pageInfo=PageInfo(hasNextPage=True, hasPreviousPage=True, startCursor=True, endCursor=True),
             edges=LabelEdge(
                 node=Label(
                     id=True,
                     name=True,
                 )
-            )
+            ),
         )
 
         LabelsQuery(
             payload=LABELS,
             first=10,
             last=10,
-            after='after',
-            before='before',
+            after="after",
+            before="before",
         )
 
         class ExecutionProperties(TaskExecutionProperties):
             exclude_empty_inputs: bool = True
 
         class WorkerDefinition(TaskDefinition):
-            name: str = 'INVENTORY_get_labels'
-            description: str = 'Get device labels'
-            labels: ListStr = ['BASICS', 'MAIN', 'INVENTORY']
+            name: str = "INVENTORY_get_labels"
+            description: str = "Get device labels"
+            labels: ListStr = ["BASICS", "MAIN", "INVENTORY"]
             timeout_seconds: int = 3600
             response_timeout_seconds: int = 3600
 
         class WorkerInput(TaskInput):
-            size: Optional[int] = None
-            cursor: Optional[str] = None
-            type: Optional[PaginationCursorType] = None
+            size: int | None = None
+            cursor: str | None = None
+            type: PaginationCursorType | None = None
 
         class WorkerOutput(TaskOutput):
             query: str
-            variable: Optional[DictAny] = None
+            variable: DictAny | None = None
             response_code: int
             response_body: Any
 
         def execute(self, worker_input: WorkerInput) -> TaskResult[WorkerOutput]:
-
             labels = LabelsQuery(
                 payload=self.LABELS,
             )
@@ -472,7 +379,6 @@ class InventoryService(ServiceWorkersImpl):
             return response_handler(query, response)
 
     class InventoryGetLabelsId(WorkerImpl):
-
         LABELS: LabelConnection = LabelConnection(
             edges=LabelEdge(
                 node=Label(
@@ -491,67 +397,53 @@ class InventoryService(ServiceWorkersImpl):
             transform_string_to_json_valid: bool = True
 
         class WorkerDefinition(TaskDefinition):
-            name: str = 'INVENTORY_get_labels_id'
+            name: str = "INVENTORY_get_labels_id"
             description: str = """
             Get id for selected inventory labels.
             If no label is inserted, return empty dict.
             If one of inserted labels missing, return FAILED status.
             """
-            labels: ListStr = ['BASICS', 'MAIN', 'INVENTORY']
+            labels: ListStr = ["BASICS", "MAIN", "INVENTORY"]
             timeout_seconds: int = 3600
             response_timeout_seconds: int = 3600
 
         class WorkerInput(TaskInput):
-            labels: Optional[ListStr] = None
+            labels: ListStr | None = None
 
         class WorkerOutput(TaskOutput):
             labels_id: DictStr
             query: str
-            variable: Optional[DictAny] = None
+            variable: DictAny | None = None
 
         def execute(self, worker_input: WorkerInput) -> TaskResult[WorkerOutput]:
-
             response = execute_inventory_query(query=self.query.query, variables=self.query.variable)
             labels_id: DictStr = {}
 
             if worker_input.labels:
-                for label in response.data['labels']['edges']:
-                    if label['node']['name'] in worker_input.labels:
-                        labels_id[label['node']['name']] = label['node']['id']
+                for label in response.data["labels"]["edges"]:
+                    if label["node"]["name"] in worker_input.labels:
+                        labels_id[label["node"]["name"]] = label["node"]["id"]
 
                 if len(labels_id.keys()) != len(worker_input.labels):
-                    raise Exception('One or more selected labels not exist in device inventory')
+                    raise Exception("One or more selected labels not exist in device inventory")
 
             return TaskResult(
                 status=TaskResultStatus.COMPLETED,
-                output=self.WorkerOutput(
-                    labels_id=labels_id,
-                    query=self.query.query,
-                    variable=self.query.variable
-                )
+                output=self.WorkerOutput(labels_id=labels_id, query=self.query.query, variable=self.query.variable),
             )
 
     class InventoryCreateLabel(WorkerImpl):
-
         create_label: CreateLabelMutation = CreateLabelMutation(
-            payload=CreateLabelPayload(
-                label=Label(
-                    name=True,
-                    id=True
-                )
-            ),
-            input=CreateLabelInput(
-                name='name'
-            )
+            payload=CreateLabelPayload(label=Label(name=True, id=True)), input=CreateLabelInput(name="name")
         )
 
         class ExecutionProperties(TaskExecutionProperties):
             exclude_empty_inputs: bool = True
 
         class WorkerDefinition(TaskDefinition):
-            name: str = 'INVENTORY_create_label'
-            description: str = 'Create device labels'
-            labels: ListStr = ['BASICS', 'MAIN', 'INVENTORY']
+            name: str = "INVENTORY_create_label"
+            description: str = "Create device labels"
+            labels: ListStr = ["BASICS", "MAIN", "INVENTORY"]
             timeout_seconds: int = 3600
             response_timeout_seconds: int = 3600
 
@@ -560,7 +452,7 @@ class InventoryService(ServiceWorkersImpl):
 
         class WorkerOutput(TaskOutput):
             query: str
-            variable: Optional[DictAny] = None
+            variable: DictAny | None = None
             response_body: Any
 
         def execute(self, worker_input: WorkerInput) -> TaskResult[WorkerOutput]:
@@ -570,22 +462,15 @@ class InventoryService(ServiceWorkersImpl):
             return response_handler(query, response)
 
     class InventoryAddDevice(WorkerImpl):
-
-        ADD_DEVICE: AddDevicePayload = AddDevicePayload(
-            device=Device(
-                name=True,
-                id=True,
-                isInstalled=True
-            )
-        )
+        ADD_DEVICE: AddDevicePayload = AddDevicePayload(device=Device(name=True, id=True, isInstalled=True))
 
         add_device: AddDeviceMutation = AddDeviceMutation(
             payload=ADD_DEVICE,
             input=AddDeviceInput(
-                name='name',
-                zoneId='zoneId',
-                mountParameters='{}',
-            )
+                name="name",
+                zoneId="zoneId",
+                mountParameters="{}",
+            ),
         )
 
         class ExecutionProperties(TaskExecutionProperties):
@@ -593,9 +478,9 @@ class InventoryService(ServiceWorkersImpl):
             transform_string_to_json_valid: bool = True
 
         class WorkerDefinition(TaskDefinition):
-            name: str = 'INVENTORY_add_device'
-            description: str = 'Add device to inventory database'
-            labels: ListStr = ['BASICS', 'MAIN', 'INVENTORY']
+            name: str = "INVENTORY_add_device"
+            description: str = "Add device to inventory database"
+            labels: ListStr = ["BASICS", "MAIN", "INVENTORY"]
             timeout_seconds: int = 3600
             response_timeout_seconds: int = 3600
 
@@ -605,45 +490,35 @@ class InventoryService(ServiceWorkersImpl):
             mount_parameters: DictAny
             service_state: DeviceServiceState
             device_size: DeviceSize
-            vendor: Optional[str] = None
-            model: Optional[str] = None
-            label_ids: Optional[ListStr] = None
-            blueprint_id: Optional[str] = None
-            address: Optional[str] = None
-            port: Optional[int] = None
-            username: Optional[str] = None
-            password: Optional[str] = None
-            version: Optional[str] = None
-            device_type: Optional[str] = None
+            vendor: str | None = None
+            model: str | None = None
+            label_ids: ListStr | None = None
+            blueprint_id: str | None = None
+            address: str | None = None
+            port: int | None = None
+            username: str | None = None
+            password: str | None = None
+            version: str | None = None
+            device_type: str | None = None
 
         class WorkerOutput(TaskOutput):
             query: str
-            variable: Optional[DictAny] = None
+            variable: DictAny | None = None
             response_body: Any
 
         @staticmethod
-        def _get_zone_id(zone_name: str) -> str | None:
-            query = ZonesQuery(
-                payload=ZonesConnection(
-                    edges=ZoneEdge(
-                        node=Zone(
-                            name=True,
-                            id=True
-                        )
-                    )
-                )
-            ).render()
+        def _get_zone_id(zone_name: str) -> str:
+            query = ZonesQuery(payload=ZonesConnection(edges=ZoneEdge(node=Zone(name=True, id=True)))).render()
 
             response = execute_inventory_query(query=query.query, variables=query.variable)
 
-            for node in response.data['zones']['edges']:
-                if node['node']['name'] == zone_name:
-                    return node['node']['id'] or None
+            for node in response.data["zones"]["edges"]:
+                if node["node"]["name"] == zone_name:
+                    return str(node["node"]["id"])
 
-            raise Exception('Device ' + zone_name + ' missing in inventory')
+            raise Exception("Device " + zone_name + " missing in inventory")
 
         def execute(self, worker_input: WorkerInput) -> TaskResult[WorkerOutput]:
-
             self.add_device.input.name = worker_input.device_name
             self.add_device.input.zone_id = self._get_zone_id(worker_input.zone_id)
             self.add_device.input.service_state = worker_input.service_state
@@ -683,31 +558,16 @@ class InventoryService(ServiceWorkersImpl):
             return response_handler(query, response)
 
     class InventoryGetPagesCursors(WorkerImpl):
-
         DEVICES: DeviceConnection = DeviceConnection(
-            pageInfo=PageInfo(
-                hasNextPage=True,
-                hasPreviousPage=True,
-                startCursor=True,
-                endCursor=True
-            ),
-            edges=DeviceEdge(
-                node=Device(
-                    id=True,
-                    name=True,
-                    isInstalled=False
-                )
-            )
+            pageInfo=PageInfo(hasNextPage=True, hasPreviousPage=True, startCursor=True, endCursor=True),
+            edges=DeviceEdge(node=Device(id=True, name=True, isInstalled=False)),
         )
 
         DevicesQuery(
             payload=DEVICES,
-            filter=FilterDevicesInput(
-                deviceName='name',
-                labels=['LABELS']
-            ),
+            filter=FilterDevicesInput(deviceName="name", labels=["LABELS"]),
             first=10,
-            after='after',
+            after="after",
         )
 
         class ExecutionProperties(TaskExecutionProperties):
@@ -715,34 +575,31 @@ class InventoryService(ServiceWorkersImpl):
             transform_string_to_json_valid: bool = True
 
         class WorkerDefinition(TaskDefinition):
-            name: str = 'INVENTORY_get_pages_cursors'
-            description: str = 'Get a list of pages cursors from device inventory'
-            labels: ListStr = ['BASIC', 'INVENTORY']
+            name: str = "INVENTORY_get_pages_cursors"
+            description: str = "Get a list of pages cursors from device inventory"
+            labels: ListStr = ["BASIC", "INVENTORY"]
             timeout_seconds: int = 3600
             response_timeout_seconds: int = 3600
 
         class WorkerInput(TaskInput):
-            labels: Optional[DictStr] = None
-            cursor_step: Optional[int] = 10
-            cursors_per_group: Optional[int] = 20
+            labels: DictStr | None = None
+            cursor_step: int | None = 10
+            cursors_per_group: int | None = 20
 
         class WorkerOutput(TaskOutput):
-            cursors_per_group: int
-            cursor_step: int
+            cursors_per_group: int | None
+            cursor_step: int | None
             number_of_groups: int
             cursors_groups: CursorGroups
 
         def execute(self, worker_input: WorkerInput) -> TaskResult[WorkerOutput]:
-
             labels = None
             if worker_input.labels:
                 labels = [label_id for label_id in worker_input.labels.keys()]
 
             query = DevicesQuery(
                 payload=self.DEVICES,
-                filter=FilterDevicesInput(
-                    labels=labels
-                ),
+                filter=FilterDevicesInput(labels=labels),
             ).render()
 
             response = execute_inventory_query(query=query.query, variables=query.variable)
@@ -755,19 +612,20 @@ class InventoryService(ServiceWorkersImpl):
             for_loop_id = 0
 
             match response.status:
-                case 'data':
-                    for device in range(len(response.data['devices']['edges'])):
+                case "data":
+                    for device in range(len(response.data["devices"]["edges"])):
                         for_loop_id += 1
 
                         dynamic_fork_list.append(
                             {
-                                response.data['devices']['edges'][device]['node']['name']:
-                                response.data['devices']['edges'][device]['node']['id']
+                                response.data["devices"]["edges"][device]["node"]["name"]: response.data["devices"][
+                                    "edges"
+                                ][device]["node"]["id"]
                             }
                         )
 
-                        dynamic_fork_dict[f'fork_{fork_dict_position}'] = dynamic_fork_list
-                        datastructure[str(f'loop_{loop_dict_position}')] = dynamic_fork_dict
+                        dynamic_fork_dict[f"fork_{fork_dict_position}"] = dynamic_fork_list
+                        datastructure[str(f"loop_{loop_dict_position}")] = dynamic_fork_dict
 
                         if for_loop_id == worker_input.cursors_per_group:
                             dynamic_fork_list = []
@@ -787,26 +645,22 @@ class InventoryService(ServiceWorkersImpl):
                     cursors_groups=datastructure,
                     number_of_groups=len(datastructure),
                     cursors_per_group=worker_input.cursors_per_group,
-                    cursor_step=worker_input.cursor_step
-                )
+                    cursor_step=worker_input.cursor_step,
+                ),
             )
 
     class InventoryGetPagesCursorsForkTasks(WorkerImpl):
-
         TASK_BODY_TEMPLATE: DictAny = {
-            'name': 'sub_task',
-            'taskReferenceName': '',
-            'type': 'SUB_WORKFLOW',
-            'subWorkflowParam': {
-                'name': '',
-                'version': 1
-            }
+            "name": "sub_task",
+            "taskReferenceName": "",
+            "type": "SUB_WORKFLOW",
+            "subWorkflowParam": {"name": "", "version": 1},
         }
 
         class WorkerDefinition(TaskDefinition):
-            name: str = 'INVENTORY_get_pages_cursors_fork_tasks'
-            description: str = 'Get all pages cursors as dynamic fork tasks'
-            labels: ListStr = ['BASIC', 'INVENTORY']
+            name: str = "INVENTORY_get_pages_cursors_fork_tasks"
+            description: str = "Get all pages cursors as dynamic fork tasks"
+            labels: ListStr = ["BASIC", "INVENTORY"]
             timeout_seconds: int = 3600
             response_timeout_seconds: int = 3600
 
@@ -819,14 +673,13 @@ class InventoryService(ServiceWorkersImpl):
             dynamic_tasks: list[DictAny]
 
         def execute(self, worker_input: WorkerInput) -> TaskResult[WorkerOutput]:
-
             dynamic_tasks = []
             dynamic_tasks_i = {}
 
             for fork_id, devices_list in worker_input.cursors_groups.items():
                 task_body = copy.deepcopy(self.TASK_BODY_TEMPLATE)
-                task_body['taskReferenceName'] = str(fork_id)
-                task_body['subWorkflowParam']['name'] = worker_input.task
+                task_body["taskReferenceName"] = str(fork_id)
+                task_body["subWorkflowParam"]["name"] = worker_input.task
                 dynamic_tasks.append(task_body)
                 dynamic_tasks_i[str(fork_id)] = dict(devices=devices_list)
 
@@ -835,26 +688,18 @@ class InventoryService(ServiceWorkersImpl):
                 output=self.WorkerOutput(
                     dynamic_tasks_input=dynamic_tasks_i,
                     dynamic_tasks=dynamic_tasks,
-                )
+                ),
             )
 
     class InventoryInstallInBatch(WorkerImpl):
-
         install_device: InstallDeviceMutation = InstallDeviceMutation(
-            payload=InstallDevicePayload(
-                device=Device(
-                    name=True,
-                    id=True,
-                    isInstalled=False
-                )
-            ),
-            id=''
+            payload=InstallDevicePayload(device=Device(name=True, id=True, isInstalled=False)), id=""
         )
 
         class WorkerDefinition(TaskDefinition):
-            name: str = 'INVENTORY_install_in_batch'
-            description: str = 'Install devices in batch'
-            labels: ListStr = ['BASIC', 'INVENTORY']
+            name: str = "INVENTORY_install_in_batch"
+            description: str = "Install devices in batch"
+            labels: ListStr = ["BASIC", "INVENTORY"]
             timeout_seconds: int = 3600
             response_timeout_seconds: int = 3600
             limit_to_thread_count: int = 5
@@ -870,21 +715,21 @@ class InventoryService(ServiceWorkersImpl):
             for device in worker_input.devices:
                 per_device_params = dict({})
                 for device_name, device_id in device.items():
-                    per_device_params.update({'device_id': device_id})
-                    per_device_params.update({'device_name': device_name})
+                    per_device_params.update({"device_id": device_id})
+                    per_device_params.update({"device_name": device_name})
 
-                self.install_device.id = per_device_params['device_id']
+                self.install_device.id = per_device_params["device_id"]
                 query = self.install_device.render()
                 response = execute_inventory_query(query=query.query, variables=query.variable)
 
                 match response.status:
-                    case 'errors':
-                        if 'already been installed' not in response.data['message']:
-                            per_device_params.update({'status': 'failed'})
-                        elif 'already been installed' in response.data['message']:
-                            per_device_params.update({'status': 'was installed before'})
-                    case 'data':
-                        per_device_params.update({'status': 'success'})
+                    case "errors":
+                        if "already been installed" not in response.data["message"]:
+                            per_device_params.update({"status": "failed"})
+                        elif "already been installed" in response.data["message"]:
+                            per_device_params.update({"status": "was installed before"})
+                    case "data":
+                        per_device_params.update({"status": "success"})
 
                 device_status.update({self.install_device.id: per_device_params})
 
@@ -892,26 +737,18 @@ class InventoryService(ServiceWorkersImpl):
                 status=TaskResultStatus.COMPLETED,
                 output=self.WorkerOutput(
                     response_body=device_status,
-                )
+                ),
             )
 
     class InventoryUninstallInBatch(WorkerImpl):
-
         uninstall_device: UninstallDeviceMutation = UninstallDeviceMutation(
-            payload=UninstallDevicePayload(
-                device=Device(
-                    name=True,
-                    id=True,
-                    isInstalled=False
-                )
-            ),
-            id=''
+            payload=UninstallDevicePayload(device=Device(name=True, id=True, isInstalled=False)), id=""
         )
 
         class WorkerDefinition(TaskDefinition):
-            name: str = 'INVENTORY_uninstall_in_batch'
-            description: str = 'Uninstall devices in batch'
-            labels: ListStr = ['BASIC', 'INVENTORY']
+            name: str = "INVENTORY_uninstall_in_batch"
+            description: str = "Uninstall devices in batch"
+            labels: ListStr = ["BASIC", "INVENTORY"]
             timeout_seconds: int = 3600
             response_timeout_seconds: int = 3600
 
@@ -926,18 +763,18 @@ class InventoryService(ServiceWorkersImpl):
             for device in worker_input.devices:
                 per_device_params = dict({})
                 for device_name, device_id in device.items():
-                    per_device_params.update({'device_id': device_id})
-                    per_device_params.update({'device_name': device_name})
+                    per_device_params.update({"device_id": device_id})
+                    per_device_params.update({"device_name": device_name})
 
-                self.uninstall_device.id = per_device_params['device_id']
+                self.uninstall_device.id = per_device_params["device_id"]
                 query = self.uninstall_device.render()
                 response = execute_inventory_query(query=query.query, variables=query.variable)
 
                 match response.status:
-                    case 'errors':
-                        per_device_params.update({'status': 'failed'})
-                    case 'data':
-                        per_device_params.update({'status': 'success'})
+                    case "errors":
+                        per_device_params.update({"status": "failed"})
+                    case "data":
+                        per_device_params.update({"status": "success"})
 
                 device_status.update({self.uninstall_device.id: per_device_params})
 
@@ -945,40 +782,35 @@ class InventoryService(ServiceWorkersImpl):
                 status=TaskResultStatus.COMPLETED,
                 output=self.WorkerOutput(
                     response_body=device_status,
-                )
+                ),
             )
 
     class InventorySubWorkflowForkFormat(WorkerImpl):
-
         TASK_BODY_TEMPLATE: DictAny = {
-            'name': 'sub_task',
-            'taskReferenceName': '',
-            'type': 'SUB_WORKFLOW',
-            'subWorkflowParam': {
-                'name': '',
-                'version': 1
-            }
+            "name": "sub_task",
+            "taskReferenceName": "",
+            "type": "SUB_WORKFLOW",
+            "subWorkflowParam": {"name": "", "version": 1},
         }
 
         class WorkerDefinition(TaskDefinition):
-            name: str = 'INVENTORY_sub_workflow_format'
-            description: str = 'Get all pages cursors as dynamic fork tasks with device name for uniconfig workers'
-            labels: ListStr = ['BASIC', 'INVENTORY']
+            name: str = "INVENTORY_sub_workflow_format"
+            description: str = "Get all pages cursors as dynamic fork tasks with device name for uniconfig workers"
+            labels: ListStr = ["BASIC", "INVENTORY"]
             timeout_seconds: int = 3600
             response_timeout_seconds: int = 3600
 
         class WorkerInput(TaskInput):
             cursors_groups: CursorGroup
             task: str
-            task_input: Optional[DictAny] = None
-            device_identifies: str = 'device_id'
+            task_input: DictAny | None = None
+            device_identifies: str = "device_id"
 
         class WorkerOutput(TaskOutput):
             dynamic_tasks_input: DictAny
             dynamic_tasks: list[DictAny]
 
         def execute(self, worker_input: WorkerInput) -> TaskResult[WorkerOutput]:
-
             dynamic_tasks = []
             dynamic_tasks_i = {}
             devices = []
@@ -990,8 +822,8 @@ class InventoryService(ServiceWorkersImpl):
 
             for device in devices:
                 task_body = copy.deepcopy(self.TASK_BODY_TEMPLATE)
-                task_body['taskReferenceName'] = str(device)
-                task_body['subWorkflowParam']['name'] = worker_input.task
+                task_body["taskReferenceName"] = str(device)
+                task_body["subWorkflowParam"]["name"] = worker_input.task
                 dynamic_tasks.append(task_body)
 
                 task_input: DictAny = {worker_input.device_identifies: device}
@@ -1006,20 +838,17 @@ class InventoryService(ServiceWorkersImpl):
                 output=self.WorkerOutput(
                     dynamic_tasks_input=dynamic_tasks_i,
                     dynamic_tasks=dynamic_tasks,
-                )
+                ),
             )
 
 
 def response_handler(query: QueryForm, response: InventoryOutput) -> TaskResult:
     match response.status:
-        case 'data':
+        case "data":
             task_result = TaskResult(status=TaskResultStatus.COMPLETED)
             task_result.status = TaskResultStatus.COMPLETED
             task_result.output = dict(
-                response_code=response.code,
-                response_body=response.data,
-                query=query.query,
-                variable=query.variable
+                response_code=response.code, response_body=response.data, query=query.query, variable=query.variable
             )
             return task_result
         case _:
@@ -1027,9 +856,6 @@ def response_handler(query: QueryForm, response: InventoryOutput) -> TaskResult:
             task_result.status = TaskResultStatus.FAILED
             task_result.logs = str(response)
             task_result.output = dict(
-                response_code=response.code,
-                response_body=response.data,
-                query=query.query,
-                variable=query.variable
+                response_code=response.code, response_body=response.data, query=query.query, variable=query.variable
             )
             return task_result
