@@ -84,7 +84,7 @@ jobs:
           poetry run mypy .
       - name: Run ruff.
         run: |
-          poetry run ruff .
+          poetry run ruff check .
       - name: Run pyright.
         run: |
           poetry run pyright .
