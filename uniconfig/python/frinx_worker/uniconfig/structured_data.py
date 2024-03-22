@@ -1,5 +1,4 @@
 from string import Template
-from typing import Optional
 
 import requests
 from frinx.common.frinx_rest import UNICONFIG_HEADERS
@@ -27,27 +26,26 @@ class StructuredData(ServiceWorkersImpl):
             exclude_empty_inputs: bool = True
 
         class WorkerDefinition(TaskDefinition):
-            name: str = 'UNICONFIG_read_structured_device_data'
-            description: str = 'Read device configuration or operational data in structured format e.g. openconfig'
-            labels: list[str] = ['BASICS', 'UNICONFIG', 'OPENCONFIG']
+            name: str = "UNICONFIG_read_structured_device_data"
+            description: str = "Read device configuration or operational data in structured format e.g. openconfig"
+            labels: list[str] = ["BASICS", "UNICONFIG", "OPENCONFIG"]
 
         class WorkerInput(TaskInput):
             node_id: str
-            uri: Optional[str] = None
-            topology_id: str = 'uniconfig'
-            transaction_id: Optional[str] = None
-            uniconfig_server_id: Optional[str] = None
+            uri: str | None = None
+            topology_id: str = "uniconfig"
+            transaction_id: str | None = None
+            uniconfig_server_id: str | None = None
             uniconfig_url_base: str = UNICONFIG_URL_BASE
 
         class WorkerOutput(TaskOutput):
             output: DictAny
 
         def execute(self, worker_input: WorkerInput) -> TaskResult[WorkerOutput]:
-
-            uri = ''
+            uri = ""
             if worker_input.uri:
-                if not worker_input.uri.startswith('/'):
-                    uri = f'/{worker_input.uri}'
+                if not worker_input.uri.startswith("/"):
+                    uri = f"/{worker_input.uri}"
                 else:
                     uri = worker_input.uri
 
@@ -59,11 +57,10 @@ class StructuredData(ServiceWorkersImpl):
                 url=url,
                 method=self.UniconfigApi.method,
                 cookies=uniconfig_zone_to_cookie(
-                    uniconfig_server_id=worker_input.uniconfig_server_id,
-                    transaction_id=worker_input.transaction_id
+                    uniconfig_server_id=worker_input.uniconfig_server_id, transaction_id=worker_input.transaction_id
                 ),
                 headers=dict(UNICONFIG_HEADERS),
-                params=UNICONFIG_REQUEST_PARAMS
+                params=UNICONFIG_REQUEST_PARAMS,
             )
 
             return handle_response(response, self.WorkerOutput)
@@ -76,30 +73,29 @@ class StructuredData(ServiceWorkersImpl):
             transform_string_to_json_valid: bool = True
 
         class WorkerDefinition(TaskDefinition):
-            name: str = 'UNICONFIG_write_structured_device_data'
-            description: str = 'Write device configuration data in structured format e.g. openconfig'
-            labels: list[str] = ['BASICS', 'UNICONFIG']
+            name: str = "UNICONFIG_write_structured_device_data"
+            description: str = "Write device configuration data in structured format e.g. openconfig"
+            labels: list[str] = ["BASICS", "UNICONFIG"]
 
         class WorkerInput(TaskInput):
             node_id: str
-            uri: Optional[str] = None
+            uri: str | None = None
             template: DictAny
-            method: str = 'PUT'
-            params: Optional[DictAny] = {}
-            topology_id: str = 'uniconfig'
-            transaction_id: Optional[str] = None
-            uniconfig_server_id: Optional[str] = None
+            method: str = "PUT"
+            params: DictAny | None = {}
+            topology_id: str = "uniconfig"
+            transaction_id: str | None = None
+            uniconfig_server_id: str | None = None
             uniconfig_url_base: str = UNICONFIG_URL_BASE
 
         class WorkerOutput(TaskOutput):
             output: DictAny
 
         def execute(self, worker_input: WorkerInput) -> TaskResult[WorkerOutput]:
-
-            uri = ''
+            uri = ""
             if worker_input.uri:
-                if not worker_input.uri.startswith('/'):
-                    uri = f'/{worker_input.uri}'
+                if not worker_input.uri.startswith("/"):
+                    uri = f"/{worker_input.uri}"
                 else:
                     uri = worker_input.uri
 
@@ -116,11 +112,10 @@ class StructuredData(ServiceWorkersImpl):
                 method=worker_input.method,
                 data=class_to_json(worker_input.template),
                 cookies=uniconfig_zone_to_cookie(
-                    uniconfig_server_id=worker_input.uniconfig_server_id,
-                    transaction_id=worker_input.transaction_id
+                    uniconfig_server_id=worker_input.uniconfig_server_id, transaction_id=worker_input.transaction_id
                 ),
                 headers=dict(UNICONFIG_HEADERS),
-                params=UNICONFIG_REQUEST_PARAMS
+                params=UNICONFIG_REQUEST_PARAMS,
             )
 
             return handle_response(response, self.WorkerOutput)
@@ -133,30 +128,29 @@ class StructuredData(ServiceWorkersImpl):
             transform_string_to_json_valid: bool = True
 
         class WorkerDefinition(TaskDefinition):
-            name: str = 'UNICONFIG_delete_structured_device_data'
-            description: str = 'Delete device configuration data in structured format e.g. openconfig'
-            labels: list[str] = ['BASICS', 'UNICONFIG']
+            name: str = "UNICONFIG_delete_structured_device_data"
+            description: str = "Delete device configuration data in structured format e.g. openconfig"
+            labels: list[str] = ["BASICS", "UNICONFIG"]
 
         class WorkerInput(TaskInput):
             node_id: str
-            uri: Optional[str] = None
+            uri: str | None = None
             template: DictAny
-            method: str = 'DELETE'
-            params: Optional[DictAny] = {}
-            topology_id: str = 'uniconfig'
-            transaction_id: Optional[str] = None
-            uniconfig_server_id: Optional[str] = None
+            method: str = "DELETE"
+            params: DictAny | None = {}
+            topology_id: str = "uniconfig"
+            transaction_id: str | None = None
+            uniconfig_server_id: str | None = None
             uniconfig_url_base: str = UNICONFIG_URL_BASE
 
         class WorkerOutput(TaskOutput):
             output: DictAny
 
         def execute(self, worker_input: WorkerInput) -> TaskResult[WorkerOutput]:
-
-            uri = ''
+            uri = ""
             if worker_input.uri:
-                if not worker_input.uri.startswith('/'):
-                    uri = f'/{worker_input.uri}'
+                if not worker_input.uri.startswith("/"):
+                    uri = f"/{worker_input.uri}"
                 else:
                     uri = worker_input.uri
 
@@ -173,11 +167,10 @@ class StructuredData(ServiceWorkersImpl):
                 method=worker_input.method,
                 data=class_to_json(worker_input.template),
                 cookies=uniconfig_zone_to_cookie(
-                    uniconfig_server_id=worker_input.uniconfig_server_id,
-                    transaction_id=worker_input.transaction_id
+                    uniconfig_server_id=worker_input.uniconfig_server_id, transaction_id=worker_input.transaction_id
                 ),
                 headers=dict(UNICONFIG_HEADERS),
-                params=UNICONFIG_REQUEST_PARAMS
+                params=UNICONFIG_REQUEST_PARAMS,
             )
 
             return handle_response(response, self.WorkerOutput)

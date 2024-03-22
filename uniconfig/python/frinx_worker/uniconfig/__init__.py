@@ -2,7 +2,6 @@ import dataclasses
 import http.client
 import json
 from typing import Any
-from typing import Optional
 
 from frinx.common.conductor_enums import TaskResultStatus
 from frinx.common.type_aliases import DictAny
@@ -31,39 +30,42 @@ def handle_response(response: Response, worker_output: Any) -> TaskResult:
                     FAILED otherwise), logs detailing the response, and the processed output.
     """
     # Check if 'worker_output' has the 'model_fields' attribute and the 'output' field is present
-    if not hasattr(worker_output, 'model_fields') or 'output' not in worker_output.model_fields:
-        raise ValueError("The worker_output does not have the expected 'output' field. "
-                         "Function handle_response expects WorkerOutput with a field named 'output'.")
+    if not hasattr(worker_output, "model_fields") or "output" not in worker_output.model_fields:
+        raise ValueError(
+            "The worker_output does not have the expected 'output' field. "
+            "Function handle_response expects WorkerOutput with a field named 'output'."
+        )
 
     output = dict()
     status = TaskResultStatus.COMPLETED if response.ok else TaskResultStatus.FAILED
-    logs = (f'{response.request.method} request to {response.url} returned with status code {response.status_code}.  '
-            f'CONTENT: {response.content.decode("utf-8")}')
-
-    # Attempt to parse response content as JSON if the response contains content.
-    if response.status_code != http.client.NO_CONTENT:
-        try:
-            output = response.json()
-        except json.JSONDecodeError:
-            logs += 'ERROR: JSON decoding failed - unparsable response content. '
-            status = TaskResultStatus.FAILED
-
-    return TaskResult(
-        status=status,
-        logs=logs,
-        output=worker_output(output=output)
+    logs = (
+        f'{response.request.method} request to {response.url} returned with status code {response.status_code}.  '
+        f'CONTENT: {response.content.decode("utf-8")}'
     )
 
+    if response.status_code not in [http.client.NO_CONTENT, http.client.CREATED]:
+        if "json" in response.headers.get("content-type", ""):
+            try:
+                output = response.json()
+            except json.JSONDecodeError:
+                logs += "ERROR: JSON decoding failed - unparsable response content. "
+                status = TaskResultStatus.FAILED
+        if "text" in response.headers.get("content-type", ""):
+            try:
+                output["message"] = response.text
+            except Exception as e:
+                logs += str(e)
+                status = TaskResultStatus.FAILED
 
-def uniconfig_zone_to_cookie(
-        transaction_id: Optional[str] = None,
-        uniconfig_server_id: Optional[str] = None
-) -> DictAny:
+    return TaskResult(status=status, logs=logs, output=worker_output(output=output))
+
+
+def uniconfig_zone_to_cookie(transaction_id: str | None = None, uniconfig_server_id: str | None = None) -> DictAny:
     cookies: DictAny = {}
     if transaction_id:
-        cookies['UNICONFIGTXID'] = transaction_id
+        cookies["UNICONFIGTXID"] = transaction_id
     if uniconfig_server_id:
-        cookies['uniconfig_server_id'] = uniconfig_server_id
+        cookies["uniconfig_server_id"] = uniconfig_server_id
     return cookies
 
 
@@ -78,7 +80,7 @@ def snake_to_kebab_case(data: Any) -> Any:
         Any: A new dictionary or list with keys converted to kebab-case.
     """
     if isinstance(data, dict):
-        return {k.replace('_', '-'): snake_to_kebab_case(v) for k, v in data.items()}
+        return {k.replace("_", "-"): snake_to_kebab_case(v) for k, v in data.items()}
     elif isinstance(data, list):
         return [snake_to_kebab_case(item) for item in data]
     else:

@@ -1,5 +1,3 @@
-from typing import Optional
-
 import requests
 from frinx.common.frinx_rest import UNICONFIG_HEADERS
 from frinx.common.frinx_rest import UNICONFIG_REQUEST_PARAMS
@@ -28,45 +26,43 @@ class UniconfigManager(ServiceWorkersImpl):
             transform_string_to_json_valid: bool = True
 
         class WorkerDefinition(TaskDefinition):
-            name: str = 'UNICONFIG_Create_transaction_RPC'
-            description: str = 'Create Uniconfig transaction'
+            name: str = "UNICONFIG_Create_transaction_RPC"
+            description: str = "Create Uniconfig transaction"
 
         class WorkerInput(TaskInput):
-            transaction_timeout: Optional[int] = None
+            transaction_timeout: int | None = None
             use_dedicated_session: bool = False
             uniconfig_url_base: str = UNICONFIG_URL_BASE
 
         class WorkerOutput(TaskOutput):
-            transaction_id: Optional[str] = None
-            uniconfig_server_id: Optional[str] = None
+            transaction_id: str | None = None
+            uniconfig_server_id: str | None = None
             uniconfig_url_base: str
 
         def execute(self, worker_input: WorkerInput) -> TaskResult[WorkerOutput]:
             if self.UniconfigApi.request is None:
-                raise Exception(f'Failed to create request {self.UniconfigApi.request}')
+                raise Exception(f"Failed to create request {self.UniconfigApi.request}")
 
             response = requests.request(
                 url=worker_input.uniconfig_url_base + self.UniconfigApi.uri,
                 method=self.UniconfigApi.method,
                 data=class_to_json(self.UniconfigApi.request()),
-                headers=dict(UNICONFIG_HEADERS)
+                headers=dict(UNICONFIG_HEADERS),
             )
 
             if not response.ok:
                 return TaskResult(
                     status=TaskResultStatus.FAILED,
-                    logs=response.content.decode('utf8'),
-                    output=self.WorkerOutput(
-                        uniconfig_url_base=worker_input.uniconfig_url_base
-                    )
+                    logs=response.content.decode("utf8"),
+                    output=self.WorkerOutput(uniconfig_url_base=worker_input.uniconfig_url_base),
                 )
             return TaskResult(
                 status=TaskResultStatus.COMPLETED,
                 output=self.WorkerOutput(
-                    transaction_id=response.cookies['UNICONFIGTXID'],
-                    uniconfig_server_id=response.cookies['uniconfig_server_id'],
-                    uniconfig_url_base=worker_input.uniconfig_url_base
-                )
+                    transaction_id=response.cookies["UNICONFIGTXID"],
+                    uniconfig_server_id=response.cookies["uniconfig_server_id"],
+                    uniconfig_url_base=worker_input.uniconfig_url_base,
+                ),
             )
 
     class CloseTransaction(WorkerImpl):
@@ -77,47 +73,44 @@ class UniconfigManager(ServiceWorkersImpl):
             transform_string_to_json_valid: bool = True
 
         class WorkerDefinition(TaskDefinition):
-            name: str = 'UNICONFIG_Close_transaction_RPC'
-            description: str = 'Close Uniconfig transaction'
+            name: str = "UNICONFIG_Close_transaction_RPC"
+            description: str = "Close Uniconfig transaction"
 
         class WorkerInput(TaskInput):
             uniconfig_url_base: str = UNICONFIG_URL_BASE
-            uniconfig_server_id: Optional[str] = None
-            transaction_id: Optional[str] = None
+            uniconfig_server_id: str | None = None
+            transaction_id: str | None = None
 
         class WorkerOutput(TaskOutput):
-            closed: Optional[DictAny] = {}
-            unclosed: Optional[DictAny] = {}
+            closed: DictAny | None = {}
+            unclosed: DictAny | None = {}
 
         def execute(self, worker_input: WorkerInput) -> TaskResult[WorkerOutput]:
             if self.UniconfigApi.request is None:
-                raise Exception(f'Failed to create request {self.UniconfigApi.request}')
+                raise Exception(f"Failed to create request {self.UniconfigApi.request}")
 
             response = requests.request(
                 url=worker_input.uniconfig_url_base + self.UniconfigApi.uri,
                 method=self.UniconfigApi.method,
-                data=class_to_json(
-                    self.UniconfigApi.request(
-                    )
-                ),
+                data=class_to_json(self.UniconfigApi.request()),
                 cookies=uniconfig_zone_to_cookie(
                     uniconfig_server_id=worker_input.uniconfig_server_id,
                     transaction_id=worker_input.transaction_id,
                 ),
                 headers=dict(UNICONFIG_HEADERS),
-                params=UNICONFIG_REQUEST_PARAMS
+                params=UNICONFIG_REQUEST_PARAMS,
             )
 
             if not response.ok:
                 return TaskResult(
                     status=TaskResultStatus.FAILED,
-                    logs=response.content.decode('utf8'),
+                    logs=response.content.decode("utf8"),
                     output=self.WorkerOutput(
                         unclosed=dict(
                             transaction_id=worker_input.transaction_id,
                             uniconfig_server_id=worker_input.uniconfig_server_id,
                         )
-                    )
+                    ),
                 )
             return TaskResult(
                 status=TaskResultStatus.COMPLETED,
@@ -126,7 +119,7 @@ class UniconfigManager(ServiceWorkersImpl):
                         transaction_id=worker_input.transaction_id,
                         uniconfig_server_id=worker_input.uniconfig_server_id,
                     )
-                )
+                ),
             )
 
     class CommitTransaction(WorkerImpl):
@@ -138,16 +131,16 @@ class UniconfigManager(ServiceWorkersImpl):
             transform_string_to_json_valid: bool = True
 
         class WorkerDefinition(TaskDefinition):
-            name: str = 'UNICONFIG_Commit_transaction_RPC'
-            description: str = 'Commit Uniconfig transaction'
+            name: str = "UNICONFIG_Commit_transaction_RPC"
+            description: str = "Commit Uniconfig transaction"
 
         class WorkerInput(TaskInput):
             confirmed_commit: bool = False
             validate_commit: bool = True
-            rollback: Optional[bool] = None
-            skip_unreachable_nodes: Optional[bool] = None
-            transaction_id: Optional[str] = None
-            uniconfig_server_id: Optional[str] = None
+            rollback: bool | None = None
+            skip_unreachable_nodes: bool | None = None
+            transaction_id: str | None = None
+            uniconfig_server_id: str | None = None
             uniconfig_url_base: str = UNICONFIG_URL_BASE
 
         class WorkerOutput(TaskOutput):
@@ -155,10 +148,11 @@ class UniconfigManager(ServiceWorkersImpl):
 
         def execute(self, worker_input: WorkerInput) -> TaskResult[WorkerOutput]:
             if self.UniconfigApi.request is None:
-                raise Exception(f'Failed to create request {self.UniconfigApi.request}')
+                raise Exception(f"Failed to create request {self.UniconfigApi.request}")
 
             response = requests.request(
-                url=worker_input.uniconfig_url_base + self.UniconfigApi.uri,
+                # TODO Request not work without namespace
+                url=worker_input.uniconfig_url_base + "/operations/uniconfig-manager:commit",
                 method=self.UniconfigApi.method,
                 data=class_to_json(
                     self.UniconfigApi.request(
@@ -171,11 +165,10 @@ class UniconfigManager(ServiceWorkersImpl):
                     )
                 ),
                 cookies=uniconfig_zone_to_cookie(
-                    uniconfig_server_id=worker_input.uniconfig_server_id,
-                    transaction_id=worker_input.transaction_id
+                    uniconfig_server_id=worker_input.uniconfig_server_id, transaction_id=worker_input.transaction_id
                 ),
                 headers=dict(UNICONFIG_HEADERS),
-                params=UNICONFIG_REQUEST_PARAMS
+                params=UNICONFIG_REQUEST_PARAMS,
             )
 
             return handle_response(response, self.WorkerOutput)
@@ -190,13 +183,13 @@ class UniconfigManager(ServiceWorkersImpl):
             transform_string_to_json_valid: bool = True
 
         class WorkerDefinition(TaskDefinition):
-            name: str = 'UNICONFIG_Replace_config_with_operational_RPC'
-            description: str = 'Replace Uniconfig CONFIG datastore with operational datastore'
+            name: str = "UNICONFIG_Replace_config_with_operational_RPC"
+            description: str = "Replace Uniconfig CONFIG datastore with operational datastore"
 
         class WorkerInput(TaskInput):
             node_ids: list[str]
             transaction_id: str
-            uniconfig_server_id: Optional[str] = None
+            uniconfig_server_id: str | None = None
             uniconfig_url_base: str = UNICONFIG_URL_BASE
 
         class WorkerOutput(TaskOutput):
@@ -204,7 +197,7 @@ class UniconfigManager(ServiceWorkersImpl):
 
         def execute(self, worker_input: WorkerInput) -> TaskResult[WorkerOutput]:
             if self.UniconfigApi.request is None:
-                raise Exception(f'Failed to create request {self.UniconfigApi.request}')
+                raise Exception(f"Failed to create request {self.UniconfigApi.request}")
 
             response = requests.request(
                 url=worker_input.uniconfig_url_base + self.UniconfigApi.uri,
@@ -217,11 +210,10 @@ class UniconfigManager(ServiceWorkersImpl):
                     )
                 ),
                 cookies=uniconfig_zone_to_cookie(
-                    uniconfig_server_id=worker_input.uniconfig_server_id,
-                    transaction_id=worker_input.transaction_id
+                    uniconfig_server_id=worker_input.uniconfig_server_id, transaction_id=worker_input.transaction_id
                 ),
                 headers=dict(UNICONFIG_HEADERS),
-                params=UNICONFIG_REQUEST_PARAMS
+                params=UNICONFIG_REQUEST_PARAMS,
             )
 
             return handle_response(response, self.WorkerOutput)
@@ -236,13 +228,13 @@ class UniconfigManager(ServiceWorkersImpl):
             transform_string_to_json_valid: bool = True
 
         class WorkerDefinition(TaskDefinition):
-            name: str = 'UNICONFIG_Sync_from_network_RPC'
-            description: str = 'Synchronize configuration from network and the UniConfig nodes'
+            name: str = "UNICONFIG_Sync_from_network_RPC"
+            description: str = "Synchronize configuration from network and the UniConfig nodes"
 
         class WorkerInput(TaskInput):
             node_ids: list[str]
             transaction_id: str
-            uniconfig_server_id: Optional[str] = None
+            uniconfig_server_id: str | None = None
             uniconfig_url_base: str = UNICONFIG_URL_BASE
 
         class WorkerOutput(TaskOutput):
@@ -250,7 +242,7 @@ class UniconfigManager(ServiceWorkersImpl):
 
         def execute(self, worker_input: WorkerInput) -> TaskResult[WorkerOutput]:
             if self.UniconfigApi.request is None:
-                raise Exception(f'Failed to create request {self.UniconfigApi.request}')
+                raise Exception(f"Failed to create request {self.UniconfigApi.request}")
 
             response = requests.request(
                 url=worker_input.uniconfig_url_base + self.UniconfigApi.uri,
@@ -263,18 +255,16 @@ class UniconfigManager(ServiceWorkersImpl):
                     )
                 ),
                 cookies=uniconfig_zone_to_cookie(
-                    uniconfig_server_id=worker_input.uniconfig_server_id,
-                    transaction_id=worker_input.transaction_id
+                    uniconfig_server_id=worker_input.uniconfig_server_id, transaction_id=worker_input.transaction_id
                 ),
                 headers=dict(UNICONFIG_HEADERS),
-                params=UNICONFIG_REQUEST_PARAMS
+                params=UNICONFIG_REQUEST_PARAMS,
             )
 
             return handle_response(response, self.WorkerOutput)
 
     class DryRunCommit(WorkerImpl):
         from frinx_api.uniconfig.dryrun.manager.dryruncommit import Input
-        from frinx_api.uniconfig.dryrun.manager.dryruncommit import TargetNodes
         from frinx_api.uniconfig.rest_api import DryrunCommit as UniconfigApi
 
         class ExecutionProperties(TaskExecutionProperties):
@@ -282,14 +272,13 @@ class UniconfigManager(ServiceWorkersImpl):
             transform_string_to_json_valid: bool = True
 
         class WorkerDefinition(TaskDefinition):
-            name: str = 'UNICONFIG_dryrun_commit'
-            description: str = 'Dryrun Commit uniconfig'
+            name: str = "UNICONFIG_dryrun_commit"
+            description: str = "Dryrun Commit uniconfig"
 
         class WorkerInput(TaskInput):
-            do_rollback: Optional[bool] = False
-            node: Optional[list[str]] = None
-            transaction_id: Optional[str] = None
-            uniconfig_server_id: Optional[str] = None
+            do_rollback: bool | None = False
+            transaction_id: str | None = None
+            uniconfig_server_id: str | None = None
             uniconfig_url_base: str = UNICONFIG_URL_BASE
 
         class WorkerOutput(TaskOutput):
@@ -297,27 +286,17 @@ class UniconfigManager(ServiceWorkersImpl):
 
         def execute(self, worker_input: WorkerInput) -> TaskResult[WorkerOutput]:
             if self.UniconfigApi.request is None:
-                raise Exception(f'Failed to create request {self.UniconfigApi.request}')
+                raise Exception(f"Failed to create request {self.UniconfigApi.request}")
 
             response = requests.request(
                 url=worker_input.uniconfig_url_base + self.UniconfigApi.uri,
                 method=self.UniconfigApi.method,
-                data=class_to_json(
-                    self.UniconfigApi.request(
-                        input=self.Input(
-                            do_rollback=worker_input.do_rollback,
-                            target_nodes=self.TargetNodes(
-                                node=worker_input.node
-                            )
-                        )
-                    )
-                ),
+                data=class_to_json(self.UniconfigApi.request(input=self.Input(do_rollback=worker_input.do_rollback))),
                 cookies=uniconfig_zone_to_cookie(
-                    uniconfig_server_id=worker_input.uniconfig_server_id,
-                    transaction_id=worker_input.transaction_id
+                    uniconfig_server_id=worker_input.uniconfig_server_id, transaction_id=worker_input.transaction_id
                 ),
                 headers=dict(UNICONFIG_HEADERS),
-                params=UNICONFIG_REQUEST_PARAMS
+                params=UNICONFIG_REQUEST_PARAMS,
             )
 
             return handle_response(response, self.WorkerOutput)

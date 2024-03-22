@@ -1,5 +1,3 @@
-
-
 def parse_ranges(list_of_strings: list[str]) -> list[int]:
     """Takes list containing integers (str) and ranges (str)
     and returns corresponding list of integers.
@@ -19,7 +17,7 @@ def parse_ranges(list_of_strings: list[str]) -> list[int]:
             output.append(number)
         except ValueError:
             try:
-                range_start, range_stop = map(int, x.split('-'))
+                range_start, range_stop = map(int, x.split("-"))
             except Exception:
                 # continue
                 raise ValueError(f"Value '{x}' does not represent an integer.")
@@ -41,13 +39,13 @@ def get_list_of_ip_addresses(ip_addresses: str) -> list[str]:
             e.g.: ['172.16.1.10', '172.16.1.20']
             or '172.16.1.100/32'
     """
-    ip_addresses = ip_addresses.replace(' ', '')
+    ip_addresses = ip_addresses.replace(" ", "")
 
-    if '/' in ip_addresses:
+    if "/" in ip_addresses:
         return [ip_addresses]
 
-    if '-' in ip_addresses:
-        ip_addresses_list = ip_addresses.split(sep='-', maxsplit=1)
+    if "-" in ip_addresses:
+        ip_addresses_list = ip_addresses.split(sep="-", maxsplit=1)
         start_ip = ip_addresses_list[0]
         end_ip = ip_addresses_list[1]
 

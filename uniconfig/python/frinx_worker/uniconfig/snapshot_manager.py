@@ -1,5 +1,3 @@
-from typing import Optional
-
 import requests
 from frinx.common.frinx_rest import UNICONFIG_HEADERS
 from frinx.common.frinx_rest import UNICONFIG_REQUEST_PARAMS
@@ -29,14 +27,14 @@ class SnapshotManager(ServiceWorkersImpl):
             transform_string_to_json_valid: bool = True
 
         class WorkerDefinition(TaskDefinition):
-            name: str = 'UNICONFIG_Create_snapshot_RPC'
-            description: str = 'Create Uniconfig snapshot'
+            name: str = "UNICONFIG_Create_snapshot_RPC"
+            description: str = "Create Uniconfig snapshot"
 
         class WorkerInput(TaskInput):
             node_ids: list[str]
             snapshot_name: str
-            transaction_id: Optional[str] = None
-            uniconfig_server_id: Optional[str] = None
+            transaction_id: str | None = None
+            uniconfig_server_id: str | None = None
             uniconfig_url_base: str = UNICONFIG_URL_BASE
 
         class WorkerOutput(TaskOutput):
@@ -44,7 +42,7 @@ class SnapshotManager(ServiceWorkersImpl):
 
         def execute(self, worker_input: WorkerInput) -> TaskResult[WorkerOutput]:
             if self.UniconfigApi.request is None:
-                raise Exception(f'Failed to create request {self.UniconfigApi.request}')
+                raise Exception(f"Failed to create request {self.UniconfigApi.request}")
 
             response = requests.request(
                 url=worker_input.uniconfig_url_base + self.UniconfigApi.uri,
@@ -58,11 +56,10 @@ class SnapshotManager(ServiceWorkersImpl):
                     )
                 ),
                 cookies=uniconfig_zone_to_cookie(
-                    uniconfig_server_id=worker_input.uniconfig_server_id,
-                    transaction_id=worker_input.transaction_id
+                    uniconfig_server_id=worker_input.uniconfig_server_id, transaction_id=worker_input.transaction_id
                 ),
                 headers=dict(UNICONFIG_HEADERS),
-                params=UNICONFIG_REQUEST_PARAMS
+                params=UNICONFIG_REQUEST_PARAMS,
             )
 
             return handle_response(response, self.WorkerOutput)
@@ -76,13 +73,13 @@ class SnapshotManager(ServiceWorkersImpl):
             transform_string_to_json_valid: bool = True
 
         class WorkerDefinition(TaskDefinition):
-            name: str = 'UNICONFIG_Delete_snapshot_RPC'
-            description: str = 'Delete Uniconfig snapshot'
+            name: str = "UNICONFIG_Delete_snapshot_RPC"
+            description: str = "Delete Uniconfig snapshot"
 
         class WorkerInput(TaskInput):
             snapshot_name: str
             transaction_id: str
-            uniconfig_server_id: Optional[str] = None
+            uniconfig_server_id: str | None = None
             uniconfig_url_base: str = UNICONFIG_URL_BASE
 
         class WorkerOutput(TaskOutput):
@@ -90,7 +87,7 @@ class SnapshotManager(ServiceWorkersImpl):
 
         def execute(self, worker_input: WorkerInput) -> TaskResult[WorkerOutput]:
             if self.UniconfigApi.request is None:
-                raise Exception(f'Failed to create request {self.UniconfigApi.request}')
+                raise Exception(f"Failed to create request {self.UniconfigApi.request}")
 
             response = requests.request(
                 url=worker_input.uniconfig_url_base + self.UniconfigApi.uri,
@@ -103,11 +100,10 @@ class SnapshotManager(ServiceWorkersImpl):
                     )
                 ),
                 cookies=uniconfig_zone_to_cookie(
-                    uniconfig_server_id=worker_input.uniconfig_server_id,
-                    transaction_id=worker_input.transaction_id
+                    uniconfig_server_id=worker_input.uniconfig_server_id, transaction_id=worker_input.transaction_id
                 ),
                 headers=dict(UNICONFIG_HEADERS),
-                params=UNICONFIG_REQUEST_PARAMS
+                params=UNICONFIG_REQUEST_PARAMS,
             )
 
             return handle_response(response, self.WorkerOutput)
@@ -122,14 +118,14 @@ class SnapshotManager(ServiceWorkersImpl):
             transform_string_to_json_valid: bool = True
 
         class WorkerDefinition(TaskDefinition):
-            name: str = 'UNICONFIG_Replace_config_with_snapshot_RPC'
-            description: str = 'Replace Uniconfig CONFIG datastore with a snapshot'
+            name: str = "UNICONFIG_Replace_config_with_snapshot_RPC"
+            description: str = "Replace Uniconfig CONFIG datastore with a snapshot"
 
         class WorkerInput(TaskInput):
             snapshot_name: str
             node_ids: list[str]
             transaction_id: str
-            uniconfig_server_id: Optional[str] = None
+            uniconfig_server_id: str | None = None
             uniconfig_url_base: str = UNICONFIG_URL_BASE
 
         class WorkerOutput(TaskOutput):
@@ -137,7 +133,7 @@ class SnapshotManager(ServiceWorkersImpl):
 
         def execute(self, worker_input: WorkerInput) -> TaskResult[WorkerOutput]:
             if self.UniconfigApi.request is None:
-                raise Exception(f'Failed to create request {self.UniconfigApi.request}')
+                raise Exception(f"Failed to create request {self.UniconfigApi.request}")
 
             response = requests.request(
                 url=worker_input.uniconfig_url_base + self.UniconfigApi.uri,
@@ -151,11 +147,10 @@ class SnapshotManager(ServiceWorkersImpl):
                     )
                 ),
                 cookies=uniconfig_zone_to_cookie(
-                    uniconfig_server_id=worker_input.uniconfig_server_id,
-                    transaction_id=worker_input.transaction_id
+                    uniconfig_server_id=worker_input.uniconfig_server_id, transaction_id=worker_input.transaction_id
                 ),
                 headers=dict(UNICONFIG_HEADERS),
-                params=UNICONFIG_REQUEST_PARAMS
+                params=UNICONFIG_REQUEST_PARAMS,
             )
 
             return handle_response(response, self.WorkerOutput)
