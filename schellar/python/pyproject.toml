@@ -5,20 +5,21 @@ build-backend = "poetry.core.masonry.api"
 [tool.poetry.dependencies]
 python = "^3.10"
 pydantic = "^2"
-frinx-python-sdk = "^1.1"
-frinx-schellar-api = { git = "https://github.com/FRINXio/frinx-services-python-api.git", rev = "frinx-schellar-api_v1.0.0", subdirectory = "schellar/python/" }
+frinx-python-sdk = "^2"
+frinx-schellar-api = { git = "https://github.com/FRINXio/frinx-services-python-api.git", tag = "6.0.0", subdirectory = "schellar/python/" }
 
 [tool.poetry.group.dev.dependencies]
-ruff = "^0.0.263"
-mypy = "^1.5.1"
-pyright = "^1.1.317"
+ruff = "^0"
+mypy = "^1"
+pyright = "^1"
+types-requests = "^2.31.0.2"
 
 [tool.poetry]
 packages = [{ include = "frinx_worker" }]
 name = "frinx-schellar-worker"
 description = "Conductor worker for Schellar service"
 authors = ["Jozef Volak <jozef.volak@elisapolystar.com>"]
-version = "1.0.0"
+version = "1.1.0"
 readme = ["README.md", "CHANGELOG.md", "RELEASE.md"]
 keywords = ["frinx-machine", "schellar", "worker"]
 license = "Apache 2.0"
@@ -34,32 +35,33 @@ reportIncompatibleVariableOverride = false
 
 [tool.ruff]
 line-length = 120
+target-version = "py310"
+
+[tool.ruff.lint]
 extend-select = ['Q', 'RUF100', 'C90', 'UP', 'I', 'E', 'F', 'N', 'PL']
 fixable = ["A", "B", "C", "D", "E", "F", "G", "I", "N", "Q", "S", "T", "W", "ANN", "ARG", "BLE", "COM", "DJ", "DTZ", "EM", "ERA", "EXE", "FBT", "ICN", "INP", "ISC", "NPY", "PD", "PGH", "PIE", "PL", "PT", "PTH", "PYI", "RET", "RSE", "RUF", "SIM", "SLF", "TCH", "TID", "TRY", "UP", "YTT"]
 
-target-version = "py310"
-
-[tool.ruff.isort]
+[tool.ruff.lint.isort]
 known-first-party = ['frinx_worker', 'tests']
 force-single-line = true
 
-[tool.ruff.flake8-quotes]
-inline-quotes = 'single'
+[tool.ruff.lint.flake8-quotes]
+inline-quotes = 'double'
 multiline-quotes = 'double'
 
-[tool.ruff.mccabe]
+[tool.ruff.lint.mccabe]
 max-complexity = 14
 
-[tool.ruff.pydocstyle]
+[tool.ruff.lint.pydocstyle]
 convention = "google"
 
-[tool.ruff.pylint]
+[tool.ruff.lint.pylint]
 max-args = 10
 
-[tool.ruff.pyupgrade]
+[tool.ruff.lint.pyupgrade]
 keep-runtime-typing = true
 
-[tool.ruff.pep8-naming]
+[tool.ruff.lint.pep8-naming]
 classmethod-decorators = ["classmethod", "pydantic.field_validator", "pydantic.model_validator"]
 
 [tool.mypy]
