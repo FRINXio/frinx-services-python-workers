@@ -20,7 +20,7 @@ def get_indentation(line: str) -> int:
     Returns:
     The number of leading spaces.
     """
-    first_code_line = line.split('\n')[1]
+    first_code_line = line.split("\n")[1]
     leading_spaces = len(first_code_line) - len(first_code_line.lstrip())
     return leading_spaces
 
@@ -39,12 +39,12 @@ def sanitize_lines(func: str, indent: int) -> str:
     new_lines: list[str] = []
     for line in func.splitlines():
         new_line = line[indent:]
-        if new_line.startswith('@'):
+        if new_line.startswith("@"):
             continue
-        if new_line.startswith('def '):
+        if new_line.startswith("def "):
             continue
         new_lines.append(new_line)
-    return '\n'.join(new_lines)
+    return "\n".join(new_lines)
 
 
 def python_lambda_stringify(func: Callable[[Any], str]) -> Callable[[], str]:
@@ -57,6 +57,7 @@ def python_lambda_stringify(func: Callable[[Any], str]) -> Callable[[], str]:
     Returns:
     A string representation of the modified function.
     """
+
     def wrap() -> str:
         # Get function in string format
         func_as_string = inspect.getsource(func)
@@ -64,6 +65,5 @@ def python_lambda_stringify(func: Callable[[Any], str]) -> Callable[[], str]:
         indent = get_indentation(func_as_string)
         # Return function without decorators, with decreased indentation, and without custom defined def
         return sanitize_lines(func_as_string, indent)
+
     return wrap
-
-
