@@ -21,7 +21,7 @@ packages = [{ include = "frinx_worker" }]
 name = "frinx-uniconfig-worker"
 description = "Conductor worker for Frinx Uniconfig"
 authors = ["Jozef Volak <jozef.volak@elisapolystar.com>"]
-version = "2.0.2"
+version = "2.1.0"
 readme = ["README.md", "CHANGELOG.md", "RELEASE.md"]
 keywords = ["frinx-machine", "uniconfig", "worker"]
 license = "Apache 2.0"
