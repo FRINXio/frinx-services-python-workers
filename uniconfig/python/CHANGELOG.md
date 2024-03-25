@@ -20,3 +20,7 @@
 # 2.0.1
 - Update dev deps
 - Remove obsolete parameters from request APIs
+
+# 2.0.2
+- Implemented worker: connection-manager get-installed-nodes RPC
+- Implemented worker: connection-manager check-installed-nodes RPC

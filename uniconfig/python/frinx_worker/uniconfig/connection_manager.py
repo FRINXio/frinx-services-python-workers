@@ -12,6 +12,7 @@ from frinx.common.worker.task_def import TaskInput
 from frinx.common.worker.task_def import TaskOutput
 from frinx.common.worker.task_result import TaskResult
 from frinx.common.worker.worker import WorkerImpl
+from frinx_api.uniconfig.connection.manager import MountType
 
 from . import class_to_json
 from . import handle_response
@@ -192,4 +193,82 @@ class ConnectionManager(ServiceWorkersImpl):
                 params=UNICONFIG_REQUEST_PARAMS,
             )
 
+            return handle_response(response, self.WorkerOutput)
+
+    class CheckInstalledNodes(WorkerImpl):
+        from frinx_api.uniconfig.connection.manager.checkinstallednodes import Input
+        from frinx_api.uniconfig.connection.manager.checkinstallednodes import TargetNodes
+        from frinx_api.uniconfig.rest_api import CheckInstalledNodes as UniconfigApi
+
+        class ExecutionProperties(TaskExecutionProperties):
+            exclude_empty_inputs: bool = True
+            transform_string_to_json_valid: bool = True
+
+        class WorkerDefinition(TaskDefinition):
+            name: str = "UNICONFIG_Check_installed_nodes_RPC"
+            description: str = "Check list of installed nodes in Uniconfig"
+
+        class WorkerInput(TaskInput):
+            uniconfig_url_base: str = UNICONFIG_URL_BASE
+            nodes: list[str]
+
+        class WorkerOutput(TaskOutput):
+            output: DictAny
+
+        def execute(self, worker_input: WorkerInput) -> TaskResult[WorkerOutput]:
+            if self.UniconfigApi.request is None:
+                raise Exception(f"Failed to create request {self.UniconfigApi.request}")
+
+            target_nodes = self.TargetNodes(node=worker_input.nodes)
+            response = requests.request(
+                url=worker_input.uniconfig_url_base + self.UniconfigApi.uri,
+                method=self.UniconfigApi.method,
+                data=class_to_json(
+                    self.UniconfigApi.request(
+                        input=self.Input(
+                            target_nodes=target_nodes,
+                        ),
+                    ),
+                ),
+                headers=dict(UNICONFIG_HEADERS),
+                params=UNICONFIG_REQUEST_PARAMS,
+            )
+            return handle_response(response, self.WorkerOutput)
+
+    class GetInstalledNodes(WorkerImpl):
+        from frinx_api.uniconfig.connection.manager.getinstallednodes import Input
+        from frinx_api.uniconfig.rest_api import GetInstalledNodes as UniconfigApi
+
+        class ExecutionProperties(TaskExecutionProperties):
+            exclude_empty_inputs: bool = True
+            transform_string_to_json_valid: bool = True
+
+        class WorkerDefinition(TaskDefinition):
+            name: str = "UNICONFIG_Get_installed_nodes_RPC"
+            description: str = "Get list of installed nodes in Uniconfig"
+
+        class WorkerInput(TaskInput):
+            uniconfig_url_base: str = UNICONFIG_URL_BASE
+            mount_type: MountType = MountType.uniconfig_preferred_connection
+
+        class WorkerOutput(TaskOutput):
+            output: DictAny
+
+        def execute(self, worker_input: WorkerInput) -> TaskResult[WorkerOutput]:
+            if self.UniconfigApi.request is None:
+                raise Exception(f"Failed to create request {self.UniconfigApi.request}")
+
+            response = requests.request(
+                url=worker_input.uniconfig_url_base + self.UniconfigApi.uri,
+                method=self.UniconfigApi.method,
+                data=class_to_json(
+                    self.UniconfigApi.request(
+                        input=self.Input(
+                            mount_type=worker_input.mount_type,
+                        ),
+                    ),
+                ),
+                headers=dict(UNICONFIG_HEADERS),
+                params=UNICONFIG_REQUEST_PARAMS,
+            )
             return handle_response(response, self.WorkerOutput)
