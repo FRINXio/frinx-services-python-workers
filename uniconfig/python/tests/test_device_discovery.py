@@ -1,6 +1,6 @@
 import unittest
 
-from frinx_api.uniconfig.device.discovery.discover import Address
+from frinx_api.uniconfig.device.discovery.discover import Addres
 from frinx_api.uniconfig.device.discovery.discover import TcpPortItem
 from frinx_api.uniconfig.device.discovery.discover import UdpPortItem
 
@@ -55,7 +55,7 @@ class TestDeviceDiscovery(unittest.TestCase):
     def test_validate_ip_single_ip_v4(self) -> None:
         ip = "192.168.0.59"
         expected = [
-            Address(
+            Addres(
                 end_ipv6_address=None,
                 ip_address="192.168.0.59",
                 hostname=None,
@@ -72,7 +72,7 @@ class TestDeviceDiscovery(unittest.TestCase):
     def test_validate_ip_range_ip_v4(self) -> None:
         ip = "192.168.0.59-192.168.0.90"
         expected = [
-            Address(
+            Addres(
                 end_ipv6_address=None,
                 ip_address=None,
                 hostname=None,
@@ -89,7 +89,7 @@ class TestDeviceDiscovery(unittest.TestCase):
     def test_validate_ip_network_v4(self) -> None:
         ip = "192.168.0.0/24"
         expected = [
-            Address(
+            Addres(
                 end_ipv6_address=None,
                 ip_address=None,
                 hostname=None,
@@ -106,7 +106,7 @@ class TestDeviceDiscovery(unittest.TestCase):
     def test_validate_ip_single_ip_v6(self) -> None:
         ip = "0000:0000:0000:0000:0000:ffff:c0a8:003b"
         expected = [
-            Address(
+            Addres(
                 end_ipv6_address=None,
                 ip_address="::ffff:c0a8:3b",
                 hostname=None,
@@ -122,7 +122,7 @@ class TestDeviceDiscovery(unittest.TestCase):
 
         ip = "::ffff:c0a8:3b"
         expected = [
-            Address(
+            Addres(
                 end_ipv6_address=None,
                 ip_address="::ffff:c0a8:3b",
                 hostname=None,
@@ -139,7 +139,7 @@ class TestDeviceDiscovery(unittest.TestCase):
     def test_validate_ip_range_ip_v6(self) -> None:
         ip = "0000:0000:0000:0000:0000:ffff:c0a8:003b-0000:0000:0000:0000:0000:ffff:c0a8:005a"
         expected = [
-            Address(
+            Addres(
                 end_ipv6_address="::ffff:c0a8:5a",
                 ip_address=None,
                 hostname=None,
@@ -155,7 +155,7 @@ class TestDeviceDiscovery(unittest.TestCase):
 
         ip = "::ffff:c0a8:3b-::ffff:c0a8:5a"
         expected = [
-            Address(
+            Addres(
                 end_ipv6_address="::ffff:c0a8:5a",
                 ip_address=None,
                 hostname=None,
@@ -172,7 +172,7 @@ class TestDeviceDiscovery(unittest.TestCase):
     def test_validate_ip_network_v6(self) -> None:
         ip = "::ffff:c0a8:0/128"
         expected = [
-            Address(
+            Addres(
                 end_ipv6_address=None,
                 ip_address=None,
                 hostname=None,

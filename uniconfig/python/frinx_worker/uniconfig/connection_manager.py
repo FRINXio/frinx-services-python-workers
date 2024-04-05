@@ -21,6 +21,7 @@ from . import handle_response
 class ConnectionManager(ServiceWorkersImpl):
     class InstallNode(WorkerImpl):
         from frinx_api.uniconfig.connection.manager.installnode import Cli
+        from frinx_api.uniconfig.connection.manager.installnode import Gnmi
         from frinx_api.uniconfig.connection.manager.installnode import Input
         from frinx_api.uniconfig.connection.manager.installnode import Netconf
         from frinx_api.uniconfig.rest_api import InstallNode as UniconfigApi
@@ -35,7 +36,7 @@ class ConnectionManager(ServiceWorkersImpl):
 
         class WorkerInput(TaskInput):
             node_id: str
-            connection_type: Literal["netconf", "cli"]
+            connection_type: Literal["netconf", "cli", "gnmi"]
             install_params: DictAny
             uniconfig_url_base: str = UNICONFIG_URL_BASE
 
@@ -58,6 +59,9 @@ class ConnectionManager(ServiceWorkersImpl):
                             else None,
                             netconf=self.Netconf(**worker_input.install_params)
                             if worker_input.connection_type == "netconf"
+                            else None,
+                            gnmi=self.Gnmi(**worker_input.install_params)
+                            if worker_input.connection_type == "gnmi"
                             else None,
                         ),
                     ),
@@ -82,7 +86,7 @@ class ConnectionManager(ServiceWorkersImpl):
 
         class WorkerInput(TaskInput):
             node_id: str
-            connection_type: Literal["netconf", "cli"]
+            connection_type: Literal["netconf", "cli", "gnmi"]
             uniconfig_url_base: str = UNICONFIG_URL_BASE
 
         class WorkerOutput(TaskOutput):
