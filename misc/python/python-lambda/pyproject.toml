@@ -18,7 +18,7 @@ packages = [{ include = "frinx_worker" }]
 name = "frinx-python-lambda"
 description = "Conductor Python Lambda worker for Frinx Machine"
 authors = ["Jozef Volak <jozef.volak@elisapolystar.com>"]
-version = "0.0.0"
+version = "1.0.1"
 readme = ["README.md", "CHANGELOG.md"]
 keywords = ["frinx-machine", "python-lambda", "worker"]
 license = "Apache 2.0"
