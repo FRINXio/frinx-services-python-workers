@@ -21,6 +21,8 @@ from frinx_api.inventory import AddDevicePayload
 from frinx_api.inventory import CreateLabelInput
 from frinx_api.inventory import CreateLabelMutation
 from frinx_api.inventory import CreateLabelPayload
+from frinx_api.inventory import DeleteDeviceMutation
+from frinx_api.inventory import DeleteDevicePayload
 from frinx_api.inventory import Device
 from frinx_api.inventory import DeviceConnection
 from frinx_api.inventory import DeviceEdge
@@ -840,6 +842,56 @@ class InventoryService(ServiceWorkersImpl):
                     dynamic_tasks=dynamic_tasks,
                 ),
             )
+
+    class InventoryDeleteDevice(WorkerImpl):
+        DELETE_DEVICE: DeleteDevicePayload = DeleteDevicePayload(device=Device(name=True, id=True))
+
+        delete_device: DeleteDeviceMutation = DeleteDeviceMutation(
+            payload=DELETE_DEVICE,
+            id="deviceId"
+        )
+
+        class ExecutionProperties(TaskExecutionProperties):
+            exclude_empty_inputs: bool = True
+            transform_string_to_json_valid: bool = True
+
+        class WorkerDefinition(TaskDefinition):
+            name: str = "INVENTORY_delete_device"
+            description: str = "Delete device from inventory database"
+            labels: ListStr = ["BASICS", "MAIN", "INVENTORY"]
+            timeout_seconds: int = 3600
+            response_timeout_seconds: int = 3600
+
+        class WorkerInput(TaskInput):
+            device_id: str
+            """
+            Identifier of the removed device.
+            """
+
+        class WorkerOutput(TaskOutput):
+            query: str
+            """
+            Request GraphQL query.
+            """
+            variable: DictAny | None = None
+            """
+            Request GraphQL variables.
+            """
+            response_body: Any
+            """
+            Response containing the name and identifier of the removed device.
+            """
+            response_code: int
+            """
+            Status of the operation.
+            """
+
+        def execute(self, worker_input: WorkerInput) -> TaskResult[WorkerOutput]:
+            self.delete_device.id = worker_input.device_id
+            query = self.delete_device.render()
+
+            response = execute_inventory_query(query=query.query, variables=query.variable)
+            return response_handler(query, response)
 
 
 def response_handler(query: QueryForm, response: InventoryOutput) -> TaskResult:
