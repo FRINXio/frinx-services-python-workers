@@ -46,7 +46,7 @@ class PythonLambda(WorkerImpl):
         cls.VISITOR.visit(ast.parse(code))
 
     @staticmethod
-    @timeout(5)  # type: ignore[misc]
+    @timeout(5, use_signals=False)  # type: ignore[misc]
     def _process_code(code: str, worker_inputs: DictAny) -> DictAny:
         ex_locals: dict[str, Any] = {"worker_input": worker_inputs}
         exec(code, None, ex_locals)
