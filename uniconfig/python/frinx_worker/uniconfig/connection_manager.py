@@ -1,3 +1,4 @@
+import urllib.parse
 from typing import Literal
 
 import requests
@@ -276,3 +277,70 @@ class ConnectionManager(ServiceWorkersImpl):
                 params=UNICONFIG_REQUEST_PARAMS,
             )
             return handle_response(response, self.WorkerOutput)
+
+    class UpdateInstallParameters(WorkerImpl):
+        class ExecutionProperties(TaskExecutionProperties):
+            exclude_empty_inputs: bool = True
+            transform_string_to_json_valid: bool = True
+
+        class WorkerDefinition(TaskDefinition):
+            name: str = "UNICONFIG_Update_install_parameters"
+            description: str = "Update install parameters of a node in Uniconfig"
+
+        class WorkerInput(TaskInput):
+            node_id: str
+            """
+            Identifier of the node in the UniConfig network topology.
+            """
+            connection_type: Literal["netconf", "cli", "gnmi"]
+            """
+            Type of connection to the device.
+            """
+            install_params: DictAny
+            """
+            Updated installation parameters. All installation parameters are replaced with the new values.
+            If a parameter is not present in the dictionary, it is removed from the original node.
+            """
+            uniconfig_url_base: str = UNICONFIG_URL_BASE
+            """
+            Base URL of the UniConfig RESTCONF server.
+            """
+
+        class WorkerOutput(TaskOutput):
+            output: DictAny
+            """
+            Response from the UniConfig server.
+            It contains empty dictionary, if the operation was successful.
+            In case of an error, it contains the error structure.
+            """
+
+        def execute(self, worker_input: WorkerInput) -> TaskResult[WorkerOutput]:
+            topology_id = self._derive_topology_id(worker_input.connection_type)
+            escaped_node_id = urllib.parse.quote(worker_input.node_id)
+            response = requests.request(
+                url=f"{worker_input.uniconfig_url_base}/data/network-topology"
+                    f"/topology={topology_id}/node={escaped_node_id}",
+                method="PUT",
+                data=class_to_json({
+                    "node": [
+                        {
+                            "node-id": worker_input.node_id,
+                            **worker_input.install_params,
+                        }
+                    ]
+                }
+                ),
+                headers=dict(UNICONFIG_HEADERS),
+                params=UNICONFIG_REQUEST_PARAMS,
+            )
+            return handle_response(response, self.WorkerOutput)
+
+        @staticmethod
+        def _derive_topology_id(connection_type: Literal["netconf", "cli", "gnmi"]) -> str:
+            if connection_type == "netconf":
+                return "topology-netconf"
+            if connection_type == "cli":
+                return "cli"
+            if connection_type == "gnmi":
+                return "gnmi-topology"
+            raise ValueError(f"Unknown connection type {connection_type}")
