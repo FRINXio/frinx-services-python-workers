@@ -15,7 +15,7 @@ from frinx.common.worker.task_def import TaskInput
 from frinx.common.worker.task_def import TaskOutput
 from frinx.common.worker.task_result import TaskResult
 from frinx_api.uniconfig import OperationsDiscoverPostResponse
-from frinx_api.uniconfig.device.discovery.discover import Addres
+from frinx_api.uniconfig.device.discovery.discover import Address
 from frinx_api.uniconfig.device.discovery.discover import Input
 from frinx_api.uniconfig.device.discovery.discover import TcpPortItem
 from frinx_api.uniconfig.device.discovery.discover import UdpPortItem
@@ -42,26 +42,26 @@ class DeviceDiscoveryWorkers(ServiceWorkersImpl):
             labels: ListStr = ["BASICS", "UNICONFIG"]
 
         class WorkerInput(TaskInput):
-            ip: list[Addres]
+            ip: list[Address]
             tcp_port: list[TcpPortItem] | None = None
             udp_port: list[UdpPortItem] | None = Field(None, max_length=500)
 
             @pydantic.field_validator("ip", mode="before")
-            def validate_ip(cls, ip: str) -> list[Addres]:
+            def validate_ip(cls, ip: str) -> list[Address]:
                 ip_list = get_list_of_ip_addresses(ip)
                 if len(ip_list) == 1:
                     if "/" in ip_list[0]:
-                        address = Addres(network=str(IPvAnyNetwork(ip_list[0])))
+                        address = Address(network=str(IPvAnyNetwork(ip_list[0])))
                     else:
-                        address = Addres(ip_address=str(IPvAnyAddress(ip_list[0])))
+                        address = Address(ip_address=str(IPvAnyAddress(ip_list[0])))
                 else:
                     try:
-                        address = Addres(
+                        address = Address(
                             start_ipv4_address=str(IPv4Address(ip_list[0])),
                             end_ipv4_address=str(IPv4Address(ip_list[1])),
                         )
                     except ValueError:
-                        address = Addres(
+                        address = Address(
                             start_ipv6_address=str(IPv6Address(ip_list[0])),
                             end_ipv6_address=str(IPv6Address(ip_list[1])),
                         )

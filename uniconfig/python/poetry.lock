@@ -306,7 +306,7 @@ websockets = ">=12,<13"
 
 [[package]]
 name = "frinx-uniconfig-api"
-version = "1.0.0"
+version = "1.1.0"
 description = "Python SDK for Frinx Machine Workflow Manager"
 optional = false
 python-versions = "^3.8"
@@ -317,8 +317,11 @@ develop = false
 pydantic = "^2"
 
 [package.source]
-type = "directory"
-url = "../../../frinx-services-python-api/uniconfig/python"
+type = "git"
+url = "https://github.com/FRINXio/frinx-services-python-api.git"
+reference = "frinx-uniconfig-api_v1.1.0"
+resolved_reference = "db7052b056ab0cdd979cefdccb66a0a616df742d"
+subdirectory = "uniconfig/python"
 
 [[package]]
 name = "frozenlist"
@@ -1118,4 +1121,4 @@ multidict = ">=4.0"
 [metadata]
 lock-version = "2.0"
 python-versions = "^3.10"
-content-hash = "05235e860c7eef7a42554bd121149d40a93b5bcda7e4f805085a1e6b01032db2"
+content-hash = "cf8a7e5623e6dfa283a5685eca4894e75b89e783a24b92308d842e9d08cd6614"
