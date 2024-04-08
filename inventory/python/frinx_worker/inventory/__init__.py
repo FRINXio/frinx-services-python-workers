@@ -21,6 +21,8 @@ from frinx_api.inventory import AddDevicePayload
 from frinx_api.inventory import CreateLabelInput
 from frinx_api.inventory import CreateLabelMutation
 from frinx_api.inventory import CreateLabelPayload
+from frinx_api.inventory import DeleteDeviceMutation
+from frinx_api.inventory import DeleteDevicePayload
 from frinx_api.inventory import Device
 from frinx_api.inventory import DeviceConnection
 from frinx_api.inventory import DeviceEdge
@@ -37,6 +39,9 @@ from frinx_api.inventory import LabelsQuery
 from frinx_api.inventory import PageInfo
 from frinx_api.inventory import UninstallDeviceMutation
 from frinx_api.inventory import UninstallDevicePayload
+from frinx_api.inventory import UpdateDeviceInput
+from frinx_api.inventory import UpdateDeviceMutation
+from frinx_api.inventory import UpdateDevicePayload
 from frinx_api.inventory import Zone
 from frinx_api.inventory import ZoneEdge
 from frinx_api.inventory import ZonesConnection
@@ -53,6 +58,22 @@ class PaginationCursorType(str, Enum):
     AFTER = "after"
     BEFORE = "before"
     NONE = None
+
+
+class DeviceInput(TaskInput):
+    mount_parameters: DictAny
+    service_state: DeviceServiceState
+    device_size: DeviceSize
+    vendor: str | None = None
+    model: str | None = None
+    label_ids: ListStr | None = None
+    blueprint_id: str | None = None
+    address: str | None = None
+    port: int | None = None
+    username: str | None = None
+    password: str | None = None
+    version: str | None = None
+    device_type: str | None = None
 
 
 class InventoryService(ServiceWorkersImpl):
@@ -484,76 +505,21 @@ class InventoryService(ServiceWorkersImpl):
             timeout_seconds: int = 3600
             response_timeout_seconds: int = 3600
 
-        class WorkerInput(TaskInput):
+        class WorkerInput(DeviceInput):
             device_name: str
             zone_id: str
-            mount_parameters: DictAny
-            service_state: DeviceServiceState
-            device_size: DeviceSize
-            vendor: str | None = None
-            model: str | None = None
-            label_ids: ListStr | None = None
-            blueprint_id: str | None = None
-            address: str | None = None
-            port: int | None = None
-            username: str | None = None
-            password: str | None = None
-            version: str | None = None
-            device_type: str | None = None
 
         class WorkerOutput(TaskOutput):
             query: str
             variable: DictAny | None = None
             response_body: Any
 
-        @staticmethod
-        def _get_zone_id(zone_name: str) -> str:
-            query = ZonesQuery(payload=ZonesConnection(edges=ZoneEdge(node=Zone(name=True, id=True)))).render()
-
-            response = execute_inventory_query(query=query.query, variables=query.variable)
-
-            for node in response.data["zones"]["edges"]:
-                if node["node"]["name"] == zone_name:
-                    return str(node["node"]["id"])
-
-            raise Exception("Device " + zone_name + " missing in inventory")
-
         def execute(self, worker_input: WorkerInput) -> TaskResult[WorkerOutput]:
             self.add_device.input.name = worker_input.device_name
-            self.add_device.input.zone_id = self._get_zone_id(worker_input.zone_id)
-            self.add_device.input.service_state = worker_input.service_state
-            self.add_device.input.device_size = worker_input.device_size
-            self.add_device.input.mount_parameters = json.dumps(worker_input.mount_parameters)
-
-            if worker_input.label_ids:
-                self.add_device.input.label_ids = worker_input.label_ids
-
-            if worker_input.vendor:
-                self.add_device.input.vendor = worker_input.vendor
-
-            if worker_input.model:
-                self.add_device.input.model = worker_input.model
-
-            if worker_input.device_type:
-                self.add_device.input.device_type = worker_input.device_type
-
-            if worker_input.version:
-                self.add_device.input.version = worker_input.version
-
-            if worker_input.address:
-                self.add_device.input.address = worker_input.address
-
-            if worker_input.port:
-                self.add_device.input.port = worker_input.port
-
-            if worker_input.username:
-                self.add_device.input.username = worker_input.username
-
-            if worker_input.password:
-                self.add_device.input.password = worker_input.password
+            self.add_device.input.zone_id = InventoryService._get_zone_id(worker_input.zone_id)
+            InventoryService._set_device_input_fields(self.add_device.input, worker_input)
 
             query = self.add_device.render()
-
             response = execute_inventory_query(query=query.query, variables=query.variable)
             return response_handler(query, response)
 
@@ -840,6 +806,137 @@ class InventoryService(ServiceWorkersImpl):
                     dynamic_tasks=dynamic_tasks,
                 ),
             )
+
+    class InventoryDeleteDevice(WorkerImpl):
+        DELETE_DEVICE: DeleteDevicePayload = DeleteDevicePayload(device=Device(name=True, id=True))
+
+        delete_device: DeleteDeviceMutation = DeleteDeviceMutation(
+            payload=DELETE_DEVICE,
+            id="deviceId"
+        )
+
+        class ExecutionProperties(TaskExecutionProperties):
+            exclude_empty_inputs: bool = True
+            transform_string_to_json_valid: bool = True
+
+        class WorkerDefinition(TaskDefinition):
+            name: str = "INVENTORY_delete_device"
+            description: str = "Delete device from inventory database"
+            labels: ListStr = ["BASICS", "MAIN", "INVENTORY"]
+            timeout_seconds: int = 3600
+            response_timeout_seconds: int = 3600
+
+        class WorkerInput(TaskInput):
+            device_id: str
+            """
+            Identifier of the removed device.
+            """
+
+        class WorkerOutput(TaskOutput):
+            query: str
+            """
+            Request GraphQL query.
+            """
+            variable: DictAny | None = None
+            """
+            Request GraphQL variables.
+            """
+            response_body: Any
+            """
+            Response containing the name and identifier of the removed device.
+            """
+            response_code: int
+            """
+            Status of the operation.
+            """
+
+        def execute(self, worker_input: WorkerInput) -> TaskResult[WorkerOutput]:
+            self.delete_device.id = worker_input.device_id
+            query = self.delete_device.render()
+
+            response = execute_inventory_query(query=query.query, variables=query.variable)
+            return response_handler(query, response)
+
+    class InventoryUpdateDevice(WorkerImpl):
+        UPDATE_DEVICE: UpdateDevicePayload = UpdateDevicePayload(device=Device(name=True, id=True, isInstalled=True))
+
+        update_device: UpdateDeviceMutation = UpdateDeviceMutation(
+            payload=UPDATE_DEVICE,
+            id="deviceId",
+            input=UpdateDeviceInput(
+                mountParameters="{}",
+            ),
+        )
+
+        class ExecutionProperties(TaskExecutionProperties):
+            exclude_empty_inputs: bool = True
+            transform_string_to_json_valid: bool = True
+
+        class WorkerDefinition(TaskDefinition):
+            name: str = "INVENTORY_update_device"
+            description: str = "Update device in inventory database"
+            labels: ListStr = ["BASICS", "MAIN", "INVENTORY"]
+            timeout_seconds: int = 3600
+            response_timeout_seconds: int = 3600
+
+        class WorkerInput(DeviceInput):
+            device_id: str
+            location_id: str | None = None
+
+        class WorkerOutput(TaskOutput):
+            query: str
+            variable: DictAny | None = None
+            response_code: int
+            response_body: Any
+
+        def execute(self, worker_input: WorkerInput) -> TaskResult[WorkerOutput]:
+            self.update_device.id = worker_input.device_id
+            InventoryService._set_device_input_fields(self.update_device.input, worker_input)
+            if worker_input.location_id:
+                self.update_device.input.location_id = worker_input.location_id
+
+            query = self.update_device.render()
+            response = execute_inventory_query(query=query.query, variables=query.variable)
+            return response_handler(query, response)
+
+    @staticmethod
+    def _set_device_input_fields(
+            query_input: UpdateDeviceInput | AddDeviceInput,
+            device_input: DeviceInput
+    ) -> None:
+        query_input.service_state = device_input.service_state
+        query_input.device_size = device_input.device_size
+        query_input.mount_parameters = json.dumps(device_input.mount_parameters)
+        if device_input.label_ids:
+            query_input.label_ids = device_input.label_ids
+        if device_input.vendor:
+            query_input.vendor = device_input.vendor
+        if device_input.model:
+            query_input.model = device_input.model
+        if device_input.device_type:
+            query_input.device_type = device_input.device_type
+        if device_input.version:
+            query_input.version = device_input.version
+        if device_input.address:
+            query_input.address = device_input.address
+        if device_input.port:
+            query_input.port = device_input.port
+        if device_input.username:
+            query_input.username = device_input.username
+        if device_input.password:
+            query_input.password = device_input.password
+
+    @staticmethod
+    def _get_zone_id(zone_name: str) -> str:
+        query = ZonesQuery(payload=ZonesConnection(edges=ZoneEdge(node=Zone(name=True, id=True)))).render()
+
+        response = execute_inventory_query(query=query.query, variables=query.variable)
+
+        for node in response.data["zones"]["edges"]:
+            if node["node"]["name"] == zone_name:
+                return str(node["node"]["id"])
+
+        raise Exception("Device " + zone_name + " missing in inventory")
 
 
 def response_handler(query: QueryForm, response: InventoryOutput) -> TaskResult:

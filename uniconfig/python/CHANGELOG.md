@@ -24,3 +24,7 @@
 # 2.1.0
 - Implemented worker: connection-manager get-installed-nodes RPC
 - Implemented worker: connection-manager check-installed-nodes RPC
+
+# 2.2.0
+- Support gNMI installation parameters
+- Implemented worker: update-install-parameters
