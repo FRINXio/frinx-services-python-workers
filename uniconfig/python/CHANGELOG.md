@@ -28,3 +28,6 @@
 # 2.2.0
 - Support gNMI installation parameters
 - Implemented worker: update-install-parameters
+
+# 2.2.1
+- Used fixed version of frinx-services-python-api v1.1.1 - fixed discovery RPC model.
