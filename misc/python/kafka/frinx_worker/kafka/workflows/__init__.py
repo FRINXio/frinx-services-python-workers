@@ -64,6 +64,13 @@ class KafkaProducer(WorkflowImpl):
             type=FrontendWFInputFieldType.TEXTAREA,
         )
 
+        headers: WorkflowInputField = WorkflowInputField(
+            name="headers",
+            frontend_default_value="""{}""",
+            description="Kafka headers: dictionary with key-value pairs",
+            type=FrontendWFInputFieldType.TEXTAREA,
+        )
+
     class WorkflowOutput(WorkflowImpl.WorkflowOutput): ...
 
     def workflow_builder(self, workflow_inputs: WorkflowInput) -> None:
@@ -79,6 +86,7 @@ class KafkaProducer(WorkflowImpl):
                         security=workflow_inputs.security.wf_input,
                         ssl_conf=workflow_inputs.ssl_conf.wf_input,
                         key=workflow_inputs.key.wf_input,
+                        headers=workflow_inputs.headers.wf_input,
                     )
                 ),
             )
