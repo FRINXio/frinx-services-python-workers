@@ -2,6 +2,7 @@ import json
 from typing import Any
 
 from frinx.common.conductor_enums import TaskResultStatus
+from frinx.common.type_aliases import DictAny
 from frinx.common.worker.service import ServiceWorkersImpl
 from frinx.common.worker.task_def import TaskDefinition
 from frinx.common.worker.task_def import TaskExecutionProperties
@@ -40,6 +41,7 @@ class KafkaWorker(ServiceWorkersImpl):
             key: Any
             security: str
             ssl_conf: Any
+            headers: DictAny = {}
 
         class WorkerOutput(TaskOutput): ...
 
@@ -71,5 +73,6 @@ class KafkaWorker(ServiceWorkersImpl):
                 topic=worker_input.topic,
                 value=worker_input.message.encode("utf-8"),
                 key=worker_input.key.encode("utf-8"),
+                headers=[(key, value.encode("utf-8")) for key, value in worker_input.headers.items()]
             )
             return TaskResult(status=TaskResultStatus.COMPLETED, logs="Kafka message published successfully")
