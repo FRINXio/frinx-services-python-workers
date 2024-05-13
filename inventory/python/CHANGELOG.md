@@ -13,3 +13,7 @@
 # 1.1.0
 - Added inventory update-device mutation
 - Added inventory delete-device mutation
+
+# 1.1.1
+- Updated inventory AddDevice and UpdateDevice settings, so they can also contain empty values.
+  Useful when adding devices that have failed during the workflow.
