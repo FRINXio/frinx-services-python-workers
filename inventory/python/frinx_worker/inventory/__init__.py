@@ -495,7 +495,7 @@ class InventoryService(ServiceWorkersImpl):
         )
 
         class ExecutionProperties(TaskExecutionProperties):
-            exclude_empty_inputs: bool = True
+            exclude_empty_inputs: bool = False
             transform_string_to_json_valid: bool = True
 
         class WorkerDefinition(TaskDefinition):
@@ -869,7 +869,7 @@ class InventoryService(ServiceWorkersImpl):
         )
 
         class ExecutionProperties(TaskExecutionProperties):
-            exclude_empty_inputs: bool = True
+            exclude_empty_inputs: bool = False
             transform_string_to_json_valid: bool = True
 
         class WorkerDefinition(TaskDefinition):
