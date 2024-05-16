@@ -19,7 +19,7 @@ packages = [{ include = "frinx_worker" }]
 name = "frinx-inventory-worker"
 description = "Conductor worker for Frinx Device Inventory"
 authors = ["Jozef Volak <jozef.volak@elisapolystar.com>"]
-version = "1.1.0"
+version = "1.2.0"
 readme = ["README.md", "CHANGELOG.md", "RELEASE.md"]
 keywords = ["frinx-machine", "device inventory", "worker"]
 license = "Apache 2.0"
