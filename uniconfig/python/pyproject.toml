@@ -7,7 +7,7 @@ python = "^3.10"
 pydantic = "^2"
 requests = "^2.31.0"
 frinx-python-sdk = "^2"
-frinx-uniconfig-api = { git = "https://github.com/FRINXio/frinx-services-python-api.git", tag = "frinx-uniconfig-api_v1.1.1", subdirectory = "uniconfig/python" }
+frinx-uniconfig-api = { git = "https://github.com/FRINXio/frinx-services-python-api.git", branch = "swagger_fix", subdirectory = "uniconfig/python" }
 
 [tool.poetry.group.dev.dependencies]
 ruff = "^0"
