@@ -31,3 +31,7 @@
 
 # 2.2.1
 - Used fixed version of frinx-services-python-api v1.1.1 - fixed discovery RPC model.
+
+# 2.2.2
+- Fixed CreateTransaction worker - 'uniconfig_server_id' is optional cookie that
+  is appended by load-balancer (LB). In the deployment without LB, it is not set.
