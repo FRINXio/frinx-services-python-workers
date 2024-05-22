@@ -35,3 +35,7 @@
 # 2.2.2
 - Fixed CreateTransaction worker - 'uniconfig_server_id' is optional cookie that
   is appended by load-balancer (LB). In the deployment without LB, it is not set.
+
+# 2.3.0
+- Implemented workflow and workers for closing of all open transactions
+  in the specified workflow (rollback_transactions).
