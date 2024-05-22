@@ -39,3 +39,6 @@
 # 2.3.0
 - Implemented workflow and workers for closing of all open transactions
   in the specified workflow (close_transactions).
+
+# 2.3.1
+- Fixed closed_transactions workflow output type (it must be string).
