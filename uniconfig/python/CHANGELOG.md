@@ -38,4 +38,4 @@
 
 # 2.3.0
 - Implemented workflow and workers for closing of all open transactions
-  in the specified workflow (rollback_transactions).
+  in the specified workflow (close_transactions).
