@@ -7,7 +7,6 @@ from frinx.common.workflow.workflow import WorkflowInputField
 from pydantic import Field
 
 from frinx_worker.uniconfig.transaction_helpers import TransactionHelpers
-from frinx_worker.uniconfig.transaction_helpers import UniconfigTransactionContext
 
 
 class TransactionWorkflows(ServiceWorkflowsImpl):
@@ -26,7 +25,7 @@ class TransactionWorkflows(ServiceWorkflowsImpl):
             )
 
         class WorkflowOutput(WorkflowImpl.WorkflowOutput):
-            closed_transactions: list[UniconfigTransactionContext] = Field(
+            closed_transactions: str = Field(
                 description="List of successfully closed UniConfig transactions in this workflow."
             )
 
