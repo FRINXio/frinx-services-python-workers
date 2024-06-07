@@ -1,8 +1,13 @@
 import unittest
 
-from frinx_api.uniconfig.device.discovery.discover import Address, TypeOfPortModel, TypeOfPortModel2, \
-    TypeOfAddressModel, TypeOfAddressModel1, TypeOfAddressModel3, TypeOfAddressModel2
+from frinx_api.uniconfig.device.discovery.discover import Address
 from frinx_api.uniconfig.device.discovery.discover import TcpPortItem
+from frinx_api.uniconfig.device.discovery.discover import TypeOfAddressModel
+from frinx_api.uniconfig.device.discovery.discover import TypeOfAddressModel1
+from frinx_api.uniconfig.device.discovery.discover import TypeOfAddressModel2
+from frinx_api.uniconfig.device.discovery.discover import TypeOfAddressModel3
+from frinx_api.uniconfig.device.discovery.discover import TypeOfPortModel
+from frinx_api.uniconfig.device.discovery.discover import TypeOfPortModel2
 from frinx_api.uniconfig.device.discovery.discover import UdpPortItem
 
 from frinx_worker.uniconfig.device_discovery import DeviceDiscoveryWorkers
