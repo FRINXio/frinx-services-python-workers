@@ -18,6 +18,12 @@ from frinx_api.uniconfig import OperationsDiscoverPostResponse
 from frinx_api.uniconfig.device.discovery.discover import Address
 from frinx_api.uniconfig.device.discovery.discover import Input
 from frinx_api.uniconfig.device.discovery.discover import TcpPortItem
+from frinx_api.uniconfig.device.discovery.discover import TypeOfAddressModel
+from frinx_api.uniconfig.device.discovery.discover import TypeOfAddressModel1
+from frinx_api.uniconfig.device.discovery.discover import TypeOfAddressModel2
+from frinx_api.uniconfig.device.discovery.discover import TypeOfAddressModel3
+from frinx_api.uniconfig.device.discovery.discover import TypeOfPortModel
+from frinx_api.uniconfig.device.discovery.discover import TypeOfPortModel2
 from frinx_api.uniconfig.device.discovery.discover import UdpPortItem
 from frinx_api.uniconfig.rest_api import Discover
 from pydantic import Field
@@ -51,19 +57,31 @@ class DeviceDiscoveryWorkers(ServiceWorkersImpl):
                 ip_list = get_list_of_ip_addresses(ip)
                 if len(ip_list) == 1:
                     if "/" in ip_list[0]:
-                        address = Address(network=str(IPvAnyNetwork(ip_list[0])))
+                        address = Address(
+                            type_of_address=TypeOfAddressModel3(
+                                network=str(IPvAnyNetwork(ip_list[0]))
+                            )
+                        )
                     else:
-                        address = Address(ip_address=str(IPvAnyAddress(ip_list[0])))
+                        address = Address(
+                            type_of_address=TypeOfAddressModel(
+                                ip_address=str(IPvAnyAddress(ip_list[0]))
+                            )
+                        )
                 else:
                     try:
                         address = Address(
-                            start_ipv4_address=str(IPv4Address(ip_list[0])),
-                            end_ipv4_address=str(IPv4Address(ip_list[1])),
+                            type_of_address=TypeOfAddressModel1(
+                                start_ipv4_address=str(IPv4Address(ip_list[0])),
+                                end_ipv4_address=str(IPv4Address(ip_list[1]))
+                            )
                         )
                     except ValueError:
                         address = Address(
-                            start_ipv6_address=str(IPv6Address(ip_list[0])),
-                            end_ipv6_address=str(IPv6Address(ip_list[1])),
+                            type_of_address=TypeOfAddressModel2(
+                                start_ipv6_address=str(IPv6Address(ip_list[0])),
+                                end_ipv6_address=str(IPv6Address(ip_list[1]))
+                            )
                         )
 
                 return [address]
@@ -71,14 +89,22 @@ class DeviceDiscoveryWorkers(ServiceWorkersImpl):
             @pydantic.field_validator("tcp_port", mode="before")
             def validate_tcp(cls, tcp_port: str) -> list[TcpPortItem] | None:
                 if tcp_port:
-                    return [TcpPortItem(port=p) for p in parse_ranges(tcp_port.split(","))]
+                    return [TcpPortItem(
+                                type_of_port=TypeOfPortModel(
+                                    port=p
+                                )
+                        ) for p in parse_ranges(tcp_port.split(","))]
                 else:
                     return None
 
             @pydantic.field_validator("udp_port", mode="before")
             def validate_udp(cls, udp_port: str) -> list[UdpPortItem] | None:
                 if udp_port:
-                    return [UdpPortItem(port=p) for p in parse_ranges(udp_port.split(","))]
+                    return [UdpPortItem(
+                        type_of_port=TypeOfPortModel2(
+                                    port=p
+                                )
+                        ) for p in parse_ranges(udp_port.split(","))]
                 else:
                     return None
 
