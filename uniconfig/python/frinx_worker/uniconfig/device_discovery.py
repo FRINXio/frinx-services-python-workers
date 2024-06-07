@@ -15,10 +15,15 @@ from frinx.common.worker.task_def import TaskInput
 from frinx.common.worker.task_def import TaskOutput
 from frinx.common.worker.task_result import TaskResult
 from frinx_api.uniconfig import OperationsDiscoverPostResponse
-from frinx_api.uniconfig.device.discovery.discover import Address, TypeOfAddressModel1, TypeOfAddressModel2, \
-    TypeOfAddressModel3, TypeOfAddressModel, TypeOfPortModel, TypeOfPortModel2
+from frinx_api.uniconfig.device.discovery.discover import Address
 from frinx_api.uniconfig.device.discovery.discover import Input
 from frinx_api.uniconfig.device.discovery.discover import TcpPortItem
+from frinx_api.uniconfig.device.discovery.discover import TypeOfAddressModel
+from frinx_api.uniconfig.device.discovery.discover import TypeOfAddressModel1
+from frinx_api.uniconfig.device.discovery.discover import TypeOfAddressModel2
+from frinx_api.uniconfig.device.discovery.discover import TypeOfAddressModel3
+from frinx_api.uniconfig.device.discovery.discover import TypeOfPortModel
+from frinx_api.uniconfig.device.discovery.discover import TypeOfPortModel2
 from frinx_api.uniconfig.device.discovery.discover import UdpPortItem
 from frinx_api.uniconfig.rest_api import Discover
 from pydantic import Field
