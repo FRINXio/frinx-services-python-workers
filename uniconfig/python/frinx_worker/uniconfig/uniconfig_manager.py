@@ -60,7 +60,7 @@ class UniconfigManager(ServiceWorkersImpl):
                 status=TaskResultStatus.COMPLETED,
                 output=self.WorkerOutput(
                     transaction_id=response.cookies["UNICONFIGTXID"],
-                    uniconfig_server_id=response.cookies["uniconfig_server_id"],
+                    uniconfig_server_id=response.cookies.get("uniconfig_server_id", None),
                     uniconfig_url_base=worker_input.uniconfig_url_base,
                 ),
             )

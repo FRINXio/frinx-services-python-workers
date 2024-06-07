@@ -414,7 +414,7 @@ class InventoryService(ServiceWorkersImpl):
         ).render()
 
         class ExecutionProperties(TaskExecutionProperties):
-            exclude_empty_inputs: bool = True
+            exclude_empty_inputs: bool = False
             transform_string_to_json_valid: bool = True
 
         class WorkerDefinition(TaskDefinition):
@@ -422,7 +422,7 @@ class InventoryService(ServiceWorkersImpl):
             description: str = """
             Get id for selected inventory labels.
             If no label is inserted, return empty dict.
-            If one of inserted labels missing, return FAILED status.
+            If one of inserted labels missing and fail_on_missing_label is True, return FAILED status.
             """
             labels: ListStr = ["BASICS", "MAIN", "INVENTORY"]
             timeout_seconds: int = 3600
@@ -430,6 +430,7 @@ class InventoryService(ServiceWorkersImpl):
 
         class WorkerInput(TaskInput):
             labels: ListStr | None = None
+            fail_on_missing_label: bool = True
 
         class WorkerOutput(TaskOutput):
             labels_id: DictStr
@@ -445,7 +446,7 @@ class InventoryService(ServiceWorkersImpl):
                     if label["node"]["name"] in worker_input.labels:
                         labels_id[label["node"]["name"]] = label["node"]["id"]
 
-                if len(labels_id.keys()) != len(worker_input.labels):
+                if worker_input.fail_on_missing_label and len(labels_id.keys()) != len(worker_input.labels):
                     raise Exception("One or more selected labels not exist in device inventory")
 
             return TaskResult(
