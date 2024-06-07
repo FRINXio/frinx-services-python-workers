@@ -44,4 +44,7 @@
 - Fixed closed_transactions workflow output type (it must be string).
 
 # 2.3.2
+- Update Inventory properties and bump Uniconfig API.
+
+# 2.3.3
 - Fix Device Discovery RPC based on new OpenAPI model.

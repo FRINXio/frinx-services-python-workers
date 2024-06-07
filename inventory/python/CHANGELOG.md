@@ -17,3 +17,7 @@
 # 1.2.0
 - Added 'fail_on_missing_label' boolean parameter to the INVENTORY_get_labels_id worker input.
 - Controls the behavior of the worker when a label is not found.
+
+# 1.2.1
+- Updated inventory AddDevice and UpdateDevice settings, so they can also contain empty values.
+  Useful when adding devices that have failed during the workflow.
