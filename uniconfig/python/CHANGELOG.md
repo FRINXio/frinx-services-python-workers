@@ -42,3 +42,6 @@
 
 # 2.3.1
 - Fixed closed_transactions workflow output type (it must be string).
+
+# 2.3.2
+- Fix Device Discovery RPC based on new OpenAPI model.
