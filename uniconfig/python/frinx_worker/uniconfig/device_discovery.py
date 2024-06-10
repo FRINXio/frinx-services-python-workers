@@ -37,10 +37,10 @@ from .util import get_list_of_ip_addresses
 from .util import parse_ranges
 
 
-def _unwrap_data(discovery_input: Input):
-    tcp_port: list[dict[str, Any]] | None = []
-    udp_port: list[dict[str, Any]] | None = []
-    address: list[dict[str, Any]] | None = []
+def _unwrap_data(discovery_input: Input) -> dict[str, Any]:
+    tcp_port: list[dict[str, Any]] = []
+    udp_port: list[dict[str, Any]] = []
+    address: list[dict[str, Any]] = []
     if discovery_input.tcp_port is not None:
         for tcp_port_item in discovery_input.tcp_port:
             tcp_port.append(tcp_port_item.type_of_port.model_dump())
@@ -51,9 +51,9 @@ def _unwrap_data(discovery_input: Input):
         for address_item in discovery_input.address:
             address.append(address_item.type_of_address.model_dump())
     return {
-        'address': address,
-        'tcp_port': tcp_port,
-        'udp_port': udp_port
+        "address": None if not address else address,
+        "tcp_port": None if not tcp_port else tcp_port,
+        "udp_port": None if not udp_port else udp_port
     }
 
 
