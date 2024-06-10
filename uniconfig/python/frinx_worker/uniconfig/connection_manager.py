@@ -81,17 +81,17 @@ class ConnectionManager(ServiceWorkersImpl):
 
         def _prepare_input(self, worker_input: WorkerInput) -> None:
             if worker_input.connection_type == "cli":
-                worker_input.install_params["credentials"] = Credentials(
+                worker_input.install_params["cli-topology:credentials"] = Credentials(
                     cli_topology_username=worker_input.install_params.pop("cli-topology:username"),
                     cli_topology_password=worker_input.install_params.pop("cli-topology:password")
                 )
             elif worker_input.connection_type == "netconf":
-                worker_input.install_params["credentials"] = CredentialsModel1(
+                worker_input.install_params["netconf-node-topology:credentials"] = CredentialsModel1(
                     netconf_node_topology_username=worker_input.install_params.pop("netconf-node-topology:username"),
                     netconf_node_topology_password=worker_input.install_params.pop("netconf-node-topology:password")
                 )
             elif worker_input.connection_type == "gnmi":
-                worker_input.install_params["credentials"] = GnmiTopologyCredentials(
+                worker_input.install_params["gnmi-topology:credentials"] = GnmiTopologyCredentials(
                     gnmi_topology_username=worker_input.install_params.pop("gnmi-topology:username"),
                     gnmi_topology_password=worker_input.install_params.pop("gnmi-topology:password")
                 )
