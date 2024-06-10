@@ -54,10 +54,10 @@ def _unwrap_data(discovery_input: Input) -> dict[str, Any]:
             if address_item.type_of_address is not None:
                 address.append(address_item.type_of_address.model_dump())
     return {
-        'input': {
-            'address': None if not address else address,
-            'tcp_port': None if not tcp_port else tcp_port,
-            'udp_port': None if not udp_port else udp_port
+        "input": {
+            "address": None if not address else address,
+            "tcp_port": None if not tcp_port else tcp_port,
+            "udp_port": None if not udp_port else udp_port
         }
     }
 
