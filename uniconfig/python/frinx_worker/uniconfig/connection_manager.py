@@ -47,7 +47,6 @@ class ConnectionManager(ServiceWorkersImpl):
             if self.UniconfigApi.request is None:
                 raise Exception(f"Failed to create request {self.UniconfigApi.request}")
 
-
             response = requests.request(
                 url=worker_input.uniconfig_url_base + self.UniconfigApi.uri,
                 method=self.UniconfigApi.method,
@@ -77,8 +76,6 @@ class ConnectionManager(ServiceWorkersImpl):
 
         def _prepare_input(self, worker_input: WorkerInput) -> DictAny:
             install_params: DictAny
-            username: str
-            password: str
             if worker_input.connection_type == "cli":
                 install_params = self.Cli(**worker_input.install_params).model_dump()
                 install_params["cli-topology:username"] = worker_input.install_params.get("cli-topology:username")
@@ -91,8 +88,10 @@ class ConnectionManager(ServiceWorkersImpl):
                 }
             elif worker_input.connection_type == "netconf":
                 install_params = self.Netconf(**worker_input.install_params).model_dump()
-                install_params["netconf-node-topology:username"] = worker_input.install_params.get("netconf-node-topology:username")
-                install_params["netconf-node-topology:username"] = worker_input.install_params.get("netconf-node-topology:username")
+                install_params["netconf-node-topology:username"] = (worker_input.install_params
+                                                                    .get("netconf-node-topology:username"))
+                install_params["netconf-node-topology:username"] = (worker_input.install_params
+                                                                    .get("netconf-node-topology:username"))
                 return {
                     "input": {
                         "node_id": worker_input.node_id,
