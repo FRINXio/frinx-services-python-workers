@@ -47,14 +47,13 @@ class ConnectionManager(ServiceWorkersImpl):
             if self.UniconfigApi.request is None:
                 raise Exception(f"Failed to create request {self.UniconfigApi.request}")
 
-            # prepare input with credentials
-            self._prepare_input(worker_input)
 
             response = requests.request(
                 url=worker_input.uniconfig_url_base + self.UniconfigApi.uri,
                 method=self.UniconfigApi.method,
                 data=class_to_json(
                     self.UniconfigApi.request(
+                        # FIXME prepare input with credentials (TEMPORARY SOLUTION)
                         self._prepare_input(worker_input)
                         # input=self.Input(
                         #     node_id=worker_input.node_id,
