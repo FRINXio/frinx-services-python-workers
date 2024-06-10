@@ -14,7 +14,9 @@ from frinx.common.worker.task_def import TaskOutput
 from frinx.common.worker.task_result import TaskResult
 from frinx.common.worker.worker import WorkerImpl
 from frinx_api.uniconfig.connection.manager import MountType
-from frinx_api.uniconfig.connection.manager.installnode import Credentials, CredentialsModel1, GnmiTopologyCredentials
+from frinx_api.uniconfig.connection.manager.installnode import Credentials
+from frinx_api.uniconfig.connection.manager.installnode import CredentialsModel1
+from frinx_api.uniconfig.connection.manager.installnode import GnmiTopologyCredentials
 
 from . import class_to_json
 from . import handle_response
@@ -77,21 +79,19 @@ class ConnectionManager(ServiceWorkersImpl):
 
             return handle_response(response, self.WorkerOutput)
 
-        def _prepare_input(self, worker_input: WorkerInput):
-            input_username: str
-            input_password: str
+        def _prepare_input(self, worker_input: WorkerInput) -> None:
             if worker_input.connection_type == "cli":
-                worker_input.install_params['credentials'] = Credentials(
+                worker_input.install_params["credentials"] = Credentials(
                     cli_topology_username=worker_input.install_params.pop("cli-topology:username"),
                     cli_topology_password=worker_input.install_params.pop("cli-topology:password")
                 )
             elif worker_input.connection_type == "netconf":
-                worker_input.install_params['credentials'] = CredentialsModel1(
+                worker_input.install_params["credentials"] = CredentialsModel1(
                     netconf_node_topology_username=worker_input.install_params.pop("netconf-node-topology:username"),
                     netconf_node_topology_password=worker_input.install_params.pop("netconf-node-topology:password")
                 )
             elif worker_input.connection_type == "gnmi":
-                worker_input.install_params['credentials'] = GnmiTopologyCredentials(
+                worker_input.install_params["credentials"] = GnmiTopologyCredentials(
                     gnmi_topology_username=worker_input.install_params.pop("gnmi-topology:username"),
                     gnmi_topology_password=worker_input.install_params.pop("gnmi-topology:password")
                 )
