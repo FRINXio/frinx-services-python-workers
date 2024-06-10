@@ -1,5 +1,6 @@
 from ipaddress import IPv4Address
 from ipaddress import IPv6Address
+from typing import Any
 
 import pydantic
 import requests
@@ -34,6 +35,26 @@ from . import class_to_json
 from . import handle_response
 from .util import get_list_of_ip_addresses
 from .util import parse_ranges
+
+
+def _unwrap_data(discovery_input: Input):
+    tcp_port: list[dict[str, Any]] | None = []
+    udp_port: list[dict[str, Any]] | None = []
+    address: list[dict[str, Any]] | None = []
+    if discovery_input.tcp_port is not None:
+        for tcp_port_item in discovery_input.tcp_port:
+            tcp_port.append(tcp_port_item.type_of_port.model_dump())
+    if discovery_input.udp_port is not None:
+        for udp_port_item in discovery_input.udp_port:
+            udp_port.append(udp_port_item.type_of_port.model_dump())
+    if discovery_input.address is not None:
+        for address_item in discovery_input.address:
+            address.append(address_item.type_of_address.model_dump())
+    return {
+        'address': address,
+        'tcp_port': tcp_port,
+        'udp_port': udp_port
+    }
 
 
 class DeviceDiscoveryWorkers(ServiceWorkersImpl):
@@ -129,8 +150,9 @@ class DeviceDiscoveryWorkers(ServiceWorkersImpl):
                 headers=dict(UNICONFIG_HEADERS),
                 params=UNICONFIG_REQUEST_PARAMS,
                 method=Discover.method,
+                # temporary workaround until UC adds possibility to accept choice nodes
                 data=class_to_json(
-                    Discover.request(input=template),
+                    _unwrap_data(template),
                 ),
             )
 
