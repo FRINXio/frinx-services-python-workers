@@ -21,9 +21,6 @@ from . import handle_response
 
 class ConnectionManager(ServiceWorkersImpl):
     class InstallNode(WorkerImpl):
-        from frinx_api.uniconfig.connection.manager.installnode import Cli
-        from frinx_api.uniconfig.connection.manager.installnode import Gnmi
-        from frinx_api.uniconfig.connection.manager.installnode import Netconf
         from frinx_api.uniconfig.rest_api import InstallNode as UniconfigApi
 
         class ExecutionProperties(TaskExecutionProperties):
@@ -51,9 +48,9 @@ class ConnectionManager(ServiceWorkersImpl):
                 url=worker_input.uniconfig_url_base + self.UniconfigApi.uri,
                 method=self.UniconfigApi.method,
                 data=class_to_json(
-                    self.UniconfigApi.request(
-                        # FIXME prepare input with credentials (TEMPORARY SOLUTION)
-                        self._prepare_input(worker_input)
+                    # FIXME prepare input with credentials (TEMPORARY SOLUTION)
+                    self._prepare_input(worker_input)
+                    # self.UniconfigApi.request(
                         # input=self.Input(
                         #     node_id=worker_input.node_id,
                         #     cli=self.Cli(**worker_input.install_params)
@@ -66,7 +63,7 @@ class ConnectionManager(ServiceWorkersImpl):
                         #     if worker_input.connection_type == "gnmi"
                         #     else None,
                         # ),
-                    ),
+                    # ),
                 ),
                 headers=dict(UNICONFIG_HEADERS),
                 params=UNICONFIG_REQUEST_PARAMS,
@@ -75,37 +72,25 @@ class ConnectionManager(ServiceWorkersImpl):
             return handle_response(response, self.WorkerOutput)
 
         def _prepare_input(self, worker_input: WorkerInput) -> DictAny:
-            install_params: DictAny
             if worker_input.connection_type == "cli":
-                install_params = self.Cli(**worker_input.install_params).model_dump()
-                install_params["cli-topology:username"] = worker_input.install_params.get("cli-topology:username")
-                install_params["cli-topology:password"] = worker_input.install_params.get("cli-topology:password")
                 return {
                     "input": {
                         "node_id": worker_input.node_id,
-                        "cli": install_params
+                        "cli": worker_input.install_params
                     }
                 }
             elif worker_input.connection_type == "netconf":
-                install_params = self.Netconf(**worker_input.install_params).model_dump()
-                install_params["netconf-node-topology:username"] = (worker_input.install_params
-                                                                    .get("netconf-node-topology:username"))
-                install_params["netconf-node-topology:username"] = (worker_input.install_params
-                                                                    .get("netconf-node-topology:username"))
                 return {
                     "input": {
                         "node_id": worker_input.node_id,
-                        "netconf": install_params
+                        "netconf": worker_input.install_params
                     }
                 }
             elif worker_input.connection_type == "gnmi":
-                install_params = self.Gnmi(**worker_input.install_params).model_dump()
-                install_params["gnmi-topology:username"] = worker_input.install_params.get("gnmi-topology:username")
-                install_params["gnmi-topology:username"] = worker_input.install_params.get("gnmi-topology:username")
                 return {
                     "input": {
                         "node_id": worker_input.node_id,
-                        "gnmi": install_params
+                        "gnmi": worker_input.install_params
                     }
                 }
             else:
