@@ -14,9 +14,6 @@ from frinx.common.worker.task_def import TaskOutput
 from frinx.common.worker.task_result import TaskResult
 from frinx.common.worker.worker import WorkerImpl
 from frinx_api.uniconfig.connection.manager import MountType
-from frinx_api.uniconfig.connection.manager.installnode import Credentials
-from frinx_api.uniconfig.connection.manager.installnode import CredentialsModel1
-from frinx_api.uniconfig.connection.manager.installnode import GnmiTopologyCredentials
 
 from . import class_to_json
 from . import handle_response
@@ -26,7 +23,6 @@ class ConnectionManager(ServiceWorkersImpl):
     class InstallNode(WorkerImpl):
         from frinx_api.uniconfig.connection.manager.installnode import Cli
         from frinx_api.uniconfig.connection.manager.installnode import Gnmi
-        from frinx_api.uniconfig.connection.manager.installnode import Input
         from frinx_api.uniconfig.connection.manager.installnode import Netconf
         from frinx_api.uniconfig.rest_api import InstallNode as UniconfigApi
 
@@ -59,18 +55,19 @@ class ConnectionManager(ServiceWorkersImpl):
                 method=self.UniconfigApi.method,
                 data=class_to_json(
                     self.UniconfigApi.request(
-                        input=self.Input(
-                            node_id=worker_input.node_id,
-                            cli=self.Cli(**worker_input.install_params)
-                            if worker_input.connection_type == "cli"
-                            else None,
-                            netconf=self.Netconf(**worker_input.install_params)
-                            if worker_input.connection_type == "netconf"
-                            else None,
-                            gnmi=self.Gnmi(**worker_input.install_params)
-                            if worker_input.connection_type == "gnmi"
-                            else None,
-                        ),
+                        self._prepare_input(worker_input)
+                        # input=self.Input(
+                        #     node_id=worker_input.node_id,
+                        #     cli=self.Cli(**worker_input.install_params)
+                        #     if worker_input.connection_type == "cli"
+                        #     else None,
+                        #     netconf=self.Netconf(**worker_input.install_params)
+                        #     if worker_input.connection_type == "netconf"
+                        #     else None,
+                        #     gnmi=self.Gnmi(**worker_input.install_params)
+                        #     if worker_input.connection_type == "gnmi"
+                        #     else None,
+                        # ),
                     ),
                 ),
                 headers=dict(UNICONFIG_HEADERS),
@@ -79,22 +76,40 @@ class ConnectionManager(ServiceWorkersImpl):
 
             return handle_response(response, self.WorkerOutput)
 
-        def _prepare_input(self, worker_input: WorkerInput) -> None:
+        def _prepare_input(self, worker_input: WorkerInput) -> DictAny:
+            install_params: DictAny
+            username: str
+            password: str
             if worker_input.connection_type == "cli":
-                worker_input.install_params["cli-topology:credentials"] = Credentials(
-                    cli_topology_username=worker_input.install_params.pop("cli-topology:username"),
-                    cli_topology_password=worker_input.install_params.pop("cli-topology:password")
-                )
+                install_params = self.Cli(**worker_input.install_params).model_dump()
+                install_params["cli-topology:username"] = worker_input.install_params.get("cli-topology:username")
+                install_params["cli-topology:password"] = worker_input.install_params.get("cli-topology:password")
+                return {
+                    "input": {
+                        "node_id": worker_input.node_id,
+                        "cli": install_params
+                    }
+                }
             elif worker_input.connection_type == "netconf":
-                worker_input.install_params["netconf-node-topology:credentials"] = CredentialsModel1(
-                    netconf_node_topology_username=worker_input.install_params.pop("netconf-node-topology:username"),
-                    netconf_node_topology_password=worker_input.install_params.pop("netconf-node-topology:password")
-                )
+                install_params = self.Netconf(**worker_input.install_params).model_dump()
+                install_params["netconf-node-topology:username"] = worker_input.install_params.get("netconf-node-topology:username")
+                install_params["netconf-node-topology:username"] = worker_input.install_params.get("netconf-node-topology:username")
+                return {
+                    "input": {
+                        "node_id": worker_input.node_id,
+                        "netconf": install_params
+                    }
+                }
             elif worker_input.connection_type == "gnmi":
-                worker_input.install_params["gnmi-topology:credentials"] = GnmiTopologyCredentials(
-                    gnmi_topology_username=worker_input.install_params.pop("gnmi-topology:username"),
-                    gnmi_topology_password=worker_input.install_params.pop("gnmi-topology:password")
-                )
+                install_params = self.Gnmi(**worker_input.install_params).model_dump()
+                install_params["gnmi-topology:username"] = worker_input.install_params.get("gnmi-topology:username")
+                install_params["gnmi-topology:username"] = worker_input.install_params.get("gnmi-topology:username")
+                return {
+                    "input": {
+                        "node_id": worker_input.node_id,
+                        "gnmi": install_params
+                    }
+                }
             else:
                 raise ValueError(f"Unknown connection type '{worker_input.connection_type}'")
 
