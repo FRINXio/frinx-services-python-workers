@@ -15,13 +15,16 @@ from frinx.common.worker.task_result import TaskResult
 from frinx.common.worker.worker import WorkerImpl
 from frinx_api.uniconfig.connection.manager import MountType
 
-from . import class_to_json
+from . import class_to_json, snake_to_kebab_case
 from . import handle_response
 
 
 class ConnectionManager(ServiceWorkersImpl):
     class InstallNode(WorkerImpl):
         from frinx_api.uniconfig.rest_api import InstallNode as UniconfigApi
+        # from frinx_api.uniconfig.connection.manager.installnode import Cli
+        # from frinx_api.uniconfig.connection.manager.installnode import Gnmi
+        # from frinx_api.uniconfig.connection.manager.installnode import Netconf
 
         class ExecutionProperties(TaskExecutionProperties):
             exclude_empty_inputs: bool = True
@@ -44,27 +47,28 @@ class ConnectionManager(ServiceWorkersImpl):
             if self.UniconfigApi.request is None:
                 raise Exception(f"Failed to create request {self.UniconfigApi.request}")
 
+            import json
             response = requests.request(
                 url=worker_input.uniconfig_url_base + self.UniconfigApi.uri,
                 method=self.UniconfigApi.method,
-                data=class_to_json(
-                    # FIXME prepare input with credentials (TEMPORARY SOLUTION)
-                    self._prepare_input(worker_input)
-                    # self.UniconfigApi.request(
-                        # input=self.Input(
-                        #     node_id=worker_input.node_id,
-                        #     cli=self.Cli(**worker_input.install_params)
-                        #     if worker_input.connection_type == "cli"
-                        #     else None,
-                        #     netconf=self.Netconf(**worker_input.install_params)
-                        #     if worker_input.connection_type == "netconf"
-                        #     else None,
-                        #     gnmi=self.Gnmi(**worker_input.install_params)
-                        #     if worker_input.connection_type == "gnmi"
-                        #     else None,
-                        # ),
-                    # ),
-                ),
+                # FIXME prepare input with credentials (TEMPORARY SOLUTION)
+                data=json.dumps(snake_to_kebab_case(self._prepare_input(worker_input))),
+                # data=class_to_json(
+                #     self.UniconfigApi.request(
+                #         input=self.Input(
+                #             node_id=worker_input.node_id,
+                #             cli=self.Cli(**worker_input.install_params)
+                #             if worker_input.connection_type == "cli"
+                #             else None,
+                #             netconf=self.Netconf(**worker_input.install_params)
+                #             if worker_input.connection_type == "netconf"
+                #             else None,
+                #             gnmi=self.Gnmi(**worker_input.install_params)
+                #             if worker_input.connection_type == "gnmi"
+                #             else None,
+                #         ),
+                #     ),
+                # ),
                 headers=dict(UNICONFIG_HEADERS),
                 params=UNICONFIG_REQUEST_PARAMS,
             )
