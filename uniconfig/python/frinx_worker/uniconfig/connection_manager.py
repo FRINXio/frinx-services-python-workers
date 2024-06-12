@@ -15,8 +15,9 @@ from frinx.common.worker.task_result import TaskResult
 from frinx.common.worker.worker import WorkerImpl
 from frinx_api.uniconfig.connection.manager import MountType
 
-from . import class_to_json, snake_to_kebab_case
+from . import class_to_json
 from . import handle_response
+from . import snake_to_kebab_case
 
 
 class ConnectionManager(ServiceWorkersImpl):
