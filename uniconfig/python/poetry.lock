@@ -288,13 +288,13 @@ test = ["pytest (>=6)"]
 
 [[package]]
 name = "frinx-python-sdk"
-version = "2.1.2"
+version = "2.1.3"
 description = "Python SDK for Frinx Machine Workflow Manager"
 optional = false
 python-versions = "<4.0,>=3.10"
 files = [
-    {file = "frinx_python_sdk-2.1.2-py3-none-any.whl", hash = "sha256:98c7ccb048c00e5c5413f445ba631d58798247801427f67a451a2f165e15fa03"},
-    {file = "frinx_python_sdk-2.1.2.tar.gz", hash = "sha256:5d41d49b2ee63d4e5ba23410c78612a4b7a1e2dda590188c7977bc8a163450a5"},
+    {file = "frinx_python_sdk-2.1.3-py3-none-any.whl", hash = "sha256:45f48a0b973a5137e718e48a1cdd031c06dd444aaabd3edf70902c296254f3de"},
+    {file = "frinx_python_sdk-2.1.3.tar.gz", hash = "sha256:7a92362f3477a74da6532eadb11818b907386c43ce18ff0e106e444626a6571e"},
 ]
 
 [package.dependencies]
@@ -1102,4 +1102,4 @@ multidict = ">=4.0"
 [metadata]
 lock-version = "2.0"
 python-versions = "^3.10"
-content-hash = "f78df47996daaa6e546de7fcdfb2e18f3d121c9def9aae01c8a78b78ff236d3d"
+content-hash = "55d42176967658b508edf364455021d390d3565a149bd5d3a03c31c1896de745"

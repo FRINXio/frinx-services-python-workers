@@ -6,7 +6,7 @@ build-backend = "poetry.core.masonry.api"
 python = "^3.10"
 pydantic = "^2"
 requests = "^2.31.0"
-frinx-python-sdk = "2.1.2"
+frinx-python-sdk = "^2"
 frinx-uniconfig-api = { git = "https://github.com/FRINXio/frinx-services-python-api.git", tag = "frinx-uniconfig-api_v1.2.0", subdirectory = "uniconfig/python" }
 
 [tool.poetry.group.dev.dependencies]
