@@ -1,5 +1,6 @@
 from ipaddress import IPv4Address
 from ipaddress import IPv6Address
+from typing import Any
 
 import pydantic
 import requests
@@ -34,6 +35,37 @@ from . import class_to_json
 from . import handle_response
 from .util import get_list_of_ip_addresses
 from .util import parse_ranges
+
+
+def _unwrap_data(discovery_input: Input) -> dict[str, Any]:
+    """
+    Unwrapping is necessary because of the input now containing choice wrapper nodes which cannot be parsed by
+    UniConfig yet. https://frinxhelpdesk.atlassian.net/browse/UNIC-1764
+    :param discovery_input: Device Discovery input.
+    :return: Unwrapped data as dict.
+    """
+    tcp_port: list[dict[str, Any]] = []
+    udp_port: list[dict[str, Any]] = []
+    address: list[dict[str, Any]] = []
+    if discovery_input.tcp_port is not None:
+        for tcp_port_item in discovery_input.tcp_port:
+            if tcp_port_item.type_of_port is not None:
+                tcp_port.append(tcp_port_item.type_of_port.model_dump())
+    if discovery_input.udp_port is not None:
+        for udp_port_item in discovery_input.udp_port:
+            if udp_port_item.type_of_port is not None:
+                udp_port.append(udp_port_item.type_of_port.model_dump())
+    if discovery_input.address is not None:
+        for address_item in discovery_input.address:
+            if address_item.type_of_address is not None:
+                address.append(address_item.type_of_address.model_dump())
+    return {
+        "input": {
+            "address": None if not address else address,
+            "tcp_port": None if not tcp_port else tcp_port,
+            "udp_port": None if not udp_port else udp_port
+        }
+    }
 
 
 class DeviceDiscoveryWorkers(ServiceWorkersImpl):
@@ -129,8 +161,9 @@ class DeviceDiscoveryWorkers(ServiceWorkersImpl):
                 headers=dict(UNICONFIG_HEADERS),
                 params=UNICONFIG_REQUEST_PARAMS,
                 method=Discover.method,
+                # temporary workaround until UC adds possibility to accept choice nodes
                 data=class_to_json(
-                    Discover.request(input=template),
+                    _unwrap_data(template),
                 ),
             )
 

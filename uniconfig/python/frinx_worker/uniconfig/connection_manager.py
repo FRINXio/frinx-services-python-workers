@@ -17,15 +17,15 @@ from frinx_api.uniconfig.connection.manager import MountType
 
 from . import class_to_json
 from . import handle_response
+from . import snake_to_kebab_case
 
 
 class ConnectionManager(ServiceWorkersImpl):
     class InstallNode(WorkerImpl):
-        from frinx_api.uniconfig.connection.manager.installnode import Cli
-        from frinx_api.uniconfig.connection.manager.installnode import Gnmi
-        from frinx_api.uniconfig.connection.manager.installnode import Input
-        from frinx_api.uniconfig.connection.manager.installnode import Netconf
         from frinx_api.uniconfig.rest_api import InstallNode as UniconfigApi
+        # from frinx_api.uniconfig.connection.manager.installnode import Cli
+        # from frinx_api.uniconfig.connection.manager.installnode import Gnmi
+        # from frinx_api.uniconfig.connection.manager.installnode import Netconf
 
         class ExecutionProperties(TaskExecutionProperties):
             exclude_empty_inputs: bool = True
@@ -48,30 +48,66 @@ class ConnectionManager(ServiceWorkersImpl):
             if self.UniconfigApi.request is None:
                 raise Exception(f"Failed to create request {self.UniconfigApi.request}")
 
+            import json
             response = requests.request(
                 url=worker_input.uniconfig_url_base + self.UniconfigApi.uri,
                 method=self.UniconfigApi.method,
-                data=class_to_json(
-                    self.UniconfigApi.request(
-                        input=self.Input(
-                            node_id=worker_input.node_id,
-                            cli=self.Cli(**worker_input.install_params)
-                            if worker_input.connection_type == "cli"
-                            else None,
-                            netconf=self.Netconf(**worker_input.install_params)
-                            if worker_input.connection_type == "netconf"
-                            else None,
-                            gnmi=self.Gnmi(**worker_input.install_params)
-                            if worker_input.connection_type == "gnmi"
-                            else None,
-                        ),
-                    ),
-                ),
+                # FIXME prepare input with credentials (TEMPORARY SOLUTION)
+                data=json.dumps(snake_to_kebab_case(self._prepare_input(worker_input))),
+                # data=class_to_json(
+                #     self.UniconfigApi.request(
+                #         input=self.Input(
+                #             node_id=worker_input.node_id,
+                #             cli=self.Cli(**worker_input.install_params)
+                #             if worker_input.connection_type == "cli"
+                #             else None,
+                #             netconf=self.Netconf(**worker_input.install_params)
+                #             if worker_input.connection_type == "netconf"
+                #             else None,
+                #             gnmi=self.Gnmi(**worker_input.install_params)
+                #             if worker_input.connection_type == "gnmi"
+                #             else None,
+                #         ),
+                #     ),
+                # ),
                 headers=dict(UNICONFIG_HEADERS),
                 params=UNICONFIG_REQUEST_PARAMS,
             )
 
             return handle_response(response, self.WorkerOutput)
+
+        def _prepare_input(self, worker_input: WorkerInput) -> DictAny:
+            """
+            The input now contains multiple choice nodes (keepalive, credentials and other). Until UniConfig can parse
+            choice nodes, this is a workaround to prepare the input for the installation request correctly.
+            https://frinxhelpdesk.atlassian.net/browse/UNIC-1764
+            :param worker_input: Worker input.
+            :return: Request input data as dict.
+            """
+            if worker_input.connection_type == "cli":
+                return {
+                    "input": {
+                        "node_id": worker_input.node_id,
+                        "cli": worker_input.install_params
+                    }
+                }
+            elif worker_input.connection_type == "netconf":
+                return {
+                    "input": {
+                        "node_id": worker_input.node_id,
+                        "netconf": worker_input.install_params
+                    }
+                }
+            elif worker_input.connection_type == "gnmi":
+                return {
+                    "input": {
+                        "node_id": worker_input.node_id,
+                        "gnmi": worker_input.install_params
+                    }
+                }
+            else:
+                raise ValueError(f"Unknown connection type '{worker_input.connection_type}'")
+
 
     class UninstallNode(WorkerImpl):
         from frinx_api.uniconfig.connection.manager import ConnectionType

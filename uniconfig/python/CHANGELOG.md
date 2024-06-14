@@ -48,3 +48,6 @@
 
 # 2.3.3
 - Fix Device Discovery RPC based on new OpenAPI model.
+
+# 2.3.4
+- Device Discovery RPC workaround caused by choice-nodes in UniConfig Yang models.
