@@ -38,6 +38,12 @@ from .util import parse_ranges
 
 
 def _unwrap_data(discovery_input: Input) -> dict[str, Any]:
+    """
+    Unwrapping is necessary because of the input now containing choice wrapper nodes which cannot be parsed by
+    UniConfig yet. https://frinxhelpdesk.atlassian.net/browse/UNIC-1764
+    :param discovery_input: Device Discovery input.
+    :return: Unwrapped data as dict.
+    """
     tcp_port: list[dict[str, Any]] = []
     udp_port: list[dict[str, Any]] = []
     address: list[dict[str, Any]] = []

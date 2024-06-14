@@ -77,6 +77,13 @@ class ConnectionManager(ServiceWorkersImpl):
             return handle_response(response, self.WorkerOutput)
 
         def _prepare_input(self, worker_input: WorkerInput) -> DictAny:
+            """
+            The input now contains multiple choice nodes (keepalive, credentials and other). Until UniConfig can parse
+            choice nodes, this is a workaround to prepare the input for the installation request correctly.
+            https://frinxhelpdesk.atlassian.net/browse/UNIC-1764
+            :param worker_input: Worker input.
+            :return: Request input data as dict.
+            """
             if worker_input.connection_type == "cli":
                 return {
                     "input": {
