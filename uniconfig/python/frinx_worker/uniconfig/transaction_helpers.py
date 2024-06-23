@@ -124,7 +124,8 @@ class TransactionHelpers(ServiceWorkersImpl):
 
         class WorkerInput(TaskInput):
             uniconfig_transactions: list[UniconfigTransactionContext] = Field(
-                description="List of UniConfig transactions to be closed by this worker."
+                description="List of UniConfig transactions to be closed by this worker.",
+                default=[]
             )
 
         class WorkerOutput(TaskOutput):

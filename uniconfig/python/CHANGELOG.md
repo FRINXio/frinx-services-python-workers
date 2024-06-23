@@ -51,3 +51,6 @@
 
 # 2.3.4
 - Device Discovery RPC workaround caused by choice-nodes in UniConfig Yang models.
+
+# 2.3.5
+- Fix handling of null or empty input in the 'close_transactions' worker.
