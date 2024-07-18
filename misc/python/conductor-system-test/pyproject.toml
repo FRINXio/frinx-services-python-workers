@@ -17,7 +17,7 @@ packages = [{ include = "frinx_worker" }]
 name = "frinx-conductor-system-test-worker"
 description = "Conductor system test worker for Frinx Machine"
 authors = ["Jozef Volak <jozef.volak@elisapolystar.com>"]
-version = "1.0.0"
+version = "1.0.1"
 readme = ["README.md", "CHANGELOG.md"]
 keywords = ["frinx-machine", "conductor-system-test", "worker"]
 license = "Apache 2.0"
