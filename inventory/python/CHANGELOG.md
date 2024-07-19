@@ -21,3 +21,8 @@
 # 1.2.1
 - Updated inventory AddDevice and UpdateDevice settings, so they can also contain empty values.
   Useful when adding devices that have failed during the workflow.
+
+# 1.3.0
+- Bumped version of frinx-inventory-api to 2.1.0.
+- Implemented new inventory workers for following mutations and query:
+  AddStreamMutation, UpdateStreamMutation, DeleteStreamMutation, StreamsQuery.
