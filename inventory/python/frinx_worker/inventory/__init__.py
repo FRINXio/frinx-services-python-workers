@@ -940,12 +940,12 @@ class InventoryService(ServiceWorkersImpl):
             ...
 
         def execute(self, worker_input: WorkerInput) -> TaskResult[WorkerOutput]:
-            self.add_stream.input.deviceName = worker_input.device_name
-            self.add_stream.input.streamName = worker_input.stream_name
+            self.add_stream.input.device_name = worker_input.device_name
+            self.add_stream.input.stream_name = worker_input.stream_name
             if worker_input.stream_parameters:
-                self.add_stream.input.streamParameters = json.dumps(worker_input.stream_parameters)
+                self.add_stream.input.stream_parameters = json.dumps(worker_input.stream_parameters)
             if worker_input.blueprint_id:
-                self.add_stream.input.blueprintId = worker_input.blueprint_id
+                self.add_stream.input.blueprint_id = worker_input.blueprint_id
 
             query = self.add_stream.render()
             response = execute_inventory_query(query=query.query, variables=query.variable)
@@ -984,12 +984,12 @@ class InventoryService(ServiceWorkersImpl):
 
         def execute(self, worker_input: WorkerInput) -> TaskResult[WorkerOutput]:
             self.update_stream.id = worker_input.stream_id
-            self.update_stream.input.streamName = worker_input.stream_name
-            self.update_stream.input.deviceName = worker_input.device_name
+            self.update_stream.input.stream_name = worker_input.stream_name
+            self.update_stream.input.device_name = worker_input.device_name
             if worker_input.blueprint_id:
-                self.update_stream.input.blueprintId = worker_input.blueprint_id
+                self.update_stream.input.blueprint_id = worker_input.blueprint_id
             if worker_input.stream_parameters:
-                self.update_stream.input.streamParameters = json.dumps(worker_input.stream_parameters)
+                self.update_stream.input.stream_parameters = json.dumps(worker_input.stream_parameters)
 
             query = self.update_stream.render()
             response = execute_inventory_query(query=query.query, variables=query.variable)
