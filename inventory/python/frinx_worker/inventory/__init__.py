@@ -31,6 +31,7 @@ from frinx_api.inventory import DeleteStreamMutation
 from frinx_api.inventory import DeleteStreamPayload
 from frinx_api.inventory import Device
 from frinx_api.inventory import DeviceConnection
+from frinx_api.inventory import DeviceDiscoveryPayload
 from frinx_api.inventory import DeviceEdge
 from frinx_api.inventory import DeviceServiceState
 from frinx_api.inventory import DeviceSize
@@ -53,6 +54,7 @@ from frinx_api.inventory import UninstallDevicePayload
 from frinx_api.inventory import UpdateDeviceInput
 from frinx_api.inventory import UpdateDeviceMutation
 from frinx_api.inventory import UpdateDevicePayload
+from frinx_api.inventory import UpdateDiscoveredAtMutation
 from frinx_api.inventory import UpdateStreamInput
 from frinx_api.inventory import UpdateStreamMutation
 from frinx_api.inventory import UpdateStreamPayload
@@ -1083,6 +1085,42 @@ class InventoryService(ServiceWorkersImpl):
                     streams.before = worker_input.cursor
 
             query = streams.render()
+            response = execute_inventory_query(query=query.query, variables=query.variable)
+            return response_handler(query, response)
+
+    class InventoryUpdateDiscoveredAtTimestamp(WorkerImpl):
+        DEVICE_DISCOVERY_PAYLOAD = DeviceDiscoveryPayload(
+            deviceId=True,
+            discoveredAt=True
+        )
+
+        update_discovered_at_timestamp = UpdateDiscoveredAtMutation(
+            payload=DEVICE_DISCOVERY_PAYLOAD,
+            deviceIds=["deviceId"],
+        )
+
+        class ExecutionProperties(TaskExecutionProperties):
+            exclude_empty_inputs: bool = True
+            transform_string_to_json_valid: bool = True
+
+        class WorkerDefinition(TaskDefinition):
+            name: str = "INVENTORY_update_discovered_at_timestamp"
+            description: str = "Update discovered at timestamp in inventory database to current time."
+            labels: ListStr = ["BASICS", "MAIN", "INVENTORY"]
+            timeout_seconds: int = 60
+            response_timeout_seconds: int = 60
+
+        class WorkerInput(TaskInput):
+            device_ids: ListStr = Field(
+                description="List of device identifiers for which the discovered timestamp should be updated.",
+            )
+
+        class WorkerOutput(InventoryWorkerOutput):
+            ...
+
+        def execute(self, worker_input: WorkerInput) -> TaskResult[WorkerOutput]:
+            self.update_discovered_at_timestamp.device_ids = worker_input.device_ids
+            query = self.update_discovered_at_timestamp.render()
             response = execute_inventory_query(query=query.query, variables=query.variable)
             return response_handler(query, response)
 
