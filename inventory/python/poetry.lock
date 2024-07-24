@@ -275,8 +275,11 @@ graphql-pydantic-converter = "^1.2"
 pydantic = "^2"
 
 [package.source]
-type = "directory"
-url = "../../../frinx-services-python-api/frinx-inventory-server/python"
+type = "git"
+url = "https://github.com/FRINXio/frinx-services-python-api.git"
+reference = "frinx-inventory-api_v2.2.0"
+resolved_reference = "05fc4545ae9d50a4854966a670572e9d926411b1"
+subdirectory = "frinx-inventory-server/python"
 
 [[package]]
 name = "frinx-python-sdk"
@@ -1032,4 +1035,4 @@ multidict = ">=4.0"
 [metadata]
 lock-version = "2.0"
 python-versions = "^3.10"
-content-hash = "0a332af60af3e30703e4c60d6999fc882d34678baa59edadc171513db0f0b320"
+content-hash = "04a6e370f27b8b5bae13266f0d9fc039fdab2ec9a116d22715c1472178ad4a1e"
