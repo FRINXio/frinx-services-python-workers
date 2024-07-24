@@ -26,3 +26,7 @@
 - Bumped version of frinx-inventory-api to 2.1.0.
 - Implemented new inventory workers for following mutations and query:
   AddStreamMutation, UpdateStreamMutation, DeleteStreamMutation, StreamsQuery.
+
+# 1.4.0
+- Bumped version of frinx-inventory-api to 2.2.0.
+- Implemented worker for updating discovered at timestamp of selected device.
