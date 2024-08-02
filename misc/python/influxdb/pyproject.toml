@@ -6,7 +6,7 @@ build-backend = "poetry.core.masonry.api"
 python = "^3.10"
 pydantic = "^2"
 influxdb-client = "^1.37.0"
-frinx-python-sdk = "^2"
+frinx-python-sdk = { git = "https://github.com/FRINXio/frinx-python-sdk.git", tag = "v2.2.0-rc1-task-log-handler"}
 
 [tool.poetry.group.dev.dependencies]
 ruff = "^0"

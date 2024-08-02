@@ -5,7 +5,7 @@ build-backend = "poetry.core.masonry.api"
 [tool.poetry.dependencies]
 python = "^3.10"
 pydantic = "^2"
-frinx-python-sdk = "^2"
+frinx-python-sdk = { git = "https://github.com/FRINXio/frinx-python-sdk.git", tag = "v2.2.0-rc1-task-log-handler"}
 frinx-inventory-api = { git = "https://github.com/FRINXio/frinx-services-python-api.git", tag = "frinx-inventory-api_v2.2.0", subdirectory = "frinx-inventory-server/python" }
 
 [tool.poetry.group.dev.dependencies]
