@@ -63,7 +63,7 @@ class SchellarWorkflows(ServiceWorkflowsImpl):
                 name="workflow_context",
                 frontend_default_value="",
                 description="Workflow input parameters in json format",
-                type=FrontendWFInputFieldType.STRING,
+                type=FrontendWFInputFieldType.JSON,
             )
 
             from_date: WorkflowInputField = WorkflowInputField(
@@ -159,7 +159,7 @@ class SchellarWorkflows(ServiceWorkflowsImpl):
                 name="workflow_context",
                 frontend_default_value="",
                 description="Workflow input parameters in json format",
-                type=FrontendWFInputFieldType.STRING,
+                type=FrontendWFInputFieldType.JSON,
             )
 
             from_date: WorkflowInputField = WorkflowInputField(
