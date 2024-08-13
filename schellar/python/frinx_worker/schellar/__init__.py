@@ -217,7 +217,7 @@ class Schellar(ServiceWorkersImpl):
             )
 
             if worker_input.workflow_context:
-                create_schedule.input.workflow_context = json_dumps(worker_input.workflow_context).replace('"', '\\"')
+                create_schedule.input.workflow_context = json_dumps(worker_input.workflow_context)
 
             mutation = create_schedule.render(form="extracted")
             response = execute_schellar_query(query=mutation.query, variables=mutation.variable)
@@ -279,7 +279,7 @@ class Schellar(ServiceWorkersImpl):
             )
 
             if worker_input.workflow_context:
-                update_schedule.input.workflow_context = json_dumps(worker_input.workflow_context).replace('"', '\\"')
+                update_schedule.input.workflow_context = json_dumps(worker_input.workflow_context)
 
             mutation = update_schedule.render()
             response = execute_schellar_query(query=mutation.query, variables=mutation.variable)
