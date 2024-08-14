@@ -104,6 +104,7 @@ class DeviceInput(TaskInput):
     password: str | None = None
     version: str | None = None
     device_type: str | None = None
+    location_id: str | None = None
 
 
 class StreamWorkerInput(TaskInput):
@@ -922,7 +923,6 @@ class InventoryService(ServiceWorkersImpl):
 
         class WorkerInput(DeviceInput):
             device_id: str
-            location_id: str | None = None
 
         class WorkerOutput(InventoryWorkerOutput):
             ...
@@ -930,8 +930,6 @@ class InventoryService(ServiceWorkersImpl):
         def execute(self, worker_input: WorkerInput) -> TaskResult[WorkerOutput]:
             self.update_device.id = worker_input.device_id
             InventoryService._set_device_input_fields(self.update_device.input, worker_input)
-            if worker_input.location_id:
-                self.update_device.input.location_id = worker_input.location_id
 
             query = self.update_device.render()
             response = execute_inventory_query(query=query.query, variables=query.variable)
@@ -1374,6 +1372,8 @@ class InventoryService(ServiceWorkersImpl):
             query_input.username = device_input.username
         if device_input.password:
             query_input.password = device_input.password
+        if device_input.location_id:
+            query_input.location_id = device_input.location_id
 
     @staticmethod
     def _get_zone_id(zone_name: str) -> str:
