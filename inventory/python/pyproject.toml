@@ -6,7 +6,7 @@ build-backend = "poetry.core.masonry.api"
 python = "^3.10"
 pydantic = "^2"
 frinx-python-sdk = "^2"
-frinx-inventory-api = { git = "https://github.com/FRINXio/frinx-services-python-api.git", tag = "frinx-inventory-api_v2.2.0", subdirectory = "frinx-inventory-server/python" }
+frinx-inventory-api = { git = "https://github.com/FRINXio/frinx-services-python-api.git", tag = "frinx-inventory-api_v2.3.0", subdirectory = "frinx-inventory-server/python" }
 
 [tool.poetry.group.dev.dependencies]
 ruff = "^0"
@@ -19,7 +19,7 @@ packages = [{ include = "frinx_worker" }]
 name = "frinx-inventory-worker"
 description = "Conductor worker for Frinx Device Inventory"
 authors = ["Jozef Volak <jozef.volak@elisapolystar.com>"]
-version = "1.4.0"
+version = "1.5.0"
 readme = ["README.md", "CHANGELOG.md", "RELEASE.md"]
 keywords = ["frinx-machine", "device inventory", "worker"]
 license = "Apache 2.0"

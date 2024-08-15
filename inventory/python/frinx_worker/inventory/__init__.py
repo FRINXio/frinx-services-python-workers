@@ -18,15 +18,21 @@ from frinx.common.worker.worker import WorkerImpl
 from frinx_api.inventory import AddDeviceInput
 from frinx_api.inventory import AddDeviceMutation
 from frinx_api.inventory import AddDevicePayload
+from frinx_api.inventory import AddLocationInput
+from frinx_api.inventory import AddLocationMutation
+from frinx_api.inventory import AddLocationPayload
 from frinx_api.inventory import AddStreamInput
 from frinx_api.inventory import AddStreamMutation
 from frinx_api.inventory import AddStreamPayload
 from frinx_api.inventory import Blueprint
+from frinx_api.inventory import Coordinates
 from frinx_api.inventory import CreateLabelInput
 from frinx_api.inventory import CreateLabelMutation
 from frinx_api.inventory import CreateLabelPayload
 from frinx_api.inventory import DeleteDeviceMutation
 from frinx_api.inventory import DeleteDevicePayload
+from frinx_api.inventory import DeleteLocationMutation
+from frinx_api.inventory import DeleteLocationPayload
 from frinx_api.inventory import DeleteStreamMutation
 from frinx_api.inventory import DeleteStreamPayload
 from frinx_api.inventory import Device
@@ -44,6 +50,10 @@ from frinx_api.inventory import Label
 from frinx_api.inventory import LabelConnection
 from frinx_api.inventory import LabelEdge
 from frinx_api.inventory import LabelsQuery
+from frinx_api.inventory import Location
+from frinx_api.inventory import LocationConnection
+from frinx_api.inventory import LocationEdge
+from frinx_api.inventory import LocationsQuery
 from frinx_api.inventory import PageInfo
 from frinx_api.inventory import Stream
 from frinx_api.inventory import StreamConnection
@@ -55,6 +65,9 @@ from frinx_api.inventory import UpdateDeviceInput
 from frinx_api.inventory import UpdateDeviceMutation
 from frinx_api.inventory import UpdateDevicePayload
 from frinx_api.inventory import UpdateDiscoveredAtMutation
+from frinx_api.inventory import UpdateLocationInput
+from frinx_api.inventory import UpdateLocationMutation
+from frinx_api.inventory import UpdateLocationPayload
 from frinx_api.inventory import UpdateStreamInput
 from frinx_api.inventory import UpdateStreamMutation
 from frinx_api.inventory import UpdateStreamPayload
@@ -91,6 +104,7 @@ class DeviceInput(TaskInput):
     password: str | None = None
     version: str | None = None
     device_type: str | None = None
+    location_id: str | None = None
 
 
 class StreamWorkerInput(TaskInput):
@@ -107,6 +121,18 @@ class StreamWorkerInput(TaskInput):
     stream_parameters: DictAny | None = Field(
         description="Stream parameters.",
         default=None
+    )
+
+
+class LocationWorkerInput(TaskInput):
+    name: str = Field(
+        description="Name of the location."
+    )
+    latitude: float = Field(
+        description="Latitude of the location."
+    )
+    longitude: float = Field(
+        description="Longitude of the location."
     )
 
 
@@ -897,7 +923,6 @@ class InventoryService(ServiceWorkersImpl):
 
         class WorkerInput(DeviceInput):
             device_id: str
-            location_id: str | None = None
 
         class WorkerOutput(InventoryWorkerOutput):
             ...
@@ -905,8 +930,6 @@ class InventoryService(ServiceWorkersImpl):
         def execute(self, worker_input: WorkerInput) -> TaskResult[WorkerOutput]:
             self.update_device.id = worker_input.device_id
             InventoryService._set_device_input_fields(self.update_device.input, worker_input)
-            if worker_input.location_id:
-                self.update_device.input.location_id = worker_input.location_id
 
             query = self.update_device.render()
             response = execute_inventory_query(query=query.query, variables=query.variable)
@@ -1124,6 +1147,205 @@ class InventoryService(ServiceWorkersImpl):
             response = execute_inventory_query(query=query.query, variables=query.variable)
             return response_handler(query, response)
 
+    class InventoryAddLocation(WorkerImpl):
+        ADD_LOCATION: AddLocationPayload = AddLocationPayload(
+            location=Location(
+                id=True,
+                name=True,
+                latitude=True,
+                longitude=True,
+                updatedAt=True,
+                createdAt=True
+            )
+        )
+
+        add_location: AddLocationMutation = AddLocationMutation(
+            payload=ADD_LOCATION,
+            input=AddLocationInput(
+                name="name",
+                coordinates=Coordinates(
+                    latitude=0.0,
+                    longitude=0.0
+                )
+            )
+        )
+
+        class ExecutionProperties(TaskExecutionProperties):
+            exclude_empty_inputs: bool = True
+            transform_string_to_json_valid: bool = True
+
+        class WorkerDefinition(TaskDefinition):
+            name: str = "INVENTORY_add_location"
+            description: str = "Add location to inventory database"
+            labels: ListStr = ["BASICS", "MAIN", "INVENTORY", "LOCATION"]
+            timeout_seconds: int = 60
+            response_timeout_seconds: int = 60
+
+        class WorkerInput(LocationWorkerInput):
+            ...
+
+        class WorkerOutput(InventoryWorkerOutput):
+            ...
+
+        def execute(self, worker_input: WorkerInput) -> TaskResult[WorkerOutput]:
+            InventoryService._set_location_input_fields(self.add_location.input, worker_input)
+            query = self.add_location.render()
+            response = execute_inventory_query(query=query.query, variables=query.variable)
+            return response_handler(query, response)
+
+    class InventoryUpdateLocation(WorkerImpl):
+        UPDATE_LOCATION: UpdateLocationPayload = UpdateLocationPayload(
+            location=Location(
+                id=True,
+                name=True,
+                latitude=True,
+                longitude=True,
+                updatedAt=True,
+                createdAt=True
+            )
+        )
+
+        update_location: UpdateLocationMutation = UpdateLocationMutation(
+            payload=UPDATE_LOCATION,
+            id="locationId",
+            input=UpdateLocationInput(
+                name="name",
+                coordinates=Coordinates(
+                    latitude=0.0,
+                    longitude=0.0
+                )
+            )
+        )
+
+        class ExecutionProperties(TaskExecutionProperties):
+            exclude_empty_inputs: bool = True
+            transform_string_to_json_valid: bool = True
+
+        class WorkerDefinition(TaskDefinition):
+            name: str = "INVENTORY_update_location"
+            description: str = "Update location in inventory database"
+            labels: ListStr = ["BASICS", "MAIN", "INVENTORY", "LOCATION"]
+            timeout_seconds: int = 60
+            response_timeout_seconds: int = 60
+
+        class WorkerInput(LocationWorkerInput):
+            location_id: str = Field(
+                description="Unique database identifier of the location.",
+            )
+
+        class WorkerOutput(InventoryWorkerOutput):
+            ...
+
+        def execute(self, worker_input: WorkerInput) -> TaskResult[WorkerOutput]:
+            self.update_location.id = worker_input.location_id
+            InventoryService._set_location_input_fields(self.update_location.input, worker_input)
+
+            query = self.update_location.render()
+            response = execute_inventory_query(query=query.query, variables=query.variable)
+            return response_handler(query, response)
+
+    class InventoryDeleteLocation(WorkerImpl):
+        DELETE_LOCATION: DeleteLocationPayload = DeleteLocationPayload(
+            location=Location(
+                id=True,
+                name=True,
+                latitude=True,
+                longitude=True,
+                updatedAt=True,
+                createdAt=True
+            )
+        )
+
+        delete_location: DeleteLocationMutation = DeleteLocationMutation(
+            payload=DELETE_LOCATION,
+            id="locationId"
+        )
+
+        class ExecutionProperties(TaskExecutionProperties):
+            exclude_empty_inputs: bool = True
+            transform_string_to_json_valid: bool = True
+
+        class WorkerDefinition(TaskDefinition):
+            name: str = "INVENTORY_delete_location"
+            description: str = "Delete location from inventory database"
+            labels: ListStr = ["BASICS", "MAIN", "INVENTORY", "LOCATION"]
+            timeout_seconds: int = 60
+            response_timeout_seconds: int = 60
+
+        class WorkerInput(TaskInput):
+            location_id: str
+
+        class WorkerOutput(InventoryWorkerOutput):
+            ...
+
+        def execute(self, worker_input: WorkerInput) -> TaskResult[WorkerOutput]:
+            self.delete_location.id = worker_input.location_id
+            query = self.delete_location.render()
+            response = execute_inventory_query(query=query.query, variables=query.variable)
+            return response_handler(query, response)
+
+    class InventoryLocations(WorkerImpl):
+        LOCATIONS = LocationConnection(
+            pageInfo=PageInfo(hasNextPage=True, hasPreviousPage=True, startCursor=True, endCursor=True),
+            edges=LocationEdge(
+                node=Location(
+                    id=True,
+                    name=True,
+                    latitude=True,
+                    longitude=True,
+                    updatedAt=True,
+                    createdAt=True
+                ),
+                cursor=True,
+            ),
+            totalCount=True,
+        )
+
+        class ExecutionProperties(TaskExecutionProperties):
+            exclude_empty_inputs: bool = True
+            transform_string_to_json_valid: bool = True
+
+        class WorkerDefinition(TaskDefinition):
+            name: str = "INVENTORY_locations"
+            description: str = "Get locations from inventory database"
+            labels: ListStr = ["BASICS", "MAIN", "INVENTORY", "LOCATION"]
+            timeout_seconds: int = 60
+            response_timeout_seconds: int = 60
+
+        class WorkerInput(TaskInput):
+            size: int | None = None
+            cursor: str | None = None
+            type: PaginationCursorType | None = None
+
+        class WorkerOutput(InventoryWorkerOutput):
+            ...
+
+        def execute(self, worker_input: WorkerInput) -> TaskResult[WorkerOutput]:
+            locations = LocationsQuery(
+                payload=self.LOCATIONS,
+            )
+
+            match worker_input.type:
+                case PaginationCursorType.BEFORE:
+                    locations.last = worker_input.size
+                    locations.before = worker_input.cursor
+                case PaginationCursorType.AFTER:
+                    locations.first = worker_input.size
+                    locations.after = worker_input.cursor
+
+            query = locations.render()
+            response = execute_inventory_query(query=query.query, variables=query.variable)
+            return response_handler(query, response)
+
+    @staticmethod
+    def _set_location_input_fields(
+            query_input: UpdateLocationInput | AddLocationInput,
+            location_input: LocationWorkerInput
+    ) -> None:
+        query_input.name = location_input.name
+        query_input.coordinates.latitude = location_input.latitude
+        query_input.coordinates.longitude = location_input.longitude
+
     @staticmethod
     def _set_device_input_fields(
             query_input: UpdateDeviceInput | AddDeviceInput,
@@ -1150,6 +1372,8 @@ class InventoryService(ServiceWorkersImpl):
             query_input.username = device_input.username
         if device_input.password:
             query_input.password = device_input.password
+        if device_input.location_id:
+            query_input.location_id = device_input.location_id
 
     @staticmethod
     def _get_zone_id(zone_name: str) -> str:

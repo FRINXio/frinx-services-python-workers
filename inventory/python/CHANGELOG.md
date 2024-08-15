@@ -30,3 +30,7 @@
 # 1.4.0
 - Bumped version of frinx-inventory-api to 2.2.0.
 - Implemented worker for updating discovered at timestamp of selected device.
+
+# 1.5.0
+- Bumped version of frinx-inventory-api to 2.3.0.
+- Implemented workers for reading, adding, updating and removing inventory locations.
