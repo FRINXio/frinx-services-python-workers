@@ -98,8 +98,8 @@ def class_to_json(dataclass: Any) -> Any:
         Any: A JSON string representation of the dataclass with keys in kebab-case.
     """
     if dataclasses.is_dataclass(dataclass):
-        return json.dumps(snake_to_kebab_case(remove_empty_elements_from_dict(dataclasses.asdict(dataclass))))
+        return json.dumps(snake_to_kebab_case(remove_empty_elements_from_dict(dataclasses.asdict(dataclass))))  # type: ignore[call-overload]
     elif isinstance(dataclass, BaseModel):
-        return dataclass.json(exclude_none=True, by_alias=True, exclude_defaults=True)
+        return dataclass.model_dump_json(exclude_none=True, by_alias=True, exclude_defaults=True)
     else:
         return json.dumps(snake_to_kebab_case(remove_empty_elements_from_dict(dataclass)))
