@@ -34,3 +34,7 @@
 # 1.5.0
 - Bumped version of frinx-inventory-api to 2.3.0.
 - Implemented workers for reading, adding, updating and removing inventory locations.
+
+# 2.0.0
+- Bumped version of frinx-inventory-api to 3.0.0.
+- Bumped version of frinx-python-sdk to 2.2.1.
