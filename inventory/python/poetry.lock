@@ -310,19 +310,20 @@ subdirectory = "frinx-inventory-server/python"
 
 [[package]]
 name = "frinx-python-sdk"
-version = "2.2.1"
+version = "2.3.0"
 description = "Python SDK for Frinx Machine Workflow Manager"
 optional = false
 python-versions = "<4.0,>=3.10"
 files = [
-    {file = "frinx_python_sdk-2.2.1-py3-none-any.whl", hash = "sha256:0c5308ac903840c44a6f715916983b4c72f81e5fc64afac2061c961863e28fdb"},
-    {file = "frinx_python_sdk-2.2.1.tar.gz", hash = "sha256:d49df192c0b351a37622e31e0ab2d0df6b3e30f7858c7972a15a2a33357c0b45"},
+    {file = "frinx_python_sdk-2.3.0-py3-none-any.whl", hash = "sha256:d07da41ba9766d55fee9de7bf1bb6189c9aadc33e64dbb4ba3d3f303d3935d1c"},
+    {file = "frinx_python_sdk-2.3.0.tar.gz", hash = "sha256:b1fb1156c42210c5b35590304f2390f83e69cbe4e05e020ee557d65e3598d84e"},
 ]
 
 [package.dependencies]
 aiohttp = ">=3.8.4,<4.0.0"
 prometheus-client = ">=0.20.0,<0.21.0"
 pydantic = ">=2.3,<2.6"
+pydantic-settings = ">=2.1.0,<3.0.0"
 requests = ">=2.28.2,<3.0.0"
 websockets = ">=12,<13"
 
@@ -762,14 +763,33 @@ files = [
 typing-extensions = ">=4.6.0,<4.7.0 || >4.7.0"
 
 [[package]]
+name = "pydantic-settings"
+version = "2.2.1"
+description = "Settings management using Pydantic"
+optional = false
+python-versions = ">=3.8"
+files = [
+    {file = "pydantic_settings-2.2.1-py3-none-any.whl", hash = "sha256:0235391d26db4d2190cb9b31051c4b46882d28a51533f97440867f012d4da091"},
+    {file = "pydantic_settings-2.2.1.tar.gz", hash = "sha256:00b9f6a5e95553590434c0fa01ead0b216c3e10bc54ae02e37f359948643c5ed"},
+]
+
+[package.dependencies]
+pydantic = ">=2.3.0"
+python-dotenv = ">=0.21.0"
+
+[package.extras]
+toml = ["tomli (>=2.0.1)"]
+yaml = ["pyyaml (>=6.0.1)"]
+
+[[package]]
 name = "pyright"
-version = "1.1.379"
+version = "1.1.380"
 description = "Command line wrapper for pyright"
 optional = false
 python-versions = ">=3.7"
 files = [
-    {file = "pyright-1.1.379-py3-none-any.whl", hash = "sha256:01954811ac71db8646f50de1577576dc275ffb891a9e7324350e676cf6df323f"},
-    {file = "pyright-1.1.379.tar.gz", hash = "sha256:6f426cb6443786fa966b930c23ad1941c8cb9fe672e4589daea8d80bb34193ea"},
+    {file = "pyright-1.1.380-py3-none-any.whl", hash = "sha256:a6404392053d8848bacc7aebcbd9d318bb46baf1a1a000359305481920f43879"},
+    {file = "pyright-1.1.380.tar.gz", hash = "sha256:e6ceb1a5f7e9f03106e0aa1d6fbb4d97735a5e7ffb59f3de6b2db590baf935b2"},
 ]
 
 [package.dependencies]
@@ -778,6 +798,20 @@ nodeenv = ">=1.6.0"
 [package.extras]
 all = ["twine (>=3.4.1)"]
 dev = ["twine (>=3.4.1)"]
+
+[[package]]
+name = "python-dotenv"
+version = "1.0.1"
+description = "Read key-value pairs from a .env file and set them as environment variables"
+optional = false
+python-versions = ">=3.8"
+files = [
+    {file = "python-dotenv-1.0.1.tar.gz", hash = "sha256:e324ee90a023d808f1959c46bcbc04446a10ced277783dc6ee09987c37ec10ca"},
+    {file = "python_dotenv-1.0.1-py3-none-any.whl", hash = "sha256:f7b63ef50f1b690dddf550d03497b66d609393b40b564ed0d674909a68ebf16a"},
+]
+
+[package.extras]
+cli = ["click (>=5.0)"]
 
 [[package]]
 name = "requests"
