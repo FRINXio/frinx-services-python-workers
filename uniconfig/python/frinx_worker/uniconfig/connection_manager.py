@@ -1,4 +1,3 @@
-import urllib.parse
 from typing import Literal
 
 import requests
@@ -6,6 +5,7 @@ from frinx.common.frinx_rest import UNICONFIG_HEADERS
 from frinx.common.frinx_rest import UNICONFIG_REQUEST_PARAMS
 from frinx.common.frinx_rest import UNICONFIG_URL_BASE
 from frinx.common.type_aliases import DictAny
+from frinx.common.util import escape_uniconfig_uri_key
 from frinx.common.worker.service import ServiceWorkersImpl
 from frinx.common.worker.task_def import TaskDefinition
 from frinx.common.worker.task_def import TaskExecutionProperties
@@ -14,18 +14,18 @@ from frinx.common.worker.task_def import TaskOutput
 from frinx.common.worker.task_result import TaskResult
 from frinx.common.worker.worker import WorkerImpl
 from frinx_api.uniconfig.connection.manager import MountType
+from frinx_api.uniconfig.connection.manager import installnode
 
 from . import class_to_json
 from . import handle_response
-from . import snake_to_kebab_case
 
 
 class ConnectionManager(ServiceWorkersImpl):
     class InstallNode(WorkerImpl):
+        from frinx_api.uniconfig.connection.manager.installnode import Cli
+        from frinx_api.uniconfig.connection.manager.installnode import Gnmi
+        from frinx_api.uniconfig.connection.manager.installnode import Netconf
         from frinx_api.uniconfig.rest_api import InstallNode as UniconfigApi
-        # from frinx_api.uniconfig.connection.manager.installnode import Cli
-        # from frinx_api.uniconfig.connection.manager.installnode import Gnmi
-        # from frinx_api.uniconfig.connection.manager.installnode import Netconf
 
         class ExecutionProperties(TaskExecutionProperties):
             exclude_empty_inputs: bool = True
@@ -48,65 +48,30 @@ class ConnectionManager(ServiceWorkersImpl):
             if self.UniconfigApi.request is None:
                 raise Exception(f"Failed to create request {self.UniconfigApi.request}")
 
-            import json
             response = requests.request(
                 url=worker_input.uniconfig_url_base + self.UniconfigApi.uri,
                 method=self.UniconfigApi.method,
-                # FIXME prepare input with credentials (TEMPORARY SOLUTION)
-                data=json.dumps(snake_to_kebab_case(self._prepare_input(worker_input))),
-                # data=class_to_json(
-                #     self.UniconfigApi.request(
-                #         input=self.Input(
-                #             node_id=worker_input.node_id,
-                #             cli=self.Cli(**worker_input.install_params)
-                #             if worker_input.connection_type == "cli"
-                #             else None,
-                #             netconf=self.Netconf(**worker_input.install_params)
-                #             if worker_input.connection_type == "netconf"
-                #             else None,
-                #             gnmi=self.Gnmi(**worker_input.install_params)
-                #             if worker_input.connection_type == "gnmi"
-                #             else None,
-                #         ),
-                #     ),
-                # ),
+                data=class_to_json(
+                    self.UniconfigApi.request(
+                        input=installnode.Input(
+                            node_id=worker_input.node_id,
+                            cli=self.Cli(**worker_input.install_params)
+                            if worker_input.connection_type == "cli"
+                            else None,
+                            netconf=self.Netconf(**worker_input.install_params)
+                            if worker_input.connection_type == "netconf"
+                            else None,
+                            gnmi=self.Gnmi(**worker_input.install_params)
+                            if worker_input.connection_type == "gnmi"
+                            else None,
+                        ),
+                    ),
+                ),
                 headers=dict(UNICONFIG_HEADERS),
                 params=UNICONFIG_REQUEST_PARAMS,
             )
 
             return handle_response(response, self.WorkerOutput)
-
-        def _prepare_input(self, worker_input: WorkerInput) -> DictAny:
-            """
-            The input now contains multiple choice nodes (keepalive, credentials and other). Until UniConfig can parse
-            choice nodes, this is a workaround to prepare the input for the installation request correctly.
-            https://frinxhelpdesk.atlassian.net/browse/UNIC-1764
-            :param worker_input: Worker input.
-            :return: Request input data as dict.
-            """
-            if worker_input.connection_type == "cli":
-                return {
-                    "input": {
-                        "node_id": worker_input.node_id,
-                        "cli": worker_input.install_params
-                    }
-                }
-            elif worker_input.connection_type == "netconf":
-                return {
-                    "input": {
-                        "node_id": worker_input.node_id,
-                        "netconf": worker_input.install_params
-                    }
-                }
-            elif worker_input.connection_type == "gnmi":
-                return {
-                    "input": {
-                        "node_id": worker_input.node_id,
-                        "gnmi": worker_input.install_params
-                    }
-                }
-            else:
-                raise ValueError(f"Unknown connection type '{worker_input.connection_type}'")
 
 
     class UninstallNode(WorkerImpl):
@@ -352,7 +317,7 @@ class ConnectionManager(ServiceWorkersImpl):
 
         def execute(self, worker_input: WorkerInput) -> TaskResult[WorkerOutput]:
             topology_id = self._derive_topology_id(worker_input.connection_type)
-            escaped_node_id = urllib.parse.quote(worker_input.node_id)
+            escaped_node_id = escape_uniconfig_uri_key(worker_input.node_id)
             response = requests.request(
                 url=f"{worker_input.uniconfig_url_base}/data/network-topology"
                     f"/topology={topology_id}/node={escaped_node_id}",

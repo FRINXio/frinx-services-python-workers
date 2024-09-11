@@ -5,6 +5,7 @@ from frinx.common.frinx_rest import UNICONFIG_HEADERS
 from frinx.common.frinx_rest import UNICONFIG_REQUEST_PARAMS
 from frinx.common.frinx_rest import UNICONFIG_URL_BASE
 from frinx.common.type_aliases import DictAny
+from frinx.common.util import escape_uniconfig_uri_key
 from frinx.common.worker.service import ServiceWorkersImpl
 from frinx.common.worker.task_def import TaskDefinition
 from frinx.common.worker.task_def import TaskExecutionProperties
@@ -49,8 +50,9 @@ class StructuredData(ServiceWorkersImpl):
                 else:
                     uri = worker_input.uri
 
+            escaped_node_id = escape_uniconfig_uri_key(worker_input.node_id)
             url = worker_input.uniconfig_url_base + self.UniconfigApi.uri.format(
-                topology_id=worker_input.topology_id, node_id=worker_input.node_id, uri=uri
+                topology_id=worker_input.topology_id, node_id=escaped_node_id, uri=uri
             )
 
             response = requests.request(
@@ -99,8 +101,9 @@ class StructuredData(ServiceWorkersImpl):
                 else:
                     uri = worker_input.uri
 
+            escaped_node_id = escape_uniconfig_uri_key(worker_input.node_id)
             url = worker_input.uniconfig_url_base + self.UniconfigApi.uri.format(
-                topology_id=worker_input.topology_id, node_id=worker_input.node_id, uri=uri
+                topology_id=worker_input.topology_id, node_id=escaped_node_id, uri=uri
             )
 
             if worker_input.params:
@@ -154,8 +157,9 @@ class StructuredData(ServiceWorkersImpl):
                 else:
                     uri = worker_input.uri
 
+            escaped_node_id = escape_uniconfig_uri_key(worker_input.node_id)
             url = worker_input.uniconfig_url_base + self.UniconfigApi.uri.format(
-                topology_id=worker_input.topology_id, node_id=worker_input.node_id, uri=uri
+                topology_id=worker_input.topology_id, node_id=escaped_node_id, uri=uri
             )
 
             if worker_input.params:

@@ -5,6 +5,7 @@ from frinx.common.frinx_rest import UNICONFIG_HEADERS
 from frinx.common.frinx_rest import UNICONFIG_REQUEST_PARAMS
 from frinx.common.frinx_rest import UNICONFIG_URL_BASE
 from frinx.common.type_aliases import ListAny
+from frinx.common.util import escape_uniconfig_uri_key
 from frinx.common.worker.service import ServiceWorkersImpl
 from frinx.common.worker.task_def import TaskDefinition
 from frinx.common.worker.task_def import TaskInput
@@ -43,9 +44,10 @@ class CliNetworkTopology(ServiceWorkersImpl):
             if self.UniconfigApi.request is None:
                 raise Exception(f"Failed to create request {self.UniconfigApi.request}")
 
+            escaped_node_id = escape_uniconfig_uri_key(worker_input.node_id)
             response = requests.request(
                 url=worker_input.uniconfig_url_base
-                + self.UniconfigApi.uri.format(topology_id=worker_input.topology_id, node_id=worker_input.node_id),
+                + self.UniconfigApi.uri.format(topology_id=worker_input.topology_id, node_id=escaped_node_id),
                 method=self.UniconfigApi.method,
                 data=class_to_json(
                     self.UniconfigApi.request(
@@ -91,9 +93,10 @@ class CliNetworkTopology(ServiceWorkersImpl):
             if self.UniconfigApi.request is None:
                 raise Exception(f"Failed to create request {self.UniconfigApi.request}")
 
+            escaped_node_id = escape_uniconfig_uri_key(worker_input.node_id)
             response = requests.request(
                 url=worker_input.uniconfig_url_base
-                + self.UniconfigApi.uri.format(topology_id=worker_input.topology_id, node_id=worker_input.node_id),
+                + self.UniconfigApi.uri.format(topology_id=worker_input.topology_id, node_id=escaped_node_id),
                 method=self.UniconfigApi.method,
                 data=class_to_json(
                     self.UniconfigApi.request(

@@ -54,3 +54,8 @@
 
 # 2.3.5
 - Fix handling of null or empty input in the 'close_transactions' worker.
+
+# 3.0.0
+- Upgrade UniConfig API to v2.0.0 (server version 7.0.0).
+- Removed temporary workaround related to unwrapping of choice nodes in the Device Discovery and Install Node RPC.
+- Integrated new key-value escaping mechanism into workers.
