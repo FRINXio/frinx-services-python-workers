@@ -40,6 +40,9 @@ class ConnectionManager(ServiceWorkersImpl):
             connection_type: Literal["netconf", "cli", "gnmi"]
             install_params: DictAny
             uniconfig_url_base: str = UNICONFIG_URL_BASE
+            # todo: remove this flag after low-quality Pydantic code is fixed
+            #  (hint: there are issues with unions and aliases)
+            validate_install_params: bool = True
 
         class WorkerOutput(TaskOutput):
             output: DictAny
@@ -48,10 +51,8 @@ class ConnectionManager(ServiceWorkersImpl):
             if self.UniconfigApi.request is None:
                 raise Exception(f"Failed to create request {self.UniconfigApi.request}")
 
-            response = requests.request(
-                url=worker_input.uniconfig_url_base + self.UniconfigApi.uri,
-                method=self.UniconfigApi.method,
-                data=class_to_json(
+            if worker_input.validate_install_params:
+                data = class_to_json(
                     self.UniconfigApi.request(
                         input=installnode.Input(
                             node_id=worker_input.node_id,
@@ -66,7 +67,26 @@ class ConnectionManager(ServiceWorkersImpl):
                             else None,
                         ),
                     ),
-                ),
+                )
+            else:
+                data = {
+                    "input": {
+                        "node-id": worker_input.node_id
+                    }
+                }
+                if worker_input.connection_type == "cli":
+                    data["input"]["cli"] = worker_input.install_params
+                elif worker_input.connection_type == "netconf":
+                    data["input"]["netconf"] = worker_input.install_params
+                elif worker_input.connection_type == "gnmi":
+                    data["input"]["gnmi"] = worker_input.install_params
+                import json
+                data = json.dumps(data)
+
+            response = requests.request(
+                url=worker_input.uniconfig_url_base + self.UniconfigApi.uri,
+                method=self.UniconfigApi.method,
+                data=data,
                 headers=dict(UNICONFIG_HEADERS),
                 params=UNICONFIG_REQUEST_PARAMS,
             )

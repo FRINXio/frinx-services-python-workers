@@ -59,3 +59,8 @@
 - Upgrade UniConfig API to v2.0.0 (server version 7.0.0).
 - Removed temporary workaround related to unwrapping of choice nodes in the Device Discovery and Install Node RPC.
 - Integrated new key-value escaping mechanism into workers.
+
+# 3.0.1
+- Fix connection-manager and discovery workers.
+- Connection-manager - Pydantic cannot correctly handle combination of aliases and unions.
+- Discovery - Fixed renamed elements.

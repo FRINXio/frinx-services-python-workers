@@ -14,6 +14,7 @@ from frinx.common.worker.task_def import TaskExecutionProperties
 from frinx.common.worker.task_def import TaskInput
 from frinx.common.worker.task_def import TaskOutput
 from frinx.common.worker.task_result import TaskResult
+from frinx_api.uniconfig import OperationsDiscoverPostRequest
 from frinx_api.uniconfig import OperationsDiscoverPostResponse
 from frinx_api.uniconfig.device.discovery.discover import Address
 from frinx_api.uniconfig.device.discovery.discover import DeviceDiscoveryTypeOfAddressModel
@@ -58,27 +59,27 @@ class DeviceDiscoveryWorkers(ServiceWorkersImpl):
                 if len(ip_list) == 1:
                     if "/" in ip_list[0]:
                         address = Address(
-                            type_of_address=DeviceDiscoveryTypeOfAddressModel3(
+                            device_discovery_type_of_address=DeviceDiscoveryTypeOfAddressModel3(
                                 network=str(IPvAnyNetwork(ip_list[0]))
                             )
                         )
                     else:
                         address = Address(
-                            type_of_address=DeviceDiscoveryTypeOfAddressModel(
+                            device_discovery_type_of_address=DeviceDiscoveryTypeOfAddressModel(
                                 ip_address=str(IPvAnyAddress(ip_list[0]))
                             )
                         )
                 else:
                     try:
                         address = Address(
-                            type_of_address=DeviceDiscoveryTypeOfAddressModel1(
+                            device_discovery_type_of_address=DeviceDiscoveryTypeOfAddressModel1(
                                 start_ipv4_address=str(IPv4Address(ip_list[0])),
                                 end_ipv4_address=str(IPv4Address(ip_list[1]))
                             )
                         )
                     except ValueError:
                         address = Address(
-                            type_of_address=DeviceDiscoveryTypeOfAddressModel2(
+                            device_discovery_type_of_address=DeviceDiscoveryTypeOfAddressModel2(
                                 start_ipv6_address=str(IPv6Address(ip_list[0])),
                                 end_ipv6_address=str(IPv6Address(ip_list[1]))
                             )
@@ -90,10 +91,8 @@ class DeviceDiscoveryWorkers(ServiceWorkersImpl):
             def validate_tcp(cls, tcp_port: str) -> list[TcpPortItem] | None:
                 if tcp_port:
                     return [TcpPortItem(
-                                type_of_port=DeviceDiscoveryTypeOfPortModel(
-                                    port=p
-                                )
-                        ) for p in parse_ranges(tcp_port.split(","))]
+                        device_discovery_type_of_port=DeviceDiscoveryTypeOfPortModel(port=p)
+                    ) for p in parse_ranges(tcp_port.split(","))]
                 else:
                     return None
 
@@ -101,10 +100,8 @@ class DeviceDiscoveryWorkers(ServiceWorkersImpl):
             def validate_udp(cls, udp_port: str) -> list[UdpPortItem] | None:
                 if udp_port:
                     return [UdpPortItem(
-                        type_of_port=DeviceDiscoveryTypeOfPortModel2(
-                                    port=p
-                                )
-                        ) for p in parse_ranges(udp_port.split(","))]
+                        device_discovery_type_of_port=DeviceDiscoveryTypeOfPortModel2(port=p)
+                    ) for p in parse_ranges(udp_port.split(","))]
                 else:
                     return None
 
@@ -118,10 +115,12 @@ class DeviceDiscoveryWorkers(ServiceWorkersImpl):
             if Discover.response is None:
                 raise Exception(f"Failed to create request {Discover.response}")
 
-            template = Input(
-                address=worker_input.ip,
-                tcp_port=worker_input.tcp_port or None,
-                udp_port=worker_input.udp_port or None,
+            rpc_input = OperationsDiscoverPostRequest(
+                input=Input(
+                    address=worker_input.ip,
+                    tcp_port=worker_input.tcp_port or None,
+                    udp_port=worker_input.udp_port or None,
+                )
             )
 
             response = requests.request(
@@ -130,7 +129,7 @@ class DeviceDiscoveryWorkers(ServiceWorkersImpl):
                 params=UNICONFIG_REQUEST_PARAMS,
                 method=Discover.method,
                 data=class_to_json(
-                    template,
+                    rpc_input,
                 ),
             )
 
