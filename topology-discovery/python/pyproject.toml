@@ -12,6 +12,7 @@ frinx-topology-discovery-api = { git = "https://github.com/FRINXio/frinx-service
 ruff = "^0"
 mypy = "^1"
 pyright = "^1"
+types-requests = "^2"
 
 [tool.poetry]
 packages = [{ include = "frinx_worker" }]
