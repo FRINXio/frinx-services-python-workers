@@ -45,7 +45,7 @@ class TopologyDiscoveryWorkers(ServiceWorkersImpl):
                 description="List of device identifiers that should be synchronized",
                 examples=[["device_id_1", "device_id_2"]],
             )
-            topololy: TopologyType = Field(
+            topology: TopologyType = Field(
                 description="To be synchronized topology type",
                 examples=[TopologyType.ETH_TOPOLOGY],
             )
@@ -58,7 +58,7 @@ class TopologyDiscoveryWorkers(ServiceWorkersImpl):
             ...
 
         def execute(self, worker_input: WorkerInput) -> TaskResult[WorkerOutput]:
-            self._sync_topology.topology_type = worker_input.topololy
+            self._sync_topology.topology_type = worker_input.topology
             self._sync_topology.devices = worker_input.devices
             self._sync_topology.labels = worker_input.labels
 
