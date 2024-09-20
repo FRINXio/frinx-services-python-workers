@@ -5,6 +5,8 @@ from frinx.common.worker.task_def import TaskExecutionProperties
 from frinx.common.worker.task_def import TaskInput
 from frinx.common.worker.task_result import TaskResult
 from frinx.common.worker.worker import WorkerImpl
+from frinx_api.topology_discovery import CreateBackupMutation
+from frinx_api.topology_discovery import CreateBackupResponse
 from frinx_api.topology_discovery import SyncMutation
 from frinx_api.topology_discovery import SyncResponse
 from frinx_api.topology_discovery import TopologyType
@@ -63,5 +65,33 @@ class TopologyDiscoveryWorkers(ServiceWorkersImpl):
             self._sync_topology.labels = worker_input.labels
 
             query = self._sync_topology.render()
+            response: TopologyOutput = execute_graphql_operation(query=query.query, variables=query.variable)
+            return response_handler(query, response)
+
+    class CreateBackup(WorkerImpl):
+        _create_backup: CreateBackupMutation = CreateBackupMutation(
+            payload=CreateBackupResponse(
+                dbName=True,
+            )
+        )
+
+        class ExecutionProperties(TaskExecutionProperties):
+            exclude_empty_inputs: bool = True
+
+        class WorkerDefinition(TaskDefinition):
+            name: str = "TOPOLOGY_create_backup"
+            description: str = "Create backup from the current state of the topology database"
+            labels: ListStr = ["BASIC", "TOPOLOGY"]
+            timeout_seconds: int = 3600
+            response_timeout_seconds: int = 3600
+
+        class WorkerInput(TaskInput):
+            ...
+
+        class WorkerOutput(TopologyWorkerOutput):
+            ...
+
+        def execute(self, worker_input: WorkerInput) -> TaskResult[WorkerOutput]:
+            query = self._create_backup.render()
             response: TopologyOutput = execute_graphql_operation(query=query.query, variables=query.variable)
             return response_handler(query, response)
