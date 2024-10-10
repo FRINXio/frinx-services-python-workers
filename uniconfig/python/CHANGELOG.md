@@ -64,3 +64,6 @@
 - Fix connection-manager and discovery workers.
 - Connection-manager - Pydantic cannot correctly handle combination of aliases and unions.
 - Discovery - Fixed renamed elements.
+
+# 3.0.2
+- Fix missing SNMP support in connection-manager UniConfig workers.
