@@ -25,6 +25,7 @@ class ConnectionManager(ServiceWorkersImpl):
         from frinx_api.uniconfig.connection.manager.installnode import Cli
         from frinx_api.uniconfig.connection.manager.installnode import Gnmi
         from frinx_api.uniconfig.connection.manager.installnode import Netconf
+        from frinx_api.uniconfig.connection.manager.installnode import Snmp
         from frinx_api.uniconfig.rest_api import InstallNode as UniconfigApi
 
         class ExecutionProperties(TaskExecutionProperties):
@@ -37,7 +38,7 @@ class ConnectionManager(ServiceWorkersImpl):
 
         class WorkerInput(TaskInput):
             node_id: str
-            connection_type: Literal["netconf", "cli", "gnmi"]
+            connection_type: Literal["netconf", "cli", "gnmi", "snmp"]
             install_params: DictAny
             uniconfig_url_base: str = UNICONFIG_URL_BASE
             # todo: remove this flag after low-quality Pydantic code is fixed
@@ -65,6 +66,9 @@ class ConnectionManager(ServiceWorkersImpl):
                             gnmi=self.Gnmi(**worker_input.install_params)
                             if worker_input.connection_type == "gnmi"
                             else None,
+                            snmp=self.Snmp(**worker_input.install_params)
+                            if worker_input.connection_type == "snmp"
+                            else None,
                         ),
                     ),
                 )
@@ -80,6 +84,8 @@ class ConnectionManager(ServiceWorkersImpl):
                     data["input"]["netconf"] = worker_input.install_params
                 elif worker_input.connection_type == "gnmi":
                     data["input"]["gnmi"] = worker_input.install_params
+                elif worker_input.connection_type == "snmp":
+                    data["input"]["snmp"] = worker_input.install_params
                 import json
                 data = json.dumps(data)
 
@@ -108,7 +114,7 @@ class ConnectionManager(ServiceWorkersImpl):
 
         class WorkerInput(TaskInput):
             node_id: str
-            connection_type: Literal["netconf", "cli", "gnmi"]
+            connection_type: Literal["netconf", "cli", "gnmi", "snmp"]
             uniconfig_url_base: str = UNICONFIG_URL_BASE
 
         class WorkerOutput(TaskOutput):
@@ -313,7 +319,7 @@ class ConnectionManager(ServiceWorkersImpl):
             """
             Identifier of the node in the UniConfig network topology.
             """
-            connection_type: Literal["netconf", "cli", "gnmi"]
+            connection_type: Literal["netconf", "cli", "gnmi", "snmp"]
             """
             Type of connection to the device.
             """
@@ -357,11 +363,13 @@ class ConnectionManager(ServiceWorkersImpl):
             return handle_response(response, self.WorkerOutput)
 
         @staticmethod
-        def _derive_topology_id(connection_type: Literal["netconf", "cli", "gnmi"]) -> str:
+        def _derive_topology_id(connection_type: Literal["netconf", "cli", "gnmi", "snmp"]) -> str:
             if connection_type == "netconf":
                 return "topology-netconf"
             if connection_type == "cli":
                 return "cli"
             if connection_type == "gnmi":
                 return "gnmi-topology"
+            if connection_type == "snmp":
+                return "topology-snmp"
             raise ValueError(f"Unknown connection type {connection_type}")
