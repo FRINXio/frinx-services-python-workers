@@ -67,3 +67,6 @@
 
 # 3.0.2
 - Fix missing SNMP support in connection-manager UniConfig workers.
+
+# 3.1.0
+- Add find-schema-resources RPC
