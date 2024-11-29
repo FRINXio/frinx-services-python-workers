@@ -1,5 +1,4 @@
 import dataclasses
-import http.client
 import json
 from typing import Any
 
@@ -36,28 +35,39 @@ def handle_response(response: Response, worker_output: Any) -> TaskResult:
             "Function handle_response expects WorkerOutput with a field named 'output'."
         )
 
-    output = dict()
-    status = TaskResultStatus.COMPLETED if response.ok else TaskResultStatus.FAILED
     logs = (
         f'{response.request.method} request to {response.url} returned with status code {response.status_code}.  '
         f'CONTENT: {response.content.decode("utf-8")}'
     )
 
-    if response.status_code not in [http.client.NO_CONTENT, http.client.CREATED]:
+    if not response.ok :
         if "json" in response.headers.get("content-type", ""):
             try:
                 output = response.json()
+                raise ValueError(f"Error {response.status_code}: {output}")
             except json.JSONDecodeError:
-                logs += "ERROR: JSON decoding failed - unparsable response content. "
-                status = TaskResultStatus.FAILED
+                msg = "ERROR: JSON decoding failed - unparsable response content. "
+                raise ValueError(msg)
+            except Exception as e:
+                raise Exception(str(e))
         if "text" in response.headers.get("content-type", ""):
             try:
-                output["message"] = response.text
+                raise ValueError(f"Error {response.status_code}: {response.text}")
             except Exception as e:
-                logs += str(e)
-                status = TaskResultStatus.FAILED
+                raise Exception(str(e))
+    else:
+            try:
+                if not response.text.strip() == "":
+                    output = response.json()
+                else:
+                    output = {}
+            except json.JSONDecodeError:
+                msg = "ERROR: JSON decoding failed - unparsable response content. "
+                raise ValueError(msg)
+            except Exception as e:
+                raise Exception(str(e))
 
-    return TaskResult(status=status, logs=logs, output=worker_output(output=output))
+            return TaskResult(status=TaskResultStatus.COMPLETED, logs=logs, output=worker_output(output=output))
 
 
 def uniconfig_zone_to_cookie(transaction_id: str | None = None, uniconfig_server_id: str | None = None) -> DictAny:
