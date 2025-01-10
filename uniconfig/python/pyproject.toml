@@ -1,13 +1,16 @@
 [build-system]
-requires = ["poetry-core"]
+requires = ["poetry-core<2.0.0"]
 build-backend = "poetry.core.masonry.api"
 
 [tool.poetry.dependencies]
 python = "^3.10"
 pydantic = "^2"
 requests = "^2.31.0"
-frinx-python-sdk = "^2"
-frinx-uniconfig-api = { git = "https://github.com/FRINXio/frinx-services-python-api.git", tag = "frinx-uniconfig-api_v2.0.1", subdirectory = "uniconfig/python" }
+# TODO: frinx-python-sdk with higher version of pydnatic is not released yet
+#frinx-python-sdk = "^2"
+frinx-python-sdk = { git = "https://github.com/FRINXio/frinx-python-sdk.git", rev = "a9bc7ea02859f1646a49c7afe8f25d276bab143f" }
+# TODO: merge/release first
+frinx-uniconfig-api = { git = "https://github.com/FRINXio/frinx-services-python-api.git", branch = "mhudec/gen-schema", subdirectory = "uniconfig/python" }
 
 [tool.poetry.group.dev.dependencies]
 ruff = "^0"
@@ -21,7 +24,7 @@ packages = [{ include = "frinx_worker" }]
 name = "frinx-uniconfig-worker"
 description = "Conductor worker for Frinx Uniconfig"
 authors = ["Jozef Volak <jozef.volak@elisapolystar.com>"]
-version = "3.0.2"
+version = "3.1.0"
 readme = ["README.md", "CHANGELOG.md", "RELEASE.md"]
 keywords = ["frinx-machine", "uniconfig", "worker"]
 license = "Apache 2.0"
