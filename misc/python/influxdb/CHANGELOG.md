@@ -10,3 +10,6 @@
 # 1.2.1
 - Updated dependencies
 - Simplify task, remove generic code
+
+# 2.0.0
+- Update pyproject.toml for Poetry 2.0, adopting PEP 621 standards

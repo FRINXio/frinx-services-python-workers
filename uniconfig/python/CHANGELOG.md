@@ -67,3 +67,8 @@
 
 # 3.0.2
 - Fix missing SNMP support in connection-manager UniConfig workers.
+
+
+# 4.0.0
+- Update pyproject.toml for Poetry 2.0, adopting PEP 621 standards
+- Bumped version of frinx-uniconfig-api to 4.0.0.

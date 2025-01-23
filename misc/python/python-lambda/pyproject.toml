@@ -1,5 +1,20 @@
+[project]
+name = "frinx-python-lambda"
+description = "Conductor Python Lambda worker for Frinx Machine"
+authors = [
+    { name = "Jozef Volak", email = "jozef.volak@elisapolystar.com" }
+]
+version = "2.0.0"
+readme = "README.md"
+keywords = ["frinx-machine", "python-lambda", "worker"]
+license = { text = "Apache-2.0" }
+
+[project.urls]
+Homepage = 'https://github.com/FRINXio/frinx-services-python-workers/tree/main/misc/python/python-lambda'
+Source = 'https://github.com/FRINXio/frinx-services-python-workers/tree/main/misc/python/python-lambda'
+
 [build-system]
-requires = ["poetry-core"]
+requires = ["poetry-core>=2.0.0,<3.0.0"]
 build-backend = "poetry.core.masonry.api"
 
 [tool.poetry.dependencies]
@@ -15,17 +30,6 @@ pytest = "^7"
 
 [tool.poetry]
 packages = [{ include = "frinx_worker" }]
-name = "frinx-python-lambda"
-description = "Conductor Python Lambda worker for Frinx Machine"
-authors = ["Jozef Volak <jozef.volak@elisapolystar.com>"]
-version = "1.1.0"
-readme = ["README.md", "CHANGELOG.md"]
-keywords = ["frinx-machine", "python-lambda", "worker"]
-license = "Apache 2.0"
-
-[project.urls]
-Homepage = 'https://github.com/FRINXio/frinx-services-python-workers/tree/main/misc/python/python-lambda'
-Source = 'https://github.com/FRINXio/frinx-services-python-workers/tree/main/misc/python/python-lambda'
 
 [tool.pyright]
 include = ['frinx_worker']

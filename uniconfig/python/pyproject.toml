@@ -1,5 +1,17 @@
+[project]
+name = "frinx-uniconfig-worker"
+description = "Conductor worker for Frinx Uniconfig"
+authors = [
+    { name = "Jozef Volak", email = "jozef.volak@elisapolystar.com" }
+]
+version = "4.0.0"
+readme = "README.md"
+keywords = ["frinx-machine", "uniconfig", "worker"]
+license = { text = "Apache-2.0" }
+
+
 [build-system]
-requires = ["poetry-core"]
+requires = ["poetry-core>=2.0.0,<3.0.0"]
 build-backend = "poetry.core.masonry.api"
 
 [tool.poetry.dependencies]
@@ -7,7 +19,7 @@ python = "^3.10"
 pydantic = "^2"
 requests = "^2.31.0"
 frinx-python-sdk = "^2"
-frinx-uniconfig-api = { git = "https://github.com/FRINXio/frinx-services-python-api.git", tag = "frinx-uniconfig-api_v2.0.1", subdirectory = "uniconfig/python" }
+frinx-uniconfig-api = { git = "https://github.com/FRINXio/frinx-services-python-api.git", tag = "frinx-uniconfig-api_v3.0.0", subdirectory = "uniconfig/python" }
 
 [tool.poetry.group.dev.dependencies]
 ruff = "^0"
@@ -18,13 +30,6 @@ pytest = "^7"
 
 [tool.poetry]
 packages = [{ include = "frinx_worker" }]
-name = "frinx-uniconfig-worker"
-description = "Conductor worker for Frinx Uniconfig"
-authors = ["Jozef Volak <jozef.volak@elisapolystar.com>"]
-version = "3.0.2"
-readme = ["README.md", "CHANGELOG.md", "RELEASE.md"]
-keywords = ["frinx-machine", "uniconfig", "worker"]
-license = "Apache 2.0"
 
 [project.urls]
 Homepage = 'https://github.com/FRINXio/frinx-python-sdk'
