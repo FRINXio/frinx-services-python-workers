@@ -1,5 +1,20 @@
+[project]
+name = "frinx-conductor-system-test-worker"
+description = "Conductor system test worker for Frinx Machine"
+authors = [
+    { name = "Jozef Volak", email = "jozef.volak@elisapolystar.com" }
+]
+version = "2.0.0"
+readme = "README.md"
+keywords = ["frinx-machine", "conductor-system-test", "worker"]
+license = { text = "Apache-2.0" }
+
+[project.urls]
+Homepage = 'https://github.com/FRINXio/frinx-python-sdk'
+Source = 'https://github.com/FRINXio/frinx-python-sdk'
+
 [build-system]
-requires = ["poetry-core"]
+requires = ["poetry-core>=2.0.0,<3.0.0"]
 build-backend = "poetry.core.masonry.api"
 
 [tool.poetry.dependencies]
@@ -14,17 +29,6 @@ pyright = "^1"
 
 [tool.poetry]
 packages = [{ include = "frinx_worker" }]
-name = "frinx-conductor-system-test-worker"
-description = "Conductor system test worker for Frinx Machine"
-authors = ["Jozef Volak <jozef.volak@elisapolystar.com>"]
-version = "1.0.1"
-readme = ["README.md", "CHANGELOG.md"]
-keywords = ["frinx-machine", "conductor-system-test", "worker"]
-license = "Apache 2.0"
-
-[project.urls]
-Homepage = 'https://github.com/FRINXio/frinx-python-sdk'
-Source = 'https://github.com/FRINXio/frinx-python-sdk'
 
 [tool.pyright]
 include = ['frinx_worker']

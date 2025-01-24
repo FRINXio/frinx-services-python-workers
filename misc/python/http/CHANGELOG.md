@@ -7,3 +7,6 @@
 # 2.0.0
 - Simplify HTTP task, remove generic code
 - Change input name 'uri' to 'url'
+
+# 3.0.0
+- Update pyproject.toml for Poetry 2.0, adopting PEP 621 standards

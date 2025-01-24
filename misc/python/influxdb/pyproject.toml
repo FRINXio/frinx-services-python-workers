@@ -1,5 +1,20 @@
+[project]
+name = "frinx-influxdb-worker"
+description = "Conductor InfluxDB worker for Frinx Machine"
+authors = [
+    { name = "Jozef Volak", email = "jozef.volak@elisapolystar.com" }
+]
+version = "2.0.0"
+readme = "README.md"
+keywords = ["frinx-machine", "influxdb", "worker"]
+license = { text = "Apache-2.0" }
+
+[project.urls]
+Homepage = 'https://github.com/FRINXio/frinx-python-sdk'
+Source = 'https://github.com/FRINXio/frinx-python-sdk'
+
 [build-system]
-requires = ["poetry-core"]
+requires = ["poetry-core>=2.0.0,<3.0.0"]
 build-backend = "poetry.core.masonry.api"
 
 [tool.poetry.dependencies]
@@ -16,17 +31,6 @@ types-requests = "^2.31.0.2"
 
 [tool.poetry]
 packages = [{ include = "frinx_worker" }]
-name = "frinx-influxdb-worker"
-description = "Conductor InfluxDB worker for Frinx Machine"
-authors = ["Jozef Volak <jozef.volak@elisapolystar.com>"]
-version = "1.2.1"
-readme = ["README.md", "CHANGELOG.md"]
-keywords = ["frinx-machine", "influxdb", "worker"]
-license = "Apache 2.0"
-
-[project.urls]
-Homepage = 'https://github.com/FRINXio/frinx-python-sdk'
-Source = 'https://github.com/FRINXio/frinx-python-sdk'
 
 [tool.pyright]
 include = ['frinx_worker']

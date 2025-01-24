@@ -12,3 +12,6 @@
 
 # 1.2.0
 - Updated frinx-python-sdk to version 2.2.1 from 2.1.3.
+
+# 2.0.0
+- Update pyproject.toml for Poetry 2.0, adopting PEP 621 standards

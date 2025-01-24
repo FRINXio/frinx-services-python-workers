@@ -33,7 +33,7 @@ jobs:
           python-version: "3.10"
       - uses: abatilo/actions-poetry@v2
         with:
-          poetry-version: "1.7.0"
+          poetry-version: "2.0.1"
       - name: Package naming
         run: |
           echo "PACKAGE_NAME=$(poetry version --no-interaction | cut -d ' ' -f 1)" >> "$GITHUB_ENV"
